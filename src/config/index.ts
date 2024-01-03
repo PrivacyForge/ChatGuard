@@ -1,3 +1,3 @@
-const peerConfig = {
-  url: "https://chatguard.job-it.me",
+export const peerConfig = {
+  url: "chatguard.job-it.me",
 };

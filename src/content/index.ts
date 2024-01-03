@@ -1,4 +1,5 @@
 import ChatGuard from "src/class";
+import { peerConfig } from "src/config";
 import { LocalStorage } from "src/utils/Storage";
 
 (async function init() {
