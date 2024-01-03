@@ -1,0 +1,16 @@
+{
+  "name": "ChatGuard",
+  "description": "ChatGuard - alpha",
+  "version": "0.0.1",
+  "manifest_version": 3,
+  "content_scripts": [
+    {
+      "matches": ["https://web.bale.ai/*"],
+      "js": ["src/content/index.ts"]
+    }
+  ],
+  "action": {
+    "default_popup": "src/popup/popup.html"
+  },
+  "permissions": ["storage"]
+}

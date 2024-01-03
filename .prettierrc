@@ -1,0 +1,9 @@
+{
+  "printWidth": 120,
+  "useTabs": false,
+  "tabWidth": 2,
+  "svelteBracketNewLine": false,
+  "svelteSortOrder": "scripts-markup-styles",
+  "svelteStrictMode": false,
+  "htmlWhitespaceSensitivity": "strict"
+}
