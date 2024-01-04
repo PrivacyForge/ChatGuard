@@ -54,7 +54,6 @@ class ExchangeService {
   private async handleExchangePeer(data: any, conn: DataConnection) {
     let store = await chromeStorage.get();
 
-    // secret exchange
     if (data.type === "sec_exchange") {
       const privateKey = forge.pki.privateKeyFromPem(store.user!.privateKey);
       const dkey = privateKey.decrypt(forge.util.hexToBytes(data.secretKey));
@@ -64,19 +63,6 @@ class ExchangeService {
     if (data.type === "pub_exchange") {
       console.log("i get the person public id and save it", { publicKey: data.publicKey });
       this.storage.setMap("chatGuard_contacts", data.id, data.publicKey);
-      // acknowledgment
-      conn.send({ type: "sec_acknowledgment", id: `${store.user?.id}`, secretKey: Boolean(store.contacts[data.id]) });
-    }
-
-    if (data.type === "sec_acknowledgment") {
-      if (!data.final) {
-        conn.send({
-          type: "sec_acknowledgment",
-          id: `${store.user?.id}`,
-          secretKey: Boolean(store.contacts[data.id]),
-          final: true,
-        });
-      }
       if (store.contacts[data.id]) {
         console.log("i already have secret key, i encrypted and send to the person", {
           secretKey: store.contacts[data.id],
@@ -86,16 +72,14 @@ class ExchangeService {
         conn.send({ type: "sec_exchange", id: `${store.user?.id}`, secretKey: encryptedKey });
         return;
       }
-      if (!data.secretKey && store.contacts[data.id]) {
-        const rawKey = forge.random.getBytesSync(16);
-        const key = forge.util.bytesToHex(rawKey);
-        console.log("i dont have secret key and i created and send to the person, and save it my self", {
-          secretKey: key,
-        });
-        const pubKey = forge.pki.publicKeyFromPem(data.publicKey);
-        const encryptedKey = forge.util.bytesToHex(pubKey.encrypt(key));
-        conn.send({ type: "sec_exchange", id: `${store.user?.id}`, secretKey: encryptedKey });
-      }
+      const rawKey = forge.random.getBytesSync(16);
+      const key = forge.util.bytesToHex(rawKey);
+      console.log("i dont have secret key and i created and send to the person, and save it my self", {
+        secretKey: key,
+      });
+      const pubKey = forge.pki.publicKeyFromPem(data.publicKey);
+      const encryptedKey = forge.util.bytesToHex(pubKey.encrypt(key));
+      conn.send({ type: "sec_exchange", id: `${store.user?.id}`, secretKey: encryptedKey });
     }
   }
 }
