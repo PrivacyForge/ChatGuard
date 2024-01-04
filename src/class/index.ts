@@ -45,10 +45,12 @@ class ChatGuard {
   }
   private handleContactChange() {
     if (this.#prevUrl === window.location.search) return;
+    console.log("DOM MUTATE :: contact change");
     this.#prevUrl = window.location.search;
     const params = new URLSearchParams(this.#prevUrl);
     const id = params.get("uid");
     if (!id) return;
+    console.log("try to connect to this user", id);
     this.exchangeService.connectToUser(id);
   }
   private async handleMessageReceive() {
@@ -76,47 +78,52 @@ class ChatGuard {
       }
     });
   }
-  private async handleElementListener() {
+  private handleClick = (e: MouseEvent) => {
+    const btn = [...this.elementListener.chatFooter!.children].at(-1)?.children[0];
+    if (btn?.isEqualNode(e.target as HTMLElement)) {
+      this.dom.typeToTextField(this.selector.textField, `${ENCRYPT_PREFIX} ${this.state.encrypted}`);
+      btn.dispatchEvent(new Event("click"));
+    }
+  };
+  private handleInput = async (e: Event) => {
     let store = await chromeStorage.get();
-    if (this.elementListener.textField || this.elementListener.chatFooter) return;
+    this.state.value = (e.target as HTMLElement).innerText;
+    const params = new URLSearchParams(this.#prevUrl);
+    const uid = params.get("uid") as string;
+    if (store.contacts[+uid]) {
+      const data = await this.cipher.encrypt(this.state.value, store.contacts[uid]);
+      this.state.encrypted = data;
+    }
+  };
+  private handleSubmit = async () => {
+    let store = await chromeStorage.get();
+    const params = new URLSearchParams(this.#prevUrl);
+    const uid = params.get("uid") as string;
+    if (store.contacts[+uid] === undefined) return;
+    this.dom.typeToTextField(this.selector.textField, `${ENCRYPT_PREFIX} ${this.state.encrypted}`);
+  };
+  private handleKeyDown = (e: any) => {
+    if (e.key === "Enter" && this.state.value !== "" && !e.shiftKey && e.detail !== 11) {
+      this.handleSubmit();
+    }
+  };
+  private async handleElementListener() {
+    if (this.elementListener.textField && this.elementListener.chatFooter) {
+      this.elementListener.chatFooter.removeEventListener("click", this.handleClick);
+      this.elementListener.textField.removeEventListener("input", this.handleInput);
+      this.elementListener.textField.removeEventListener("keydown", this.handleKeyDown);
+    }
 
     this.elementListener.textField = (await this.dom.getElement(this.selector.textField)) as HTMLDivElement;
     this.elementListener.chatFooter = (await this.dom.getElement(
       `${this.selector.textFieldWrapper} div `
     )) as HTMLElement;
     // Events
-    this.elementListener.chatFooter.addEventListener("click", (e) => {
-      const btn = [...this.elementListener.chatFooter!.children].at(-1)?.children[0];
-      if (btn?.isEqualNode(e.target as HTMLElement)) {
-        this.dom.typeToTextField(this.selector.textField, `${ENCRYPT_PREFIX} ${this.state.encrypted}`);
-        btn.dispatchEvent(new Event("click"));
-      }
-    });
-    this.elementListener.textField.addEventListener("input", async (e) => {
-      store = await chromeStorage.get();
-      this.state.value = (e.target as HTMLElement).innerText;
-      const params = new URLSearchParams(this.#prevUrl);
-      const uid = params.get("uid") as string;
-      console.log(store.contacts, uid);
-      if (store.contacts[+uid]) {
-        const data = await this.cipher.encrypt(this.state.value, store.contacts[uid]);
-        this.state.encrypted = data;
-      }
-    });
-    const handleSubmit = () => {
-      const params = new URLSearchParams(this.#prevUrl);
-      const uid = params.get("uid") as string;
-      if (store.contacts[+uid] === undefined) return;
-      this.dom.typeToTextField(this.selector.textField, `${ENCRYPT_PREFIX} ${this.state.encrypted}`);
-    };
-    this.elementListener.textField.addEventListener("keydown", (e) => {
-      console.log(e);
-      if (e.key === "Enter" && this.state.value !== "" && !e.shiftKey && e.detail !== 11) {
-        handleSubmit();
-      }
-    });
+    this.elementListener.chatFooter.addEventListener("click", this.handleClick);
+    this.elementListener.textField.addEventListener("input", this.handleInput);
+    this.elementListener.textField.addEventListener("keydown", this.handleKeyDown);
   }
-  public async initDomManipulation(chatWrapper: HTMLElement) {
+  public initDomManipulation(chatWrapper: HTMLElement) {
     const handleMutation = () => {
       this.handleElementListener();
       this.handleContactChange();

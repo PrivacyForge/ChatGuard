@@ -10,11 +10,14 @@ class ExchangeService {
   peer: Peer | null = null;
 
   public async connectToPeerServer(host: string, path: string = "/") {
-    console.log("lol");
+    console.log("start connection to peer server ...");
     let store = await chromeStorage.get();
-    this.peer = new Peer(store.user!.id, { host, path });
-
-    console.log(this.peer);
+    console.log(`me: ${store.user.id}`);
+    this.peer = new Peer(`${store.user!.id}`, { host, path });
+    console.log("connected to peer server", { server: this.peer });
+    this.peer.on("error", (err) => {
+      console.log(err);
+    });
     this.peer.on("connection", (conn) => {
       conn.on("data", (data: any) => {
         this.handleExchangePeer(data, conn);
@@ -25,12 +28,14 @@ class ExchangeService {
     });
   }
   public async connectToUser(id: string) {
+    console.log(this);
+    if (this.peer?.disconnected) return console.error("Peer not connected to server");
     if (this.connection) this.connection.close();
-    if (!this.peer) console.error("Peer not connected to server");
-
-    console.log({ id });
     let store = await chromeStorage.get();
-    this.connection = this.peer!.connect(id);
+    this.connection = this.peer!.connect(`${id}`);
+    this.connection.on("error", (error) => {
+      console.log("error", error);
+    });
     this.connection.on("open", () => {
       console.log("open");
       this.connection!.send({ type: "pub_exchange", id: store.user?.id, publicKey: store.user?.publicKey });
@@ -45,12 +50,17 @@ class ExchangeService {
     if (data.type === "sec_exchange") {
       const privateKey = forge.pki.privateKeyFromPem(store.user!.privateKey);
       const dkey = privateKey.decrypt(forge.util.hexToBytes(data.secretKey));
+      console.log("i receive the person secret key and i decrypted and save it", { secretKey: dkey });
       chromeStorage.set({ ...store, contacts: { ...store.contacts, [data.id]: dkey } });
     }
     if (data.type === "pub_exchange") {
+      console.log("i get the person public id and save it", { publicKey: data.publicKey });
       this.storage.setMap("chatGuard_contacts", data.id, data.publicKey);
 
       if (store.contacts[data.id]) {
+        console.log("i already have secret key, i encrypted and send to the person", {
+          secretKey: store.connect[data.id],
+        });
         const pubKey = forge.pki.publicKeyFromPem(data.publicKey);
         const encryptedKey = forge.util.bytesToHex(pubKey.encrypt(store.contacts[data.id]));
         conn.send({ type: "sec_exchange", id: store.user?.id, secretKey: encryptedKey });
@@ -58,6 +68,9 @@ class ExchangeService {
       }
       const rawKey = forge.random.getBytesSync(16);
       const key = forge.util.bytesToHex(rawKey);
+      console.log("i dont have secret key and i created and send to the person, and save it my self", {
+        secretKey: key,
+      });
       const pubKey = forge.pki.publicKeyFromPem(data.publicKey);
       const encryptedKey = forge.util.bytesToHex(pubKey.encrypt(key));
       conn.send({ type: "sec_exchange", id: store.user?.id, secretKey: encryptedKey });
