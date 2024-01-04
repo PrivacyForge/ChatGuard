@@ -38,7 +38,7 @@ class ExchangeService {
     });
     this.connection.on("open", () => {
       console.log("open");
-      this.connection!.send({ type: "pub_exchange", id: store.user?.id, publicKey: store.user?.publicKey });
+      this.connection!.send({ type: "pub_exchange", id: `${store.user?.id}`, publicKey: store.user?.publicKey });
     });
     this.connection.on("data", (data) => {
       this.handleExchangePeer(data, this.connection as DataConnection);
@@ -63,7 +63,7 @@ class ExchangeService {
         });
         const pubKey = forge.pki.publicKeyFromPem(data.publicKey);
         const encryptedKey = forge.util.bytesToHex(pubKey.encrypt(store.contacts[data.id]));
-        conn.send({ type: "sec_exchange", id: store.user?.id, secretKey: encryptedKey });
+        conn.send({ type: "sec_exchange", id: `${store.user?.id}`, secretKey: encryptedKey });
         return;
       }
       const rawKey = forge.random.getBytesSync(16);
@@ -73,7 +73,7 @@ class ExchangeService {
       });
       const pubKey = forge.pki.publicKeyFromPem(data.publicKey);
       const encryptedKey = forge.util.bytesToHex(pubKey.encrypt(key));
-      conn.send({ type: "sec_exchange", id: store.user?.id, secretKey: encryptedKey });
+      conn.send({ type: "sec_exchange", id: `${store.user?.id}`, secretKey: encryptedKey });
     }
   }
 }

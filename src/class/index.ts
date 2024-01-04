@@ -32,10 +32,11 @@ class ChatGuard {
           chromeStorage.set({
             ...store,
             user: {
-              id: this.user.id,
+              id: `${this.user.id}`,
               publicKey,
               privateKey,
             },
+            contacts: {},
           });
           res();
         });
