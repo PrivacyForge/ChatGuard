@@ -3,6 +3,7 @@ import forge from "node-forge";
 import type { DataConnection } from "peerjs";
 import { LocalStorage } from "src/utils/Storage";
 import { chromeStorage } from "src/store";
+import { peerConfig } from "src/config";
 
 class ExchangeService {
   storage = new LocalStorage();
@@ -28,10 +29,16 @@ class ExchangeService {
     });
   }
   public async connectToUser(id: string) {
-    console.log(this);
-    if (this.peer?.disconnected) return console.error("Peer not connected to server");
-    if (this.connection) this.connection.close();
     let store = await chromeStorage.get();
+    if (store.contacts[id]) return console.log("have secret dont need");
+    console.log(this);
+    if (this.peer?.disconnected || !this.peer) {
+      await this.connectToPeerServer(peerConfig.url, "/");
+    }
+    if (this.connection) {
+      this.connection.close();
+      this.peer!._removeConnection(this.connection);
+    }
     this.connection = this.peer!.connect(`${id}`);
     this.connection.on("error", (error) => {
       console.log("error", error);
@@ -47,6 +54,7 @@ class ExchangeService {
   private async handleExchangePeer(data: any, conn: DataConnection) {
     let store = await chromeStorage.get();
 
+    // secret exchange
     if (data.type === "sec_exchange") {
       const privateKey = forge.pki.privateKeyFromPem(store.user!.privateKey);
       const dkey = privateKey.decrypt(forge.util.hexToBytes(data.secretKey));
@@ -56,24 +64,38 @@ class ExchangeService {
     if (data.type === "pub_exchange") {
       console.log("i get the person public id and save it", { publicKey: data.publicKey });
       this.storage.setMap("chatGuard_contacts", data.id, data.publicKey);
+      // acknowledgment
+      conn.send({ type: "sec_acknowledgment", id: `${store.user?.id}`, secretKey: Boolean(store.contacts[data.id]) });
+    }
 
+    if (data.type === "sec_acknowledgment") {
+      if (!data.final) {
+        conn.send({
+          type: "sec_acknowledgment",
+          id: `${store.user?.id}`,
+          secretKey: Boolean(store.contacts[data.id]),
+          final: true,
+        });
+      }
       if (store.contacts[data.id]) {
         console.log("i already have secret key, i encrypted and send to the person", {
-          secretKey: store.connect[data.id],
+          secretKey: store.contacts[data.id],
         });
         const pubKey = forge.pki.publicKeyFromPem(data.publicKey);
         const encryptedKey = forge.util.bytesToHex(pubKey.encrypt(store.contacts[data.id]));
         conn.send({ type: "sec_exchange", id: `${store.user?.id}`, secretKey: encryptedKey });
         return;
       }
-      const rawKey = forge.random.getBytesSync(16);
-      const key = forge.util.bytesToHex(rawKey);
-      console.log("i dont have secret key and i created and send to the person, and save it my self", {
-        secretKey: key,
-      });
-      const pubKey = forge.pki.publicKeyFromPem(data.publicKey);
-      const encryptedKey = forge.util.bytesToHex(pubKey.encrypt(key));
-      conn.send({ type: "sec_exchange", id: `${store.user?.id}`, secretKey: encryptedKey });
+      if (!data.secretKey && store.contacts[data.id]) {
+        const rawKey = forge.random.getBytesSync(16);
+        const key = forge.util.bytesToHex(rawKey);
+        console.log("i dont have secret key and i created and send to the person, and save it my self", {
+          secretKey: key,
+        });
+        const pubKey = forge.pki.publicKeyFromPem(data.publicKey);
+        const encryptedKey = forge.util.bytesToHex(pubKey.encrypt(key));
+        conn.send({ type: "sec_exchange", id: `${store.user?.id}`, secretKey: encryptedKey });
+      }
     }
   }
 }

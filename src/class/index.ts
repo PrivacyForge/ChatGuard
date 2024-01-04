@@ -82,6 +82,7 @@ class ChatGuard {
   private handleClick = (e: MouseEvent) => {
     const btn = [...this.elementListener.chatFooter!.children].at(-1)?.children[0];
     if (btn?.isEqualNode(e.target as HTMLElement)) {
+      if (this.state.encrypted === "") return;
       this.dom.typeToTextField(this.selector.textField, `${ENCRYPT_PREFIX} ${this.state.encrypted}`);
       btn.dispatchEvent(new Event("click"));
     }
@@ -96,16 +97,9 @@ class ChatGuard {
       this.state.encrypted = data;
     }
   };
-  private handleSubmit = async () => {
-    let store = await chromeStorage.get();
-    const params = new URLSearchParams(this.#prevUrl);
-    const uid = params.get("uid") as string;
-    if (store.contacts[+uid] === undefined) return;
-    this.dom.typeToTextField(this.selector.textField, `${ENCRYPT_PREFIX} ${this.state.encrypted}`);
-  };
   private handleKeyDown = (e: any) => {
-    if (e.key === "Enter" && this.state.value !== "" && !e.shiftKey && e.detail !== 11) {
-      this.handleSubmit();
+    if (e.key === "Enter" && this.state.value !== "" && !e.shiftKey && e.detail !== 11 && this.state.encrypted !== "") {
+      this.dom.typeToTextField(this.selector.textField, `${ENCRYPT_PREFIX} ${this.state.encrypted}`);
     }
   };
   private async handleElementListener() {
