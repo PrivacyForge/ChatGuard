@@ -48,6 +48,7 @@ class ChatGuard {
     if (this.#prevUrl === window.location.search) return;
     console.log("DOM MUTATE :: contact change");
     this.#prevUrl = window.location.search;
+    this.state = { value: "", encrypted: "" };
     const params = new URLSearchParams(this.#prevUrl);
     const id = params.get("uid");
     if (!id) return;
@@ -61,12 +62,12 @@ class ChatGuard {
       if (!message.textContent?.startsWith(ENCRYPT_PREFIX)) return;
       const target = message.querySelector("span") as HTMLElement;
       if (!target) return;
+
       const messageText = target.textContent || "";
-      console.log(messageText);
+      const rawMessage = messageText.replace(ENCRYPT_PREFIX, "");
+      const params = new URLSearchParams(this.#prevUrl);
+      const uid = params.get("uid") as string;
       try {
-        const rawMessage = messageText.replace(ENCRYPT_PREFIX, "");
-        const params = new URLSearchParams(this.#prevUrl);
-        const uid = params.get("uid") as string;
         if (uid && store.contacts[uid]) {
           target.textContent = "decrypting message ....";
           const data = await this.cipher.decrypt(rawMessage, store.contacts[uid]);
@@ -92,7 +93,8 @@ class ChatGuard {
     this.state.value = (e.target as HTMLElement).innerText;
     const params = new URLSearchParams(this.#prevUrl);
     const uid = params.get("uid") as string;
-    if (store.contacts[+uid]) {
+    console.log("os", store.contacts[uid]);
+    if (store.contacts[uid]) {
       const data = await this.cipher.encrypt(this.state.value, store.contacts[uid]);
       this.state.encrypted = data;
     }
