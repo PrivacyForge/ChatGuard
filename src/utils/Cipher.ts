@@ -1,3 +1,5 @@
+import forge from "node-forge";
+
 class Cipher {
   public async encrypt(message: string, secretKey: string): Promise<string> {
     const encoder = new TextEncoder();
@@ -45,6 +47,11 @@ class Cipher {
     );
 
     return decoder.decode(decryptedData);
+  }
+  generateKey() {
+    const rawKey = forge.random.getBytesSync(16);
+    const key = forge.util.bytesToHex(rawKey);
+    return key;
   }
 }
 export default Cipher;
