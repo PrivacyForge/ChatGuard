@@ -58,7 +58,7 @@ class ExchangeService {
       const privateKey = forge.pki.privateKeyFromPem(store.user!.privateKey);
       const dkey = privateKey.decrypt(forge.util.hexToBytes(data.secretKey));
       console.log("i receive the person secret key and i decrypted and save it", { secretKey: dkey });
-      chromeStorage.set({ ...store, contacts: { ...store.contacts, [data.id]: dkey } });
+      chromeStorage.set({ ...store, contacts: { ...store.contacts, [`${data.id}`]: dkey } });
     }
     if (data.type === "pub_exchange") {
       console.log("i get the person public id and save it", { publicKey: data.publicKey });
