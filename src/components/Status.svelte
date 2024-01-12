@@ -7,22 +7,19 @@
   export let app: ChatGuard;
   export let name: string;
 
-  let status: "idle" | "loading" | "accept" = "idle";
+  let status: "idle" | "accept" = "idle";
+  let loading = false;
 
   const checkHandshake = () => {
     const user = app.storage.getMap("chatguard_contacts", app.url.params.uid);
-    if (user.publicKey && !user.acknowledged) {
-      status = "loading";
-      return;
+    if (user.acknowledged) {
+      loading = false;
     }
-    if (user.publicKey && user.acknowledged) {
+    if (user.publicKey) {
       status = "accept";
       return;
     }
-    if (!user.publicKey && !user.acknowledged) {
-      status = "idle";
-      return;
-    }
+    status = "idle";
   };
 
   onMount(() => {
@@ -32,27 +29,27 @@
   });
 
   const handleSendHandshake = async () => {
-    if (status === "loading") return;
+    if (loading) return;
     const textField = selectors[window.location.hostname].textField;
     const submitButton = selectors[window.location.hostname].submitButton;
     const packet = await app.createDRSAPHandshake();
     DomManipulator.typeTo(textField, packet);
     DomManipulator.clickTo(submitButton);
-    status = "loading";
+    loading = true;
   };
 </script>
 
 <div id="chatguard_{name}" class="wrapper">
   <button on:click={handleSendHandshake} title="request for handShake">
-    {#if status === "idle"}
+    {#if loading}
+      loading
+    {:else if status === "idle"}
       request
-    {:else if status === "loading"}
-      loading ...
     {:else}
       done
     {/if}
   </button>
-  <div class="status" class:error={status === "idle"} class:loading={status === "loading"}></div>
+  <div class="status" class:error={status === "idle"} class:loading></div>
 </div>
 
 <style lang="scss">
@@ -63,10 +60,10 @@
     .status {
       width: 1rem;
       height: 1rem;
-      background-color: greenyellow;
+      background-color: green;
       border-radius: 50%;
       &.loading {
-        background-color: yellow;
+        background-color: yellow !important;
       }
       &.error {
         background-color: red;
