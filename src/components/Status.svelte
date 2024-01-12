@@ -11,15 +11,18 @@
 
   const checkHandshake = () => {
     const user = app.storage.getMap("chatguard_contacts", app.url.params.uid);
+    if (user.publicKey && !user.acknowledged) {
+      status = "loading";
+      return;
+    }
     if (user.publicKey && user.acknowledged) {
       status = "accept";
       return;
     }
-    if (!user.acknowledged) {
-      status = "loading";
+    if (!user.publicKey && !user.acknowledged) {
+      status = "idle";
       return;
     }
-    status = "idle";
   };
 
   onMount(() => {
@@ -49,7 +52,7 @@
       done
     {/if}
   </button>
-  <div class="status" class:error={status !== "accept"} class:loading={status === "loading"}></div>
+  <div class="status" class:error={status === "idle"} class:loading={status === "loading"}></div>
 </div>
 
 <style lang="scss">
