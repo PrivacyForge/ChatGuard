@@ -4,6 +4,7 @@ export interface Selector {
   submitButton: string;
   header: string;
   message: string;
+  innerMessageText: string;
 }
 
 export const selectors: Record<string, Selector> = {
@@ -13,5 +14,6 @@ export const selectors: Record<string, Selector> = {
     submitButton: "#chat_footer :nth-child(2) :nth-child(5)",
     header: "#toolbarWrapper",
     message: "[data-sid]",
+    innerMessageText: "div",
   },
 };

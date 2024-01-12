@@ -19,10 +19,6 @@
 
 <div class="wrapper">
   <h1 class="title">ChatGuard (alpha)</h1>
-  <div class="form">
-    active:
-    <input bind:checked={enable} type="checkbox" name="" id="" />
-  </div>
 </div>
 
 <style module>
@@ -32,8 +28,8 @@
     box-sizing: border-box;
   }
   :global(body) {
-    background-color: #000000;
-    color: #fff;
+    background-color: #ffffff;
+    color: #111217;
   }
   .title {
     font-size: 1.2rem;
@@ -41,14 +37,10 @@
   .wrapper {
     padding: 2rem;
     width: 24rem;
+    height: 27rem;
     display: flex;
-    flex-direction: column;
-    gap: 1rem;
-    font-size: 1.2rem;
-  }
-  .form {
-    display: flex;
+    justify-content: center;
     align-items: center;
-    gap: 1rem;
+    font-size: 1.2rem;
   }
 </style>

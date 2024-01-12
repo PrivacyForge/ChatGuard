@@ -1,24 +1,87 @@
+interface RenderMap {
+  name: string;
+  rendered: boolean;
+  parent: HTMLElement;
+  patentSelector: string;
+  render: (parent: HTMLElement) => void;
+}
 class DomManipulator {
-  public async getElement<T>(selector: string) {
+  renderMap: Record<string, RenderMap> = {};
+  eventsListener: Record<string, (e: Event) => void> = {};
+
+  constructor(private readonly main: HTMLElement) {
+    this.observe(this.main, (mutations) => {
+      mutations.forEach((mutation) => {
+        mutation.removedNodes.forEach(() => {
+          for (let els in this.renderMap) {
+            const isRendered = document.getElementById(`chatguard_${this.renderMap[els].name}`);
+            if (!isRendered) {
+              this.renderMap[els].rendered = false;
+            }
+          }
+        });
+      });
+
+      for (let els in this.renderMap) {
+        const parentElement = document.querySelector(this.renderMap[els].patentSelector);
+        if (parentElement && !this.renderMap[els].rendered) {
+          this.renderMap[els].render(parentElement as HTMLElement);
+          this.renderMap[els].rendered = true;
+        }
+      }
+    });
+  }
+
+  public async renderTo(name: string, parent: string, renderCallback: (parent: HTMLElement) => void) {
+    const parentElement = (await DomManipulator.getElement(parent)) as HTMLElement;
+    this.renderMap[name] = {
+      name,
+      rendered: false,
+      parent: parentElement,
+      patentSelector: parent,
+      render: renderCallback,
+    };
+  }
+  public on(selector: string, name: string, callback: (event: Event) => void) {
+    const element = document.querySelector(selector);
+    if (!element) return;
+
+    if (this.eventsListener[name]) {
+      element.removeEventListener(name, callback);
+    } else {
+      element.addEventListener(name, callback);
+      this.eventsListener[name] = callback;
+    }
+  }
+  public observe(app: HTMLElement, callback: MutationCallback) {
+    const chatObserver = new MutationObserver((mutations) => {
+      callback(mutations, chatObserver);
+    });
+    chatObserver.observe(app, { childList: true, subtree: true });
+  }
+  public destroyed(name: string) {
+    this.renderMap[name].rendered = false;
+  }
+  static async getElement<T>(selector: string) {
     while (document.querySelector(selector) === null) {
       await new Promise((resolve) => requestAnimationFrame(resolve));
     }
     return document.querySelector(selector) as T;
   }
-  public async typeTo(selector: string, message: string) {
+  static async typeTo(selector: string, message: string) {
     const el = (await this.getElement(selector)) as HTMLElement;
     el.textContent = message;
     const event = new Event("input", { bubbles: true });
     el.dispatchEvent(event);
   }
-  public async wait(ms: number) {
+  static async wait(ms: number) {
     return new Promise<void>((res) => {
       setTimeout(() => {
         res();
       }, ms);
     });
   }
-  public async clickTo(selector: string) {
+  static async clickTo(selector: string) {
     const el = (await this.getElement(selector)) as HTMLElement;
     el.click();
   }
