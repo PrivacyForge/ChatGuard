@@ -10,12 +10,14 @@
   let status: "idle" | "accept" = "idle";
   let loading = false;
 
+  const checkStatus = () => {
+    const user = app.storage.getMap("chatguard_contacts", app.url.params.uid);
+    if (user.publicKey) return (status = "accept");
+    status = "idle";
+  };
   onMount(() => {
-    app.storage.on("chatguard_current-route", () => {
-      const user = app.storage.getMap("chatguard_contacts", app.url.params.uid);
-      if (user.publicKey) return (status = "accept");
-      status = "idle";
-    });
+    checkStatus();
+    app.storage.on("chatguard_current-route", checkStatus);
     app.storage.on("chatguard_contacts", () => {
       const user = app.storage.getMap("chatguard_contacts", app.url.params.uid);
       if (loading && user.publicKey) {
