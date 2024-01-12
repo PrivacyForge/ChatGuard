@@ -57,19 +57,9 @@ import { LocalStorage } from "src/utils/Storage";
         const acknowledgment = await app.resolveDRSAPHandshake(
           target.textContent.slice(0, target.textContent.length - 5) || ""
         );
-        if (acknowledgment) {
-          await DomManipulator.typeTo(app.selector.textField, acknowledgment);
-          DomManipulator.clickTo(app.selector.submitButton);
-        }
         target.textContent = "Handshake";
         message.setAttribute("handshake-read", "true");
         return;
-      }
-      // Acknowledgment
-      if (target.textContent?.startsWith(app.ACKNOWLEDGMENT_PREFIX) && !message.getAttribute("acknowledgment-read")) {
-        app.resolveDRSAPAcknowledgment(target.textContent);
-        target.textContent = "acknowledgment";
-        message.setAttribute("acknowledgment-read", "true");
       }
     });
   };

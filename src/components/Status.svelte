@@ -10,22 +10,18 @@
   let status: "idle" | "accept" = "idle";
   let loading = false;
 
-  const checkHandshake = () => {
-    const user = app.storage.getMap("chatguard_contacts", app.url.params.uid);
-    if (user.acknowledged) {
-      loading = false;
-    }
-    if (user.publicKey) {
-      status = "accept";
-      return;
-    }
-    status = "idle";
-  };
-
   onMount(() => {
-    checkHandshake();
-    app.storage.on("chatguard_current-route", checkHandshake);
-    app.storage.on("chatguard_contacts", checkHandshake);
+    app.storage.on("chatguard_current-route", () => {
+      const user = app.storage.getMap("chatguard_contacts", app.url.params.uid);
+      if (user.publicKey) return (status = "accept");
+      status = "idle";
+    });
+    app.storage.on("chatguard_contacts", () => {
+      const user = app.storage.getMap("chatguard_contacts", app.url.params.uid);
+      if (loading && user.publicKey) {
+        status = "idle";
+      }
+    });
   });
 
   const handleSendHandshake = async () => {
