@@ -12,28 +12,26 @@ import { LocalStorage } from "src/utils/Storage";
   dom.renderTo("status", "#toolbarWrapper", (target) => {
     new Status({ target, props: { app, name: "status" } });
   });
+  dom.on(app.selector.textField, "keydown", (event) => {
+    const e = event as KeyboardEvent;
+    if (e.key === "Enter" && app.state.value && !e.shiftKey && e.detail !== 11 && app.state.encrypted) {
+      DomManipulator.typeTo(app.selector.textField, app.state.encrypted);
+    }
+  });
+  dom.on(app.selector.submitButton, "click", () => {
+    DomManipulator.typeTo(app.selector.textField, app.state.encrypted);
+  });
+  dom.on(app.selector.textField, "input", async (event) => {
+    app.state.value = (event.target as HTMLElement).innerText;
+    const encrypted = await app.createDRSAP(app.state.value, app.url.params.uid);
+    if (encrypted) {
+      app.state.encrypted = encrypted;
+    }
+  });
 
-  dom.observe(document.body, () => {
+  dom.observerGlobal(() => {
     app.urlObserver();
     onMessageReceive();
-
-    dom.on(app.selector.textField, "keydown", (event) => {
-      const e = event as KeyboardEvent;
-      if (e.key === "Enter" && app.state.value !== "" && !e.shiftKey && e.detail !== 11 && app.state.encrypted !== "") {
-        DomManipulator.typeTo(app.selector.textField, app.state.encrypted);
-      }
-    });
-    dom.on(app.selector.submitButton, "click", () => {
-      DomManipulator.typeTo(app.selector.textField, app.state.encrypted);
-    });
-    dom.on(app.selector.textField, "input", async (event) => {
-      app.state.value = (event.target as HTMLElement).innerText;
-      const encrypted = await app.createDRSAP(app.state.value, app.url.params.uid);
-      if (encrypted) {
-        console.log(encrypted);
-        app.state.encrypted = encrypted;
-      }
-    });
   });
 
   const onMessageReceive = async () => {
@@ -46,10 +44,10 @@ import { LocalStorage } from "src/utils/Storage";
         target.textContent = "decrypting message ....";
         try {
           const packet = await app.resolveDRSAP(messageText);
-          if (!packet) target.textContent = `Error in decryption \n${messageText}`;
+          if (!packet) target.textContent = `Error in decryption`;
           else target.textContent = packet;
         } catch (error) {
-          target.textContent = `Error in decryption \n${messageText}`;
+          target.textContent = `Error in decryption`;
         }
         return;
       }

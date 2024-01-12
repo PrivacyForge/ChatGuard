@@ -8,8 +8,16 @@ interface RenderMap {
 class DomManipulator {
   renderMap: Record<string, RenderMap> = {};
   eventsListener: Record<string, (e: Event) => void> = {};
+  observerCalls: MutationCallback[] = [];
 
   constructor(private readonly main: HTMLElement) {
+    const globalObserver = new MutationObserver((mutations) => {
+      this.observerCalls.forEach((callback) => {
+        callback(mutations, globalObserver);
+      });
+    });
+    globalObserver.observe(main, { childList: true, subtree: true });
+
     this.observe(this.main, (mutations) => {
       mutations.forEach((mutation) => {
         mutation.removedNodes.forEach(() => {
@@ -43,21 +51,25 @@ class DomManipulator {
     };
   }
   public on(selector: string, name: string, callback: (event: Event) => void) {
-    const element = document.querySelector(selector);
-    if (!element) return;
+    this.observerGlobal(() => {
+      const element = document.querySelector(selector);
+      if (!element) return;
 
-    if (this.eventsListener[name]) {
-      element.removeEventListener(name, callback);
-    } else {
+      if (this.eventsListener[name]) {
+        element.removeEventListener(name, callback);
+      }
       element.addEventListener(name, callback);
       this.eventsListener[name] = callback;
-    }
+    });
   }
   public observe(app: HTMLElement, callback: MutationCallback) {
     const chatObserver = new MutationObserver((mutations) => {
       callback(mutations, chatObserver);
     });
     chatObserver.observe(app, { childList: true, subtree: true });
+  }
+  public observerGlobal(callback: MutationCallback) {
+    this.observerCalls.push(callback);
   }
   public destroyed(name: string) {
     this.renderMap[name].rendered = false;

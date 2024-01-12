@@ -56,6 +56,7 @@ class ChatGuard {
     const secretKey = this.cipher.generateKey();
     const ownPublicKey = forge.pki.publicKeyFromPem(store.user!.publicKey);
     const { publicKey: publicKeyPem } = this.storage.getMap("chatguard_contacts", to);
+    if (!publicKeyPem) return null;
     const toPublicKey = forge.pki.publicKeyFromPem(publicKeyPem);
     const r1 = forge.util.bytesToHex(ownPublicKey.encrypt(secretKey));
     const r2 = forge.util.bytesToHex(toPublicKey.encrypt(secretKey));
@@ -65,8 +66,7 @@ class ChatGuard {
   }
   public async resolveDRSAP(packet: string) {
     let store = await chromeStorage.get();
-    const [prefix, r1, r2, encryptedMessage] = packet.split("__");
-    if (prefix !== this.ENCRYPT_PREFIX) return;
+    const [_, r1, r2, encryptedMessage] = packet.split("__");
     const ownPrivateKey = forge.pki.privateKeyFromPem(store.user!.privateKey);
     let key;
     try {
@@ -77,6 +77,7 @@ class ChatGuard {
         key = ownPrivateKey.decrypt(forge.util.hexToBytes(r2));
       } catch (error) {}
     }
+    if (!key) return null;
     const message = this.cipher.decrypt(encryptedMessage, key as string);
     return message;
   }
@@ -98,12 +99,11 @@ class ChatGuard {
   public urlObserver() {
     if (this.url.path === window.location.href) return;
     this.url.path = window.location.href;
-
+    this.state = { value: "", encrypted: "" };
     const params = new URLSearchParams(window.location.search);
     params.forEach((val, key) => {
       this.url.params[key] = val;
     });
-    console.log(this.url.params);
     this.storage.set("chatguard_current-route", this.url.path);
   }
 }
