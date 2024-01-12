@@ -14,9 +14,9 @@ interface State {
   [key: string]: any;
 }
 class ChatGuard {
-  VERSION = "1";
-  ENCRYPT_PREFIX = `::ChatGuard-V-${this.VERSION}::`;
-  HANDSHAKE_PREFIX = `::HandShake-V-${this.VERSION}::`;
+  ENCRYPT_PREFIX = `::MESSAGE::`;
+  HANDSHAKE_PREFIX = `::HANDSHAKE::`;
+  ACKNOWLEDGMENT_PREFIX = `::ACKNOWLEDGMENT::`;
 
   url: Url = { path: "", params: {} };
   selector = selectors[window.location.hostname];
@@ -36,7 +36,12 @@ class ChatGuard {
           if (error) return alert("Error in chatGuard generating key pair");
           const publicKey = forge.pki.publicKeyToPem(keyPair.publicKey);
           const privateKey = forge.pki.privateKeyToPem(keyPair.privateKey);
-          this.storage.setMap("chatguard_contacts", this.user.id, { publicKey, timestamp: new Date().getTime() });
+          this.storage.setMap("chatguard_contacts", this.user.id, {
+            publicKey,
+            timestamp: new Date().getTime(),
+            enable: true,
+            acknowledged: true,
+          });
           chromeStorage.set({
             ...store,
             user: {
@@ -93,7 +98,22 @@ class ChatGuard {
     if (id === store.user!.id.toString()) return;
     const { timestamp: oldTimestamp } = this.storage.getMap("chatguard_contacts", id);
     if (timestamp && +timestamp < +oldTimestamp) return;
-    this.storage.setMap("chatguard_contacts", id, { publicKey, timestamp: new Date().getTime() });
+    this.storage.setMap("chatguard_contacts", id, {
+      publicKey,
+      timestamp: new Date().getTime(),
+      acknowledged: false,
+      enable: true,
+    });
+    return this.createDRSAPAcknowledgment(id);
+  }
+  public createDRSAPAcknowledgment(id: string) {
+    return `${this.ACKNOWLEDGMENT_PREFIX}__${id}`;
+  }
+  public resolveDRSAPAcknowledgment(packet: string) {
+    const [_, id] = packet.split("__");
+    const user = this.storage.getMap("chatguard_contacts", id);
+    if (!user.publicKey) return;
+    user.acknowledged = true;
   }
 
   public urlObserver() {

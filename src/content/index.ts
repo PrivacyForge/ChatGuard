@@ -9,7 +9,7 @@ import { LocalStorage } from "src/utils/Storage";
   await app.register();
   const dom = new DomManipulator(document.body);
 
-  dom.renderTo("status", "#toolbarWrapper", (target) => {
+  dom.renderTo("status", app.selector.header, (target) => {
     new Status({ target, props: { app, name: "status" } });
   });
   dom.on(app.selector.textField, "keydown", (event) => {
@@ -38,8 +38,9 @@ import { LocalStorage } from "src/utils/Storage";
     const messages = document.querySelectorAll(app.selector.message);
     messages.forEach(async (message) => {
       // Messages
-      if (message.textContent?.startsWith(app.ENCRYPT_PREFIX)) {
-        const target = message.children[0].children[0].children[0].children[0];
+      const target = message.children[0].children[0].children[0].children[0];
+
+      if (target.textContent?.startsWith(app.ENCRYPT_PREFIX)) {
         const messageText = target.textContent || "";
         target.textContent = "decrypting message ....";
         try {
@@ -52,12 +53,23 @@ import { LocalStorage } from "src/utils/Storage";
         return;
       }
       // HandShakes
-      if (message.textContent?.startsWith(app.HANDSHAKE_PREFIX) && !message.getAttribute("handshake-read")) {
-        app.resolveDRSAPHandshake(message.textContent.slice(0, message.textContent.length - 5) || "");
-        const target = message.children[0].children[0].children[0].children[0];
+      if (target.textContent?.startsWith(app.HANDSHAKE_PREFIX) && !message.getAttribute("handshake-read")) {
+        const acknowledgment = await app.resolveDRSAPHandshake(
+          target.textContent.slice(0, target.textContent.length - 5) || ""
+        );
+        if (acknowledgment) {
+          await DomManipulator.typeTo(app.selector.textField, acknowledgment);
+          DomManipulator.clickTo(app.selector.submitButton);
+        }
         target.textContent = "Handshake";
         message.setAttribute("handshake-read", "true");
         return;
+      }
+      // Acknowledgment
+      if (target.textContent?.startsWith(app.ACKNOWLEDGMENT_PREFIX) && !message.getAttribute("acknowledgment-read")) {
+        app.resolveDRSAPAcknowledgment(target.textContent);
+        target.textContent = "acknowledgment";
+        message.setAttribute("acknowledgment-read", "true");
       }
     });
   };

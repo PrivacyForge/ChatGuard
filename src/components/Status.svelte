@@ -10,11 +10,16 @@
   let status: "idle" | "loading" | "accept" = "idle";
 
   const checkHandshake = () => {
-    if (app.storage.getMap("chatguard_contacts", app.url.params.uid).publicKey) {
+    const user = app.storage.getMap("chatguard_contacts", app.url.params.uid);
+    if (user.publicKey && user.acknowledged) {
       status = "accept";
-    } else {
-      status = "idle";
+      return;
     }
+    if (!user.acknowledged) {
+      status = "loading";
+      return;
+    }
+    status = "idle";
   };
 
   onMount(() => {
