@@ -23,9 +23,11 @@ import { LocalStorage } from "src/utils/Storage";
   });
   dom.on(app.selector.textField, "input", async (event) => {
     app.state.value = (event.target as HTMLElement).innerText;
-    const encrypted = await app.createDRSAP(app.state.value, app.url.params.uid);
-    if (encrypted) {
-      app.state.encrypted = encrypted;
+    if (event.isTrusted) {
+      const encrypted = await app.createDRSAP(app.state.value, app.url.params.uid);
+      if (encrypted) {
+        app.state.encrypted = encrypted;
+      }
     }
   });
 
