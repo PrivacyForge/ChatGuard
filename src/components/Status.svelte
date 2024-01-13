@@ -21,7 +21,8 @@
     app.storage.on("chatguard_contacts", () => {
       const user = app.storage.getMap("chatguard_contacts", app.url.params.uid);
       if (loading && user.publicKey) {
-        status = "idle";
+        status = "accept";
+        loading = false;
       }
     });
   });
