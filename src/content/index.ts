@@ -54,15 +54,12 @@ import { LocalStorage } from "src/utils/Storage";
       }
       if (target.textContent?.startsWith(app.ACKNOWLEDGMENT_PREFIX) && !message.getAttribute("acknowledgment-read")) {
         app.resolveDRSAPAcknowledgment(target.textContent);
+        target.textContent = "acknowledgment";
         message.setAttribute("acknowledgment-read", "true");
       }
       // HandShakes
       if (target.textContent?.startsWith(app.HANDSHAKE_PREFIX) && !message.getAttribute("handshake-read")) {
         const acknowledgment = await app.resolveDRSAPHandshake(target.textContent);
-        if (acknowledgment) {
-          await DomManipulator.typeTo(app.selector.textField, acknowledgment);
-          DomManipulator.clickTo(app.selector.submitButton);
-        }
         target.textContent = "Handshake";
         message.setAttribute("handshake-read", "true");
         return;

@@ -3,6 +3,7 @@
   import DomManipulator from "src/class/DomManipulator";
   import { selectors } from "src/constant/selectors";
   import { onMount } from "svelte";
+  import { chromeStorage } from "../store/index";
 
   export let app: ChatGuard;
   export let name: string;
@@ -18,11 +19,15 @@
   onMount(() => {
     checkStatus();
     app.storage.on("chatguard_current-route", checkStatus);
-    app.storage.on("chatguard_contacts", () => {
+    app.storage.on("chatguard_contacts", async () => {
+      const store = await chromeStorage.get();
       const user = app.storage.getMap("chatguard_contacts", app.url.params.uid);
       if (loading && user.publicKey) {
         status = "accept";
         loading = false;
+        const ack = app.createDRSAPAcknowledgment(store.user!.id);
+        await DomManipulator.typeTo(app.selector.textField, ack);
+        DomManipulator.clickTo(app.selector.submitButton);
       }
     });
   });
