@@ -54,9 +54,7 @@ import { LocalStorage } from "src/utils/Storage";
       }
       // HandShakes
       if (target.textContent?.startsWith(app.HANDSHAKE_PREFIX) && !message.getAttribute("handshake-read")) {
-        const acknowledgment = await app.resolveDRSAPHandshake(
-          target.textContent.slice(0, target.textContent.length - 5) || ""
-        );
+        const acknowledgment = await app.resolveDRSAPHandshake(target.textContent);
         target.textContent = "Handshake";
         message.setAttribute("handshake-read", "true");
         return;

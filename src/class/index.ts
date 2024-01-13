@@ -96,8 +96,9 @@ class ChatGuard {
     let store = await chromeStorage.get();
     const [_prefix, timestamp, id, publicKey] = packet.split("__");
     if (id === store.user!.id.toString()) return;
+    console.log({ publicKey });
     const { timestamp: oldTimestamp } = this.storage.getMap("chatguard_contacts", id);
-    if (timestamp && +timestamp < +oldTimestamp) return;
+    if (+timestamp < +oldTimestamp) return;
     this.storage.setMap("chatguard_contacts", id, {
       publicKey,
       timestamp: new Date().getTime(),
