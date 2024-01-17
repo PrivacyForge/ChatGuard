@@ -18,7 +18,7 @@ let state: State = { value: "", encrypted: "", submit: false };
   console.log(app.selector);
   await app.register();
   const dom = new DomManipulator(document.body);
-  const cipher = new Cipher(config);
+  const cipher = new Cipher(dom, config);
 
   dom.renderTo("status", app.selector.header, (target) => {
     new Status({ target, props: { state, cipher, app, dom, name: "status" } });
@@ -36,7 +36,6 @@ let state: State = { value: "", encrypted: "", submit: false };
   });
   dom.on(app.selector.textField, "input", async (event) => {
     state.value = (event.target as HTMLElement).innerText;
-    console.log(state.value);
     if (state.submit) {
       return (state.submit = false);
     }

@@ -2,9 +2,10 @@ import forge from "node-forge";
 import { chromeStorage } from "src/store";
 import { LocalStorage } from "./Storage";
 import type { Config } from "src/types/Config";
+import type DomManipulator from "./DomManipulator";
 
 export class Cipher {
-  constructor(private readonly config: Config) {}
+  constructor(private readonly dom: DomManipulator, private readonly config: Config) {}
 
   storage = new LocalStorage();
 
@@ -47,15 +48,15 @@ export class Cipher {
   public async resolveDRSAPHandshake(packet: string) {
     const [_prefix, timestamp, toId, publicKey] = packet.split("__");
 
-    const { timestamp: oldTimestamp } = this.storage.getMap("chatguard_contacts", toId);
+    const { timestamp: oldTimestamp } = this.storage.getMap("chatguard_contacts", this.dom.url.params.id);
     if (+timestamp < +(oldTimestamp || 0)) return;
-    console.log({ packet });
-    this.storage.setMap("chatguard_contacts", toId, {
+
+    this.storage.setMap("chatguard_contacts", this.dom.url.params.id, {
       publicKey,
       timestamp,
       enable: true,
     });
-    return this.createDRSAPAcknowledgment(toId);
+    return this.createDRSAPAcknowledgment(this.dom.url.params.id);
   }
   public createDRSAPAcknowledgment(toId: string) {
     return `${this.config.ACKNOWLEDGMENT_PREFIX}__${toId}`;
