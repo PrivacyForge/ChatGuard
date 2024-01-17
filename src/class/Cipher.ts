@@ -49,6 +49,7 @@ export class Cipher {
 
     const { timestamp: oldTimestamp } = this.storage.getMap("chatguard_contacts", toId);
     if (+timestamp < +(oldTimestamp || 0)) return;
+    console.log({ packet });
     this.storage.setMap("chatguard_contacts", toId, {
       publicKey,
       timestamp,

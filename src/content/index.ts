@@ -96,8 +96,9 @@ let state: State = { value: "", encrypted: "", submit: false };
       }
       // HandShakes
       if (target.textContent?.startsWith(config.HANDSHAKE_PREFIX) && !message.getAttribute("handshake-read")) {
+        const packet = target.textContent;
         target.textContent = "⏳ Loading ...";
-        const acknowledgment = await cipher.resolveDRSAPHandshake(target.textContent);
+        const acknowledgment = await cipher.resolveDRSAPHandshake(packet);
         target.textContent = "🤝 encryption Handshake";
         message.setAttribute("handshake-read", "true");
         return;
