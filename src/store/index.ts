@@ -1,7 +1,6 @@
-import { ChromeStorage } from "src/utils/Storage";
+import { ChromeStorage } from "src/class/Storage";
 
 interface User {
-  id: string;
   publicKey: string;
   privateKey: string;
 }

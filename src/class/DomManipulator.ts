@@ -1,3 +1,5 @@
+import { LocalStorage } from "src/class/Storage";
+
 interface RenderMap {
   name: string;
   rendered: boolean;
@@ -5,10 +7,16 @@ interface RenderMap {
   patentSelector: string;
   render: (parent: HTMLElement) => void;
 }
+interface Url {
+  path: string;
+  params: Record<string, string>;
+}
 class DomManipulator {
   renderMap: Record<string, RenderMap> = {};
+  url: Url = { path: "", params: {} };
   eventsListener: Record<string, (e: Event) => void> = {};
   observerCalls: MutationCallback[] = [];
+  storage = new LocalStorage();
 
   constructor(private readonly main: HTMLElement) {
     const globalObserver = new MutationObserver((mutations) => {
@@ -52,7 +60,7 @@ class DomManipulator {
   }
   public on(selector: string, name: string, callback: (event: Event) => void) {
     this.observerGlobal(() => {
-      const element = document.querySelector(selector);
+      const element = Array.from(document.querySelectorAll(selector)).at(-1);
       if (!element) return;
 
       if (this.eventsListener[name]) {
@@ -70,6 +78,12 @@ class DomManipulator {
   }
   public observerGlobal(callback: MutationCallback) {
     this.observerCalls.push(callback);
+  }
+  public urlObserver(mutate: (url: string) => void) {
+    if (this.url.path === window.location.href) return;
+    this.url.path = window.location.href;
+    mutate(this.url.path);
+    this.storage.set("chatguard_current-route", this.url.path);
   }
   public destroyed(name: string) {
     this.renderMap[name].rendered = false;
