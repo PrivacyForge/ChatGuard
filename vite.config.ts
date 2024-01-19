@@ -6,7 +6,6 @@ import manifest from "./manifest.json";
 
 const srcDir = resolve(__dirname, "src");
 
-// https://vitejs.dev/config/
 export default defineConfig({
   plugins: [svelte(), crx({ manifest })],
   resolve: {

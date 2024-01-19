@@ -1,6 +1,11 @@
 {
-  "name": "enc",
-  "version": "0.0.1",
+  "name": "chatguard",
+  "author": {
+    "name": "mostafa kheibary",
+    "email": "mostafa.kheibary@gmail.com",
+    "url": "https://github.com/mostafa-kheibary"
+  },
+  "version": "0.1.0",
   "type": "module",
   "scripts": {
     "dev": "vite",

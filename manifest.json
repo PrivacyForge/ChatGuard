@@ -1,11 +1,19 @@
 {
-  "name": "ChatGuard",
-  "description": "ChatGuard - alpha",
-  "version": "0.0.1",
+  "name": "ChatGuard-beta",
+  "description": "Browser Add on to make any chat application (End to End) encrypted",
+  "version": "0.1.0",
+  "author": "https://github.com/mostafa-kheibary",
   "manifest_version": 3,
+  "icons": {
+    "16": "src/assets/icons/icon16.png",
+    "32": "src/assets/icons/icon32.png",
+    "48": "src/assets/icons/icon48.png",
+    "128": "src/assets/icons/icon128.png"
+  },
+
   "content_scripts": [
     {
-      "matches": ["https://web.bale.ai/*", "https://web.telegram.org/k/*"],
+      "matches": ["https://web.bale.ai/*"],
       "js": ["src/content/index.ts"]
     }
   ],
