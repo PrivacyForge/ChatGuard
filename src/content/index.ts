@@ -76,6 +76,7 @@ let state: State = { value: "", encrypted: "", submit: false };
           const packet = await cipher.resolveDRSAP(messageText);
           if (!packet) target.textContent = `⛔Error in decryption⛔`;
           else target.textContent = packet;
+          target.dir = "auto";
         } catch (error) {
           target.textContent = `⛔Error in decryption⛔`;
         }

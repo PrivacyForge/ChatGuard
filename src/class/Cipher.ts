@@ -108,7 +108,7 @@ export class Cipher {
   }
 
   public async decryptAES(encryptedMessage: string, secretKey: string): Promise<string> {
-    const decoder = new TextDecoder("utf-8");
+    const decoder = new TextDecoder();
     const encryptedData = new Uint8Array(encryptedMessage.match(/[\da-f]{2}/gi)!.map((hex) => parseInt(hex, 16)));
 
     const iv = encryptedData.slice(0, 16);
