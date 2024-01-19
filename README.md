@@ -1,4 +1,7 @@
+<img width="450px" class="img-fluid" src="https://github.com/mostafa-kheibary/ChatGuard/assets/58364608/c0441f87-3f2f-4a24-bc32-672dd270cca1" />
+
 # ChatGuard Browser Extension
+
 
 ChatGuard is a browser extension designed to make a secure and private chatting across various applications by implementing end-to-end encryption (E2E). The current beta version is exclusively available for use in the Bale Messenger, with plans to extend support to almost all messaging applications in the near future.
 
