@@ -1,27 +1,25 @@
 <script lang="ts">
-  import { chromeStorage } from "src/store";
-  import { onMount } from "svelte";
-
-  let enable: any = true;
-
-  onMount(async () => {
-    const store = await chromeStorage.get();
-    enable = store.enable;
-  });
-
-  const handleCheckbox = async (en: any) => {
-    const p = await chromeStorage.get();
-    chromeStorage.set({ ...p, enable: en ? true : false });
-  };
-
-  $: handleCheckbox(enable);
+  import logo from "src/assets/icons/icon128.png";
+  import Settings from "src/components/Settings.svelte";
 </script>
 
 <div class="wrapper">
-  <h1 class="title">ChatGuard (alpha)</h1>
+  <div class="header">
+    <img width="50px" src={logo} alt="logo" />
+    <div>
+      <h1 class="title">ChatGuard</h1>
+      <p class="slogan">safe way to chat</p>
+    </div>
+  </div>
+  <Settings />
+  <p class="info"
+    ><span class="error">warning</span>
+    : when you export your config its important to keep it in the safe place its containing your private key that can decrypt
+    the messages
+  </p>
 </div>
 
-<style module>
+<style lang="scss" module>
   :global(*) {
     margin: 0;
     padding: 0;
@@ -31,16 +29,34 @@
     background-color: #ffffff;
     color: #111217;
   }
-  .title {
-    font-size: 1.2rem;
-  }
+
   .wrapper {
     padding: 2rem;
     width: 24rem;
-    height: 27rem;
     display: flex;
-    justify-content: center;
-    align-items: center;
+    flex-direction: column;
     font-size: 1.2rem;
+    .header {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      .title {
+        font-size: 1.5rem;
+      }
+      .slogan {
+        opacity: 0.7;
+        padding-left: 0.2rem;
+        font-size: 0.8rem;
+      }
+    }
+    .info {
+      text-align: center;
+      margin-top: 2rem;
+      font-size: 0.8rem;
+      opacity: 0.7;
+      .error {
+        color: red;
+      }
+    }
   }
 </style>

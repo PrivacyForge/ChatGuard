@@ -13,8 +13,8 @@ interface State {
 let state: State = { value: "", encrypted: "", submit: false };
 
 (async function init() {
-  const app = new ChatGuard();
-  await app.register();
+  const app = await new ChatGuard().register();
+  if (!app) return;
   const dom = new DomManipulator(document.body, app.storage);
   const cipher = new Cipher(app.storage, config);
 

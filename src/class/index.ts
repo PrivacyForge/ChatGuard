@@ -10,6 +10,7 @@ class ChatGuard {
 
   public async register() {
     let store = await chromeStorage.get();
+    if (!store.enable) return null;
     if (!store.user) {
       await new Promise<void>((res) => {
         forge.pki.rsa.generateKeyPair({}, (error, keyPair) => {
@@ -23,6 +24,7 @@ class ChatGuard {
           });
           chromeStorage.set({
             ...store,
+            enable: true,
             user: {
               publicKey,
               privateKey,

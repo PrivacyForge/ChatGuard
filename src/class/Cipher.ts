@@ -66,6 +66,22 @@ export class Cipher {
     user.acknowledged = true;
     this.storage.setMap("chatguard_contacts", from, user);
   }
+  public static validatePublicPem(pem: string) {
+    try {
+      forge.pki.publicKeyFromPem(pem);
+      return true;
+    } catch (error) {
+      return false;
+    }
+  }
+  public static validatePrivatePem(pem: string) {
+    try {
+      forge.pki.privateKeyFromPem(pem);
+      return true;
+    } catch (error) {
+      return false;
+    }
+  }
   public async encryptAES(message: string, secretKey: string): Promise<string> {
     const encoder = new TextEncoder();
     const data = encoder.encode(message);
