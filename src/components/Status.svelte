@@ -1,7 +1,6 @@
 <script lang="ts">
   import type ChatGuard from "src/class";
   import DomManipulator from "src/class/DomManipulator";
-  import { selectors } from "src/config";
   import { onMount } from "svelte";
   import type Cipher from "src/class/Cipher";
 
@@ -23,14 +22,13 @@
     checkStatus();
     app.storage.on("chatguard_current-route", checkStatus);
     app.storage.on("chatguard_contacts", async () => {
-      const root = selectors[window.location.hostname];
       const user = app.storage.getMap("chatguard_contacts", dom.url.params.id);
       if (loading && user.publicKey) {
         status = "accept";
         loading = false;
         const ack = cipher.createDRSAPAcknowledgment(dom.url.params.id);
-        await DomManipulator.typeTo(root.selector.textField, ack);
-        DomManipulator.clickTo(root.selector.submitButton);
+        await DomManipulator.typeTo(app.selector.textField, ack);
+        DomManipulator.clickTo(app.selector.submitButton);
         state.value = "";
         state.encrypted = "";
         state.submit = true;
@@ -40,9 +38,8 @@
 
   const handleSendHandshake = async () => {
     if (loading) return;
-    const root = selectors[window.location.hostname];
-    const textField = root.selector.textField;
-    const submitButton = root.selector.submitButton;
+    const textField = app.selector.textField;
+    const submitButton = app.selector.submitButton;
     const packet = await cipher.createDRSAPHandshake(dom.url.params.id);
     DomManipulator.typeTo(textField, packet);
     DomManipulator.clickTo(submitButton);
@@ -54,7 +51,7 @@
 </script>
 
 <div id="chatguard_{name}" class="wrapper">
-  <button on:click|stopPropagation={handleSendHandshake} title="request for handShake">
+  <button class="button" on:click|stopPropagation={handleSendHandshake} title="request for handShake">
     {#if loading}
       loading
     {:else if status === "idle"}
@@ -71,9 +68,10 @@
     display: flex;
     align-items: center;
     gap: 1rem;
-    button {
+    .button {
       background-color: #fff;
       color: #000;
+      cursor: pointer;
     }
     .status {
       width: 1rem;

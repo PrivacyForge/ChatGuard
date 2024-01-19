@@ -1,13 +1,10 @@
 import forge from "node-forge";
 import { chromeStorage } from "src/store";
-import { LocalStorage } from "./Storage";
 import type { Config } from "src/types/Config";
-import type DomManipulator from "./DomManipulator";
+import type { LocalStorage } from "./Storage";
 
 export class Cipher {
-  constructor(private readonly dom: DomManipulator, private readonly config: Config) {}
-
-  storage = new LocalStorage();
+  constructor(private readonly storage: LocalStorage, private readonly config: Config) {}
 
   public async createDRSAP(message: string, to: string) {
     let store = await chromeStorage.get();
@@ -45,28 +42,29 @@ export class Cipher {
     const packet = `${this.config.HANDSHAKE_PREFIX}__${new Date().getTime()}__${to}__${store.user!.publicKey}`;
     return packet;
   }
-  public async resolveDRSAPHandshake(packet: string) {
+  public async resolveDRSAPHandshake(packet: string, from: string) {
     const [_prefix, timestamp, toId, publicKey] = packet.split("__");
-
-    const { timestamp: oldTimestamp } = this.storage.getMap("chatguard_contacts", this.dom.url.params.id);
+    if (toId === from) return;
+    const { timestamp: oldTimestamp } = this.storage.getMap("chatguard_contacts", from);
     if (+timestamp < +(oldTimestamp || 0)) return;
-
-    this.storage.setMap("chatguard_contacts", this.dom.url.params.id, {
+    this.storage.setMap("chatguard_contacts", from, {
       publicKey,
       timestamp,
       enable: true,
     });
-    return this.createDRSAPAcknowledgment(this.dom.url.params.id);
+    return this.createDRSAPAcknowledgment(from);
   }
   public createDRSAPAcknowledgment(toId: string) {
     return `${this.config.ACKNOWLEDGMENT_PREFIX}__${toId}`;
   }
-  public resolveDRSAPAcknowledgment(packet: string) {
+  public resolveDRSAPAcknowledgment(packet: string, from: string) {
     const [_, id] = packet.split("__");
-    const user = this.storage.getMap("chatguard_contacts", id);
+    if (from === id) return;
+
+    const user = this.storage.getMap("chatguard_contacts", from);
     if (!user.publicKey) return;
     user.acknowledged = true;
-    this.storage.setMap("chatguard_contacts", id, user);
+    this.storage.setMap("chatguard_contacts", from, user);
   }
   public async encryptAES(message: string, secretKey: string): Promise<string> {
     const encoder = new TextEncoder();

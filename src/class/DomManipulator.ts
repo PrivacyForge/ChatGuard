@@ -1,4 +1,4 @@
-import { LocalStorage } from "src/class/Storage";
+import type { LocalStorage } from "src/class/Storage";
 
 interface RenderMap {
   name: string;
@@ -16,9 +16,8 @@ class DomManipulator {
   url: Url = { path: "", params: {} };
   eventsListener: Record<string, (e: Event) => void> = {};
   observerCalls: MutationCallback[] = [];
-  storage = new LocalStorage();
 
-  constructor(private readonly main: HTMLElement) {
+  constructor(private readonly main: HTMLElement, private readonly storage: LocalStorage) {
     const globalObserver = new MutationObserver((mutations) => {
       this.observerCalls.forEach((callback) => {
         callback(mutations, globalObserver);

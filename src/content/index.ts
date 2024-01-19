@@ -3,7 +3,6 @@ import DomManipulator from "src/class/DomManipulator";
 import Status from "src/components/Status.svelte";
 import { config } from "src/config";
 import Cipher from "src/class/Cipher";
-import { LocalStorage } from "src/class/Storage";
 
 interface State {
   value: string;
@@ -15,10 +14,9 @@ let state: State = { value: "", encrypted: "", submit: false };
 
 (async function init() {
   const app = new ChatGuard();
-  console.log(app.selector);
   await app.register();
-  const dom = new DomManipulator(document.body);
-  const cipher = new Cipher(dom, config);
+  const dom = new DomManipulator(document.body, app.storage);
+  const cipher = new Cipher(app.storage, config);
 
   dom.renderTo("status", app.selector.header, (target) => {
     new Status({ target, props: { state, cipher, app, dom, name: "status" } });
@@ -47,17 +45,16 @@ let state: State = { value: "", encrypted: "", submit: false };
 
   dom.observerGlobal(() => {
     dom.urlObserver(() => {
-      document.querySelector(app.selector.textField)?.dispatchEvent(new Event("input"));
-
       if (app.root.idProvider === "#") {
         const id = window.location.hash.slice(1, window.location.hash.length);
         dom.url.params.id = id;
-        console.log(id);
         return;
       }
       const id = new URLSearchParams(window.location.search).get(app.root.idProvider) || "";
-      console.log(id);
       dom.url.params.id = id;
+      if (app.storage.getMap("chatguard_contacts", dom.url.params.id).publicKey) {
+        document.querySelector(app.selector.textField)?.dispatchEvent(new Event("input"));
+      }
     });
 
     onMessageReceive();
@@ -84,12 +81,13 @@ let state: State = { value: "", encrypted: "", submit: false };
         }
         return;
       }
+      // Acknowledgment
       if (
         target.textContent?.startsWith(config.ACKNOWLEDGMENT_PREFIX) &&
         !message.getAttribute("acknowledgment-read")
       ) {
-        cipher.resolveDRSAPAcknowledgment(target.textContent);
-        (message as any).style.display = "none";
+        cipher.resolveDRSAPAcknowledgment(target.textContent, dom.url.params.id);
+        target.textContent = "✉️ acknowledgment";
         message.setAttribute("acknowledgment-read", "true");
         return;
       }
@@ -97,7 +95,7 @@ let state: State = { value: "", encrypted: "", submit: false };
       if (target.textContent?.startsWith(config.HANDSHAKE_PREFIX) && !message.getAttribute("handshake-read")) {
         const packet = target.textContent;
         target.textContent = "⏳ Loading ...";
-        const acknowledgment = await cipher.resolveDRSAPHandshake(packet);
+        await cipher.resolveDRSAPHandshake(packet, dom.url.params.id);
         target.textContent = "🤝 encryption Handshake";
         message.setAttribute("handshake-read", "true");
         return;
