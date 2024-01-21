@@ -1,4 +1,4 @@
-import { ChromeStorage } from "src/class/Storage";
+import { BrowserStorage } from "src/class/Storage";
 
 interface User {
   publicKey: string;
@@ -12,4 +12,4 @@ const defaultStorage: IStorage = {
   user: null,
   enable: true,
 };
-export const chromeStorage = new ChromeStorage(defaultStorage);
+export const chromeStorage = new BrowserStorage(defaultStorage);

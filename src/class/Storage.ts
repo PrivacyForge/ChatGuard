@@ -1,15 +1,22 @@
 import type { IStorage } from "src/store";
 
-class ChromeStorage {
+export class BrowserStorage {
   constructor(private readonly defaultStorage: IStorage) {}
+
   public async get(): Promise<IStorage> {
+    if (typeof browser !== "undefined") {
+      return browser.storage.sync.get(this.defaultStorage as any) as Promise<IStorage>;
+    }
     return chrome.storage.sync.get(this.defaultStorage) as Promise<IStorage>;
   }
   public async set(value: any) {
+    if (typeof browser !== "undefined") {
+      return browser.storage.sync.set(value);
+    }
     return chrome.storage.sync.set(value);
   }
 }
-class LocalStorage {
+export class LocalStorage {
   listeners: Record<string, Function> = {};
 
   get(key: string) {
@@ -38,4 +45,3 @@ class LocalStorage {
     this.listeners[main] = callback;
   }
 }
-export { ChromeStorage, LocalStorage };

@@ -13,7 +13,7 @@
 
   "content_scripts": [
     {
-      "matches": ["https://web.bale.ai/*"],
+      "matches": ["https://web.bale.ai/*", "https://web.telegram.org/k/*"],
       "js": ["src/content/index.ts"]
     }
   ],

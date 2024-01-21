@@ -39,7 +39,8 @@ export class Cipher {
 
   public async createDRSAPHandshake(to: string) {
     const store = await chromeStorage.get();
-    const packet = `${this.config.HANDSHAKE_PREFIX}__${new Date().getTime()}__${to}__${store.user!.publicKey}`;
+    const cleanedPublicKey = store.user!.publicKey.replace(/[\r\n]/g, "");
+    const packet = `${this.config.HANDSHAKE_PREFIX}__${new Date().getTime()}__${to}__${cleanedPublicKey}`;
     return packet;
   }
   public async resolveDRSAPHandshake(packet: string, from: string) {

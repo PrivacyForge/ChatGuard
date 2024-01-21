@@ -10,6 +10,7 @@ export const selectors: Record<string, Selector> = {
     selector: {
       app: "#app_main_wrapper",
       textField: "#editable-message-text",
+      textFieldWrapper: "#editable-message-text",
       submitButton: "#chat_footer :nth-child(2) :nth-child(5)",
       header: "#toolbarWrapper",
       message: "[data-sid]",
@@ -21,6 +22,7 @@ export const selectors: Record<string, Selector> = {
     selector: {
       app: "#page-chats",
       textField: ".input-message-input[data-peer-id][contenteditable]",
+      textFieldWrapper: ".input-message-container",
       submitButton: ".btn-send-container button",
       header: "[data-type=chat] .sidebar-header",
       message: "[data-type=chat] [data-peer-id][data-mid]",

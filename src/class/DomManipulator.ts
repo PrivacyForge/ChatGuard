@@ -14,7 +14,7 @@ interface Url {
 class DomManipulator {
   renderMap: Record<string, RenderMap> = {};
   url: Url = { path: "", params: {} };
-  eventsListener: Record<string, (e: Event) => void> = {};
+  eventsListener: Record<string, ((e: Event) => void)[]> = {};
   observerCalls: MutationCallback[] = [];
 
   constructor(private readonly main: HTMLElement, private readonly storage: LocalStorage) {
@@ -62,11 +62,13 @@ class DomManipulator {
       const element = Array.from(document.querySelectorAll(selector)).at(-1);
       if (!element) return;
 
-      if (this.eventsListener[name]) {
+      if ((this.eventsListener[name] || []).find((cl) => cl === callback)) {
         element.removeEventListener(name, callback);
       }
       element.addEventListener(name, callback);
-      this.eventsListener[name] = callback;
+
+      if (!this.eventsListener[name]) this.eventsListener[name] = [];
+      this.eventsListener[name].push(callback);
     });
   }
   public observe(app: HTMLElement, callback: MutationCallback) {
@@ -86,6 +88,13 @@ class DomManipulator {
   }
   public destroyed(name: string) {
     this.renderMap[name].rendered = false;
+  }
+  public changeTextNode(element: HTMLElement, replace: string) {
+    element.childNodes.forEach((node) => {
+      if (node.nodeType === 3) {
+        node.textContent = replace;
+      }
+    });
   }
   static async getElement<T>(selector: string) {
     while (document.querySelector(selector) === null) {

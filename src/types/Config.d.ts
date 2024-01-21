@@ -2,6 +2,7 @@ export interface Selector {
   selector: {
     app: string;
     textField: string;
+    textFieldWrapper: string;
     submitButton: string;
     header: string;
     message: string;

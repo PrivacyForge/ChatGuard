@@ -21,7 +21,17 @@ let state: State = { value: "", encrypted: "", submit: false };
   dom.renderTo("status", app.selector.header, (target) => {
     new Status({ target, props: { state, cipher, app, dom, name: "status" } });
   });
+
+  dom.on(app.selector.textFieldWrapper, "input", async (event: Event) => {
+    state.value = (event.target as HTMLElement).innerText;
+    if (state.submit) {
+      return (state.submit = false);
+    }
+    const encrypted = await cipher.createDRSAP(state.value, dom.url.params.id);
+    if (encrypted) state.encrypted = encrypted;
+  });
   dom.on(app.selector.textField, "keydown", (event) => {
+    state.value = (event.target as HTMLElement).innerText;
     const e = event as KeyboardEvent;
     if (e.key === "Enter" && state.value && !e.shiftKey && e.detail !== 11 && state.encrypted) {
       DomManipulator.typeTo(app.selector.textField, state.encrypted);
@@ -31,16 +41,6 @@ let state: State = { value: "", encrypted: "", submit: false };
   dom.on(app.selector.submitButton, "click", () => {
     DomManipulator.typeTo(app.selector.textField, state.encrypted);
     state = { ...state, value: "", encrypted: "", submit: true };
-  });
-  dom.on(app.selector.textField, "input", async (event) => {
-    state.value = (event.target as HTMLElement).innerText;
-    if (state.submit) {
-      return (state.submit = false);
-    }
-    const encrypted = await cipher.createDRSAP(state.value, dom.url.params.id);
-    if (encrypted) {
-      state.encrypted = encrypted;
-    }
   });
 
   dom.observerGlobal(() => {
@@ -59,45 +59,51 @@ let state: State = { value: "", encrypted: "", submit: false };
 
     onMessageReceive();
   });
-
   const onMessageReceive = async () => {
     const messages = document.querySelectorAll(app.selector.message);
     messages.forEach(async (message, index) => {
       // Messages
       const targets = Array.from(messages[index].querySelectorAll(app.selector.innerMessageText));
-      const target = targets.find((el) => el.textContent?.startsWith("::"))?.parentElement;
+      const target = targets.find((el) => {
+        let find = null;
+        el.childNodes.forEach((node) => {
+          if (node.nodeType === 3 && node.textContent?.startsWith("::")) {
+            find = true;
+          }
+        });
+        if (find) return el;
+        return false;
+      }) as HTMLElement | null;
 
       if (!target) return;
 
-      if (target.textContent?.startsWith(config.ENCRYPT_PREFIX)) {
-        const messageText = target.textContent || "";
-        target.textContent = "⏳ Loading ...";
+      const textNodeContent = Array.from(target.childNodes).find((node) => node.nodeType === 3)?.textContent || "";
+
+      if (textNodeContent.startsWith(config.ENCRYPT_PREFIX)) {
+        dom.changeTextNode(target, "⏳ Loading ...");
         try {
-          const packet = await cipher.resolveDRSAP(messageText);
-          if (!packet) target.textContent = `⛔Error in decryption⛔`;
-          else target.textContent = packet;
-          target.dir = "auto";
+          const packet = await cipher.resolveDRSAP(textNodeContent);
+          if (!packet) dom.changeTextNode(target, "⛔Error in decryption⛔");
+          else dom.changeTextNode(target, packet);
+          (target as any).dir = "auto";
         } catch (error) {
-          target.textContent = `⛔Error in decryption⛔`;
+          dom.changeTextNode(target, "⛔Error in decryption⛔");
         }
         return;
       }
       // Acknowledgment
-      if (
-        target.textContent?.startsWith(config.ACKNOWLEDGMENT_PREFIX) &&
-        !message.getAttribute("acknowledgment-read")
-      ) {
-        cipher.resolveDRSAPAcknowledgment(target.textContent, dom.url.params.id);
-        target.textContent = "✉️ acknowledgment";
+      if (textNodeContent.startsWith(config.ACKNOWLEDGMENT_PREFIX) && !message.getAttribute("acknowledgment-read")) {
+        cipher.resolveDRSAPAcknowledgment(textNodeContent, dom.url.params.id);
+        dom.changeTextNode(target, "✉️ acknowledgment");
         message.setAttribute("acknowledgment-read", "true");
         return;
       }
       // HandShakes
-      if (target.textContent?.startsWith(config.HANDSHAKE_PREFIX) && !message.getAttribute("handshake-read")) {
-        const packet = target.textContent;
-        target.textContent = "⏳ Loading ...";
-        await cipher.resolveDRSAPHandshake(packet, dom.url.params.id);
-        target.textContent = "🤝 encryption Handshake";
+      if (textNodeContent.startsWith(config.HANDSHAKE_PREFIX) && !message.getAttribute("handshake-read")) {
+        dom.changeTextNode(target, "⏳ Loading ...");
+        console.log(textNodeContent);
+        await cipher.resolveDRSAPHandshake(textNodeContent, dom.url.params.id);
+        dom.changeTextNode(target, "🤝 encryption Handshake");
         message.setAttribute("handshake-read", "true");
         return;
       }
