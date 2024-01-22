@@ -65,7 +65,7 @@ class DomManipulator {
       if ((this.eventsListener[name] || []).find((cl) => cl === callback)) {
         element.removeEventListener(name, callback);
       }
-      element.addEventListener(name, callback);
+      element.addEventListener(name, callback, { capture: true });
 
       if (!this.eventsListener[name]) this.eventsListener[name] = [];
       this.eventsListener[name].push(callback);
@@ -104,8 +104,9 @@ class DomManipulator {
   }
   static async typeTo(selector: string, message: string) {
     const el = (await this.getElement(selector)) as HTMLElement;
+    console.log(el);
     el.textContent = message;
-    const event = new Event("input", { bubbles: true });
+    const event = new Event("input", { bubbles: true, cancelable: false });
     el.dispatchEvent(event);
   }
   static async wait(ms: number) {
