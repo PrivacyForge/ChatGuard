@@ -24,6 +24,11 @@ let state: State = { value: "", encrypted: "", submit: false };
 
   dom.on(app.selector.textFieldWrapper, "input", async (event: Event) => {
     state.value = (event.target as HTMLElement).innerText;
+
+    if (state.value.startsWith(config.ENCRYPT_PREFIX) && !state.submit) {
+      const packet = await cipher.resolveDRSAP(state.value);
+      if (packet) DomManipulator.typeTo(app.selector.textField, packet);
+    }
     if (state.submit) {
       return (state.submit = false);
     }
@@ -83,11 +88,11 @@ let state: State = { value: "", encrypted: "", submit: false };
         dom.changeTextNode(target, "⏳ Loading ...");
         try {
           const packet = await cipher.resolveDRSAP(textNodeContent);
-          if (!packet) dom.changeTextNode(target, "⛔Error in decryption⛔");
+          if (!packet) dom.changeTextNode(target, "⛔ Error in decryption");
           else dom.changeTextNode(target, packet);
           (target as any).dir = "auto";
         } catch (error) {
-          dom.changeTextNode(target, "⛔Error in decryption⛔");
+          dom.changeTextNode(target, "⛔ Error in decryption");
         }
         return;
       }
@@ -99,12 +104,10 @@ let state: State = { value: "", encrypted: "", submit: false };
         return;
       }
       // HandShakes
-      if (textNodeContent.startsWith(config.HANDSHAKE_PREFIX) && !message.getAttribute("handshake-read")) {
+      if (textNodeContent.startsWith(config.HANDSHAKE_PREFIX)) {
         dom.changeTextNode(target, "⏳ Loading ...");
-        console.log(textNodeContent);
         await cipher.resolveDRSAPHandshake(textNodeContent, dom.url.params.id);
         dom.changeTextNode(target, "🤝 encryption Handshake");
-        message.setAttribute("handshake-read", "true");
         return;
       }
     });

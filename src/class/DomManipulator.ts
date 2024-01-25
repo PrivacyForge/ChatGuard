@@ -104,10 +104,15 @@ class DomManipulator {
   }
   static async typeTo(selector: string, message: string) {
     const el = (await this.getElement(selector)) as HTMLElement;
-    console.log(el);
     el.textContent = message;
     const event = new Event("input", { bubbles: true, cancelable: false });
     el.dispatchEvent(event);
+    const range = document.createRange();
+    range.selectNodeContents(el);
+    range.collapse(false);
+    const selection = window.getSelection();
+    selection?.removeAllRanges();
+    selection?.addRange(range);
   }
   static async wait(ms: number) {
     return new Promise<void>((res) => {

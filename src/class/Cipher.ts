@@ -8,20 +8,25 @@ export class Cipher {
 
   public async createDRSAP(message: string, to: string) {
     let store = await chromeStorage.get();
-    const secretKey = this.generateSecretKey(16);
+    const secretKey = forge.random.getBytesSync(16);
+    const hexSecret = forge.util.bytesToHex(secretKey);
+
     const ownPublicKey = forge.pki.publicKeyFromPem(store.user!.publicKey);
     const { publicKey: publicKeyPem } = this.storage.getMap("chatguard_contacts", to);
     if (!publicKeyPem) return null;
     const toPublicKey = forge.pki.publicKeyFromPem(publicKeyPem);
     const r1 = forge.util.bytesToHex(ownPublicKey.encrypt(secretKey));
     const r2 = forge.util.bytesToHex(toPublicKey.encrypt(secretKey));
-    const encryptedMessage = await this.encryptAES(message, secretKey);
-    const template = `${this.config.ENCRYPT_PREFIX}__${r1}__${r2}__${encryptedMessage}`;
+    const encryptedMessage = await this.encryptAES(message, hexSecret);
+    const template = this.config.ENCRYPT_PREFIX + r1 + r2 + encryptedMessage;
     return template;
   }
   public async resolveDRSAP(packet: string) {
     let store = await chromeStorage.get();
-    const [_, r1, r2, encryptedMessage] = packet.split("__");
+    const packetArray = packet.split(this.config.ENCRYPT_PREFIX)[1].split("");
+    const r1 = packetArray.splice(0, 128).join("");
+    const r2 = packetArray.splice(0, 128).join("");
+
     const ownPrivateKey = forge.pki.privateKeyFromPem(store.user!.privateKey);
     let key;
     try {
@@ -33,7 +38,7 @@ export class Cipher {
       } catch (error) {}
     }
     if (!key) return null;
-    const message = this.decryptAES(encryptedMessage, key as string);
+    const message = this.decryptAES(packetArray.join(""), forge.util.bytesToHex(key));
     return message;
   }
 
@@ -129,11 +134,6 @@ export class Cipher {
     );
 
     return decoder.decode(decryptedData);
-  }
-  generateSecretKey(length: number = 16) {
-    const rawKey = forge.random.getBytesSync(length);
-    const key = forge.util.bytesToHex(rawKey);
-    return key;
   }
 }
 export default Cipher;

@@ -1,9 +1,9 @@
 import type { Config, Selector } from "src/types/Config";
 
 export const config: Config = {
-  ENCRYPT_PREFIX: `::MESSAGE::`,
-  HANDSHAKE_PREFIX: `::HANDSHAKE::`,
-  ACKNOWLEDGMENT_PREFIX: `::ACKNOWLEDGMENT::`,
+  ENCRYPT_PREFIX: `::CGM::`,
+  HANDSHAKE_PREFIX: `::HSH::`,
+  ACKNOWLEDGMENT_PREFIX: `::ACK::`,
 };
 export const selectors: Record<string, Selector> = {
   "web.bale.ai": {

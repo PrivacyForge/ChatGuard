@@ -13,7 +13,7 @@ class ChatGuard {
     if (!store.enable) return null;
     if (!store.user) {
       await new Promise<void>((res) => {
-        forge.pki.rsa.generateKeyPair({}, (error, keyPair) => {
+        forge.pki.rsa.generateKeyPair({ bits: 512, workers: 2 }, (error, keyPair) => {
           if (error) return alert("Error in chatGuard generating key pair");
           const publicKey = forge.pki.publicKeyToPem(keyPair.publicKey);
           const privateKey = forge.pki.privateKeyToPem(keyPair.privateKey);
