@@ -3,87 +3,58 @@
   import DomManipulator from "src/class/DomManipulator";
   import { onMount } from "svelte";
   import type Cipher from "src/class/Cipher";
+  import LockButton from "./LockButton.svelte";
 
   export let app: ChatGuard;
   export let dom: DomManipulator;
   export let cipher: Cipher;
-  export let state: any;
   export let name: string;
+  const state = app.state;
 
-  let status: "idle" | "accept" = "idle";
-  let loading = false;
+  let status: "safe" | "unsafe" = "unsafe";
 
   const checkStatus = () => {
     const user = app.storage.getMap("chatguard_contacts", dom.url.params.id);
-    if (user.publicKey) return (status = "accept");
-    status = "idle";
+    if (user.publicKey) return (status = "safe");
+    status = "unsafe";
   };
   onMount(() => {
     checkStatus();
+
     app.storage.on("chatguard_current-route", checkStatus);
     app.storage.on("chatguard_contacts", async () => {
       const user = app.storage.getMap("chatguard_contacts", dom.url.params.id);
-      if (loading && user.publicKey) {
-        status = "accept";
-        loading = false;
+      if ($state.loading && user.publicKey) {
+        status = "safe";
         const ack = cipher.createDRSAPAcknowledgment(dom.url.params.id);
         await DomManipulator.typeTo(app.selector.textField, ack);
         DomManipulator.clickTo(app.selector.submitButton);
-        state.value = "";
-        state.encrypted = "";
-        state.submit = true;
+        app.state.update((state) => ({ ...state, loading: false, value: "", encrypted: "", submit: true }));
       }
     });
   });
 
   const handleSendHandshake = async () => {
-    if (loading) return;
+    if ($state.loading) return;
     const textField = app.selector.textField;
     const submitButton = app.selector.submitButton;
     const packet = await cipher.createDRSAPHandshake(dom.url.params.id);
-    DomManipulator.typeTo(textField, packet);
+    await DomManipulator.typeTo(textField, packet);
     DomManipulator.clickTo(submitButton);
-    loading = true;
-    state.value = "";
-    state.encrypted = "";
-    state.submit = true;
+    app.state.update((state) => ({ ...state, loading: true, value: "", encrypted: "", submit: true }));
   };
 </script>
 
 <div id="chatguard_{name}" class="wrapper">
-  <button class="button" on:click|stopPropagation={handleSendHandshake} title="request for handShake">
-    {#if loading}
-      loading
-    {:else if status === "idle"}
-      request
-    {:else}
-      done
-    {/if}
-  </button>
-  <div class="status" class:error={status === "idle"} class:loading></div>
+  <LockButton on:click={handleSendHandshake} icon={status} loading={$state.loading} />
 </div>
 
 <style lang="scss">
   .wrapper {
+    position: relative;
+    padding: 1rem;
     display: flex;
     align-items: center;
     gap: 1rem;
-    .button {
-      background-color: #fff;
-      color: #000;
-      cursor: pointer;
-    }
-    .status {
-      width: 1rem;
-      height: 1rem;
-      background-color: green;
-      border-radius: 50%;
-      &.loading {
-        background-color: yellow !important;
-      }
-      &.error {
-        background-color: red;
-      }
-    }
   }
 </style>

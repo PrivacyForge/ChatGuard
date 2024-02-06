@@ -2,11 +2,22 @@ import forge from "node-forge";
 import { chromeStorage } from "src/store";
 import { LocalStorage } from "src/class/Storage";
 import { selectors } from "src/config";
+import { writable } from "svelte/store";
+import { getDeviceType } from "src/utils/getDevice";
+import type { Selector } from "src/types/Config";
 
 class ChatGuard {
   storage = new LocalStorage();
   root = selectors[window.location.hostname];
-  selector = selectors[window.location.hostname].selector;
+  selector: Selector["selector"]["desktop"];
+  state = writable({ value: "", encrypted: "", submit: false, loading: false });
+
+  constructor() {
+    const type = getDeviceType();
+    const selector = selectors[window.location.hostname].selector[type];
+    if (selector) this.selector = selector;
+    else this.selector = selectors[window.location.hostname].selector.desktop;
+  }
 
   public async register() {
     let store = await chromeStorage.get();

@@ -3,14 +3,8 @@ import DomManipulator from "src/class/DomManipulator";
 import Status from "src/components/Status.svelte";
 import { config } from "src/config";
 import Cipher from "src/class/Cipher";
-
-interface State {
-  value: string;
-  encrypted: string;
-  [key: string]: any;
-}
-
-let state: State = { value: "", encrypted: "", submit: false };
+import LoadingScreen from "src/components/LoadingScreen.svelte";
+import { get } from "svelte/store";
 
 (async function init() {
   const app = await new ChatGuard().register();
@@ -18,34 +12,40 @@ let state: State = { value: "", encrypted: "", submit: false };
   const dom = new DomManipulator(document.body, app.storage);
   const cipher = new Cipher(app.storage, config);
 
+  new LoadingScreen({ target: document.body, props: { app } });
+
   dom.renderTo("status", app.selector.header, (target) => {
-    new Status({ target, props: { state, cipher, app, dom, name: "status" } });
+    new Status({ target, props: { cipher, app, dom, name: "status" } });
   });
 
   dom.on(app.selector.textFieldWrapper, "input", async (event: Event) => {
-    state.value = (event.target as HTMLElement).innerText;
+    app.state.update((state) => ({ ...state, value: (event.target as HTMLElement).innerText }));
+    const state = get(app.state);
 
     if (state.value.startsWith(config.ENCRYPT_PREFIX) && !state.submit) {
       const packet = await cipher.resolveDRSAP(state.value);
       if (packet) DomManipulator.typeTo(app.selector.textField, packet);
     }
     if (state.submit) {
-      return (state.submit = false);
+      return app.state.update((prev) => ({ ...prev, submit: false }));
     }
     const encrypted = await cipher.createDRSAP(state.value, dom.url.params.id);
-    if (encrypted) state.encrypted = encrypted;
+    if (encrypted) app.state.update((prev) => ({ ...prev, encrypted }));
   });
   dom.on(app.selector.textField, "keydown", (event) => {
-    state.value = (event.target as HTMLElement).innerText;
+    app.state.update((prev) => ({ ...prev, value: (event.target as HTMLElement).innerText }));
+    const state = get(app.state);
     const e = event as KeyboardEvent;
     if (e.key === "Enter" && state.value && !e.shiftKey && e.detail !== 11 && state.encrypted) {
       DomManipulator.typeTo(app.selector.textField, state.encrypted);
-      state = { ...state, value: "", encrypted: "", submit: true };
+      app.state.update((prev) => ({ ...prev, value: "", encrypted: "", submit: true }));
     }
   });
-  dom.on(app.selector.submitButton, "click", () => {
+  dom.on(app.selector.submitButton, "click", async (e) => {
+    console.log("click");
+    const state = get(app.state);
     DomManipulator.typeTo(app.selector.textField, state.encrypted);
-    state = { ...state, value: "", encrypted: "", submit: true };
+    app.state.update((prev) => ({ ...prev, value: "", encrypted: "", submit: true }));
   });
 
   dom.observerGlobal(() => {
