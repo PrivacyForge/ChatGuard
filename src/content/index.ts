@@ -18,8 +18,15 @@ import { get } from "svelte/store";
     new Status({ target, props: { cipher, app, dom, name: "status" } });
   });
 
+  dom.onClick(app.selector.submitButton, () => {
+    const state = get(app.state);
+    if (!state.encrypted) return;
+    DomManipulator.typeTo(app.selector.textField, state.encrypted);
+    app.state.update((prev) => ({ ...prev, value: "", encrypted: "", submit: true }));
+  });
+
   dom.on(app.selector.textFieldWrapper, "input", async (event: Event) => {
-    app.state.update((state) => ({ ...state, value: (event.target as HTMLElement).innerText }));
+    app.state.update((state) => ({ ...state, value: (event.target as HTMLElement).textContent || "" }));
     const state = get(app.state);
 
     if (state.value.startsWith(config.ENCRYPT_PREFIX) && !state.submit) {
@@ -33,19 +40,14 @@ import { get } from "svelte/store";
     if (encrypted) app.state.update((prev) => ({ ...prev, encrypted }));
   });
   dom.on(app.selector.textField, "keydown", (event) => {
-    app.state.update((prev) => ({ ...prev, value: (event.target as HTMLElement).innerText }));
+    app.state.update((prev) => ({ ...prev, value: (event.target as HTMLElement).textContent || "" }));
     const state = get(app.state);
     const e = event as KeyboardEvent;
-    if (e.key === "Enter" && state.value && !e.shiftKey && e.detail !== 11 && state.encrypted) {
+
+    if (e.key === "Enter" && state.value && !e.shiftKey && e.detail !== 11 && state.encrypted && !app.isTouch) {
       DomManipulator.typeTo(app.selector.textField, state.encrypted);
       app.state.update((prev) => ({ ...prev, value: "", encrypted: "", submit: true }));
     }
-  });
-  dom.on(app.selector.submitButton, "click", async (e) => {
-    console.log("click");
-    const state = get(app.state);
-    DomManipulator.typeTo(app.selector.textField, state.encrypted);
-    app.state.update((prev) => ({ ...prev, value: "", encrypted: "", submit: true }));
   });
 
   dom.observerGlobal(() => {

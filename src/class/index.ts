@@ -11,9 +11,11 @@ class ChatGuard {
   root = selectors[window.location.hostname];
   selector: Selector["selector"]["desktop"];
   state = writable({ value: "", encrypted: "", submit: false, loading: false });
+  isTouch = false;
 
   constructor() {
     const type = getDeviceType();
+    if (type === "mobile") this.isTouch = true;
     const selector = selectors[window.location.hostname].selector[type];
     if (selector) this.selector = selector;
     else this.selector = selectors[window.location.hostname].selector.desktop;

@@ -16,8 +16,26 @@ class DomManipulator {
   url: Url = { path: "", params: {} };
   eventsListener: Record<string, ((e: Event) => void)[]> = {};
   observerCalls: MutationCallback[] = [];
+  clickMap: Record<string, Function[]> = {};
 
   constructor(private readonly main: HTMLElement, private readonly storage: LocalStorage) {
+    document.addEventListener(
+      "click",
+      (e) => {
+        for (const selector in this.clickMap) {
+          const el = document.querySelector(selector);
+          if (el) {
+            const { top, left, width, height } = el.getBoundingClientRect();
+            const { pageX, pageY } = e;
+            if (pageX >= left && pageX <= left + width && pageY >= top && pageY <= top + height) {
+              this.clickMap[selector].forEach((callback) => callback());
+            }
+          }
+        }
+      },
+      { capture: true }
+    );
+
     const globalObserver = new MutationObserver((mutations) => {
       this.observerCalls.forEach((callback) => {
         callback(mutations, globalObserver);
@@ -95,6 +113,10 @@ class DomManipulator {
         node.textContent = replace;
       }
     });
+  }
+  public async onClick(selector: string, callback: Function) {
+    if (!this.clickMap[selector]) this.clickMap[selector] = [];
+    this.clickMap[selector].push(callback);
   }
   static async getElement<T>(selector: string) {
     while (document.querySelector(selector) === null) {
