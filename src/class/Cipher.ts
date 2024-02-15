@@ -53,6 +53,13 @@ export class Cipher {
     if (toId === from) return;
     const { timestamp: oldTimestamp } = this.storage.getMap("chatguard_contacts", from);
     if (+timestamp < +(oldTimestamp || 0)) return;
+    const allHandshakes = this.storage.get("chatguard_contacts");
+    let isFound = false;
+    for (let handshake in allHandshakes) {
+      if (publicKey === allHandshakes[handshake].publicKey) return (isFound = true);
+    }
+    if (isFound) return;
+
     this.storage.setMap("chatguard_contacts", from, {
       publicKey,
       timestamp,

@@ -30,7 +30,7 @@ class ChatGuard {
           if (error) return alert("Error in chatGuard generating key pair");
           const publicKey = forge.pki.publicKeyToPem(keyPair.publicKey);
           const privateKey = forge.pki.privateKeyToPem(keyPair.privateKey);
-          this.storage.set("chatguard_user", {
+          this.storage.setMap("chatguard_contacts", "_me_", {
             publicKey,
             timestamp: new Date().getTime(),
             enable: true,

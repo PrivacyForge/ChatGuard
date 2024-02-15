@@ -1,7 +1,7 @@
 {
   "name": "ChatGuard-beta",
   "description": "Browser Add on to make any chat application (End to End) encrypted",
-  "version": "0.1.0",
+  "version": "0.5.3",
   "author": "https://github.com/mostafa-kheibary",
   "manifest_version": 3,
   "icons": {
