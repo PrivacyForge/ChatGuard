@@ -43,4 +43,19 @@ export const selectors: Record<string, Selector> = {
     },
     idProvider: "#",
   },
+  "web.splus.ir": {
+    selector: {
+      desktop: {
+        app: "#root",
+        textField: "#editable-message-text",
+        textFieldWrapper: "#message-input-text",
+        header: "#MiddleColumn > div.messages-layout > div.MiddleHeader",
+        message: "[data-message-id]",
+        innerMessageText: "div",
+        submitButton:
+          "#MiddleColumn > div.messages-layout > div.Transition.slide > div > div.middle-column-footer > div > button",
+      },
+    },
+    idProvider: "#",
+  },
 };
