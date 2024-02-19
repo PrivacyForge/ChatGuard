@@ -52,7 +52,7 @@ Welcome to Chat Guard for. This guide will walk you through the steps to downloa
 
 ### From the Official Mozilla Add-ons
 
-[![firefox store](../public/images/firefoxStore.svg)](https://addons.mozilla.org/en-US/firefox/)
+[![firefox store](./docs/public/images/firefoxStore.svg)](https://addons.mozilla.org/en-US/firefox/)
 
 1. Open [Mozilla Add-ons](https://addons.mozilla.org/).
 
@@ -68,7 +68,7 @@ Welcome to Chat Guard for. This guide will walk you through the steps to downloa
 
 ### From the Official Safari Extension Gallery
 
-[![apple app store](../public/images/appleStore.svg)](https://safari-extensions.apple.com/)
+[![apple app store](./docs/public/images/appleStore.svg)](https://safari-extensions.apple.com/)
 
 1. Open [Safari Extensions](https://safari-extensions.apple.com/).
 
