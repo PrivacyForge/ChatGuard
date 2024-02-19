@@ -11,7 +11,7 @@ hero:
   actions:
     - theme: brand
       text: Download & Install
-      link: /markdown-examples
+      link: /getting-started/installation
     - theme: alt
       text: Documentation
       link: /api/chat-guard
