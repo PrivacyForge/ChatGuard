@@ -14,7 +14,7 @@ hero:
       link: /markdown-examples
     - theme: alt
       text: Documentation
-      link: /api-examples
+      link: /api/chat-guard
 
 features:
   - title: Supporting major messengers

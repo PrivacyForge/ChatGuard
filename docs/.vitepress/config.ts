@@ -13,7 +13,7 @@ export default defineConfig({
     nav: [
       { text: "Home", link: "/" },
       { text: "Download & Install", link: "/getting-started/installation" },
-      { text: "Documentation", link: "/api" },
+      { text: "Documentation", link: "/api/chat-guard" },
     ],
 
     sidebar: [

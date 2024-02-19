@@ -2,6 +2,10 @@
 
 Thank you for considering contributing to our project! Your contributions are valuable and help improve the overall quality of the project. Before you start, please follow these simple steps:
 
+## Using Git Emojis in Your Commits
+
+We encourage you to use Git emojis in your commit messages to add a touch of expressiveness and clarity. To choose the right emoji for your commits, refer to the [Gitmoji Guide](https://gitmoji.dev/). Simply include the chosen emoji at the beginning of your commit message to convey the nature of your changes. Let's make our commit history more colorful and fun! 🎉
+
 ### Step 1: Read the GitHub Issues
 
 Check the project's GitHub repository for any open issues. Issues marked with an "open" flag are available for contributors. Review the issues to find a task or feature you would like to work on.
