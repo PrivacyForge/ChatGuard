@@ -4,7 +4,7 @@
 
 1. **Download and Install Extension**
 
-   - Download and install `Chat Guard` using [official documentation](/GettingStarted/Installation)
+   - Download and install `Chat Guard` using [official documentation](/getting-started/installation)
 
 2. **Restart Browser** <Badge type="tip" text="important" />
    - Some browsers may require a restart after installing the extension.

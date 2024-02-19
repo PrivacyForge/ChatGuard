@@ -1,55 +1,99 @@
-<img width="450px" class="img-fluid" src="https://github.com/mostafa-kheibary/ChatGuard/assets/58364608/c0441f87-3f2f-4a24-bc32-672dd270cca1" />
+# Chat Guard
 
-# ChatGuard Browser Extension
+" Freedom of speech is not just a right; it's a cornerstone of democracy. In its purest form, it allows ideas to clash, perspectives to evolve, and societies to progress. Yet, with this great power comes the responsibility to navigate the delicate balance between expression and respect. How do we safeguard this essential freedom while fostering a culture of inclusivity and understanding? "
 
+## Overview
 
-ChatGuard is a browser extension designed to make a secure and private chatting across various applications by implementing end-to-end encryption (E2E). The current beta version is exclusively available for use in the Bale Messenger, with plans to extend support to almost all messaging applications in the near future.
+Chat Guard is browser Extension allow to have end to end encrypted conversation in almost any platform you want
 
-## Features
+Welcome to Chat Guard for. This guide will walk you through the steps to download and install the Chat Guard on various browsers and devices.
 
-- **End-to-End Encryption (E2E):** Enjoy secure and private conversations without compromising your data.
-- **Cross-Application Compatibility:** While currently limited to Bale Messenger during the beta phase, ChatGuard aims to extend its support to a wide range of messaging applications.
-- **serverless:** No need of server for exchanging public key,chatGuard uses the Messenger that running on as messaging service to transfer public keys
+## Table of Contents
 
-## How It's Works ?
+1. [Chrome](#chrome)
+   - [From the Official Chrome Web Store](#from-the-official-chrome-web-store)
+   - [Sideload Extension (Using the Extension File)](#sideload-extension-using-the-extension-file)
+2. [Firefox](#firefox)
 
-there are 2 step to make a chat secure (E2E), and the step are:
+   - [From the Official Mozilla Add-ons](#from-the-official-mozilla-add-ons)
+   - [Sideload Extension (Using the Extension File)](#sideload-extension-using-the-extension-file)
 
-- Public key Handshake
-  ChatGuard will transfer the public key by the current Messenger
+3. [Safari](#safari)
 
-- Acknowledgment
-  Both side acknowledge each other that they have each others public keys
+   - [From the Official Safari Extension Gallery](#from-the-official-safari-extension-gallery)
+   - [Sideload Extension (Using the Extension File)](#sideload-extension-using-the-extension-file)
 
-- encryption
-  Now when chatGuard know the public keys it will use a Combination of DRSAP (dynamic RSA packet) Algorithm to encrypt each message
+4. [Mobile Browsers](#mobile-browsers)
+   - [Chrome Mobile](#chrome-mobile)
+   - [Kiwi Browser](#kiwi-browser)
+   - [Safari (iOS)](#safari-ios)
 
-## DRSAP (dynamic RSA packet)
+## Chrome
 
-how encrypted message packet are made? so the client that want to create message :
+### From the Official Chrome Web Store
 
-- 1. Generate a secret key
+[![chrome store](./docs/public/images/chromeStore.svg)](https://chromewebstore.google.com/)
 
-- 2. encrypt the secret key by the public key of the message owner
+1. Open [Chrome Web Store](https://chrome.google.com/webstore).
 
-- 3. encrypt the secret key by the public key of person that we want to send the message to
+2. Click on the "Add to Chrome" button.
 
-- 4. encrypt the message with the secret key
+### Sideload Extension (Using the Extension File)
 
-- 5. create a packet including the 2 encrypted secret key's and the actual encrypted message
+1. Download the extension file (usually a .zip or .crx file) from [download page](https://github.com/PrivacyForge/ChatGuard/releases/tag/v0.5.3-beta).
 
-- 6. now each client can decrypt the secret key's with their own private key and finally decrypt the actual message with that.
+2. Open Chrome and go to `chrome://extensions/`.
 
-## Support The Project
+3. Enable "Developer mode" at the top-right corner.
 
-This is a Free and Open Source (FOS) project, but your donation would be greatly appreciated.
+4. Click "Load unpacked" and select the folder containing the extension files.
 
-Your support helps us maintain and improve the project, ensuring its continued availability to the community.
+## Firefox
 
-<a href="https://www.coffeebede.com/mosidev"><img width="250px" class="img-fluid" src="https://coffeebede.ir/DashboardTemplateV2/app-assets/images/banner/default-yellow.svg" /></a>
+### From the Official Mozilla Add-ons
 
-## License
+[![firefox store](../public/images/firefoxStore.svg)](https://addons.mozilla.org/en-US/firefox/)
 
-This project is licensed under the [MIT License](link to license file). See the LICENSE.md file for details.
+1. Open [Mozilla Add-ons](https://addons.mozilla.org/).
 
-**Note:** This version is currently in beta, and we appreciate your patience as we work towards expanding ChatGuard's compatibility and features. Stay tuned for updates!
+2. Search for "[Your Browser Extension Name]".
+
+3. Click on "Add to Firefox".
+
+### Sideload Extension (Using the Extension File) <Badge type="warning" text="not Supported" />
+
+1. This feature is not working anymore, so use the official store to install the extension.
+
+## Safari
+
+### From the Official Safari Extension Gallery
+
+[![apple app store](../public/images/appleStore.svg)](https://safari-extensions.apple.com/)
+
+1. Open [Safari Extensions](https://safari-extensions.apple.com/).
+
+2. Click "Install Now".
+
+### Sideload Extension (Using the Extension File) <Badge type="warning" text="not Supported" />
+
+1. This feature is not working anymore, so use the official store to install the extension.
+
+## Mobile Browsers
+
+### Android (Kiwi Browser)
+
+1. Open Kiwi Browser on your mobile device.
+
+2. Visit the Chrome Web Store and search for "Chat Guard".
+
+3. Tap "Add to Chrome".
+
+### iOS (Safari)
+
+1. Open Safari on your iOS device.
+
+2. Go to the [official Safari Extensions](https://apps.apple.com/us/developer/apple-inc/id284417353).
+
+3. Search for "Chat Guard".
+
+4. Tap "Get" to download and install the extension.
