@@ -3,27 +3,27 @@
 layout: home
 
 hero:
-  name: "Chat Guard"
+  name: <span style="font-family:Kranky;">Chat Guard</h1>
   tagline: A browser extension designed to make any messenger app to End to End encrypted
   image:
-    src: /images/vitepress-logo.webp
+    src: /images/logo.svg
     alt: logo
   actions:
     - theme: brand
-      text: Markdown Examples
+      text: Download & Install
       link: /markdown-examples
     - theme: alt
-      text: API Examples
+      text: Documentation
       link: /api-examples
 
 features:
-  - title: Feature A
+  - title: Supporting major messengers
+    icon: 💬
+    details: We support major messengers on the fly, and you can also add support for your own messengers.
+  - title: Serverless
     icon: 🌍
-    details: Lorem ipsum dolor sit amet, consectetur adipiscing elit
-  - title: Feature B
+    details: Chat Guard doesn't need any external service for encryption; all data will be encrypted on the client.
+  - title: End to End Encrypted
     icon: 🚀
-    details: Lorem ipsum dolor sit amet, consectetur adipiscing elit
-  - title: Feature C
-    icon: 🔋
-    details: Lorem ipsum dolor sit amet, consectetur adipiscing elit
+    details: Chat Guard utilizes end-to-end encryption with hybrid encryption."
 ---
