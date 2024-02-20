@@ -31,7 +31,7 @@ class ChatGuard {
           const publicKey = forge.pki.publicKeyToPem(keyPair.publicKey);
           const privateKey = forge.pki.privateKeyToPem(keyPair.privateKey);
           this.storage.setMap("chatguard_contacts", "_me_", {
-            publicKey,
+            publicKey: publicKey.replace(/[\r\n]/g, ""),
             timestamp: new Date().getTime(),
             enable: true,
           });
@@ -39,7 +39,7 @@ class ChatGuard {
             ...store,
             enable: true,
             user: {
-              publicKey,
+              publicKey: publicKey.replace(/[\r\n]/g, ""),
               privateKey,
             },
           });
