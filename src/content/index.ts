@@ -40,7 +40,6 @@ import { get } from "svelte/store";
     if (encrypted) app.state.update((prev) => ({ ...prev, encrypted }));
   });
   dom.on(app.selector.textField, "keydown", (event) => {
-    app.state.update((prev) => ({ ...prev, value: (event.target as HTMLElement).textContent || "" }));
     const state = get(app.state);
     const e = event as KeyboardEvent;
 
