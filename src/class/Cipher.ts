@@ -1,10 +1,10 @@
 import forge from "node-forge";
 import type { Config } from "src/types/Config";
-import type { LocalStorage } from "./Storage";
-import BrowserStorage from 'src/utils/BrowserStorage'
+import BrowserStorage from "src/utils/BrowserStorage";
+import LocalStorage from "src/utils/LocalStorage";
 
 export class Cipher {
-  constructor(private readonly storage: LocalStorage, private readonly config: Config) {}
+  constructor(private readonly config: Config) {}
 
   public async createDRSAP(message: string, to: string) {
     let store = await BrowserStorage.get();
@@ -12,7 +12,7 @@ export class Cipher {
     const hexSecret = forge.util.bytesToHex(secretKey);
 
     const ownPublicKey = forge.pki.publicKeyFromPem(store.user!.publicKey);
-    const { publicKey: publicKeyPem } = this.storage.getMap("chatguard_contacts", to);
+    const { publicKey: publicKeyPem } = LocalStorage.getMap("chatguard_contacts", to);
     if (!publicKeyPem) return null;
     const toPublicKey = forge.pki.publicKeyFromPem(publicKeyPem);
     const r1 = forge.util.bytesToHex(ownPublicKey.encrypt(secretKey));
@@ -51,16 +51,16 @@ export class Cipher {
   public async resolveDRSAPHandshake(packet: string, from: string) {
     const [_prefix, timestamp, toId, publicKey] = packet.split("__");
     if (toId === from) return;
-    const { timestamp: oldTimestamp } = this.storage.getMap("chatguard_contacts", from);
+    const { timestamp: oldTimestamp } = LocalStorage.getMap("chatguard_contacts", from);
     if (+timestamp < +(oldTimestamp || 0)) return;
-    const allHandshakes = this.storage.get("chatguard_contacts");
+    const allHandshakes = LocalStorage.get("chatguard_contacts");
     let isFound = false;
     for (let handshake in allHandshakes) {
       if (publicKey === allHandshakes[handshake].publicKey) return (isFound = true);
     }
     if (isFound) return;
 
-    this.storage.setMap("chatguard_contacts", from, {
+    LocalStorage.setMap("chatguard_contacts", from, {
       publicKey,
       timestamp,
       enable: true,
@@ -74,10 +74,10 @@ export class Cipher {
     const [_, id] = packet.split("__");
     if (from === id) return;
 
-    const user = this.storage.getMap("chatguard_contacts", from);
+    const user = LocalStorage.getMap("chatguard_contacts", from);
     if (!user.publicKey) return;
     user.acknowledged = true;
-    this.storage.setMap("chatguard_contacts", from, user);
+    LocalStorage.setMap("chatguard_contacts", from, user);
   }
   public static validatePublicPem(pem: string) {
     try {
