@@ -4,6 +4,7 @@
   import { onMount } from "svelte";
   import type Cipher from "src/class/Cipher";
   import LockButton from "./LockButton.svelte";
+  import LocalStorage from "src/utils/LocalStorage";
 
   export let app: ChatGuard;
   export let dom: DomManipulator;
@@ -14,15 +15,15 @@
   let status: "safe" | "unsafe" = "unsafe";
 
   const checkStatus = () => {
-    const contact = app.storage.getMap("chatguard_contacts", dom.url.params.id);
+    const contact = LocalStorage.getMap("chatguard_contacts", dom.url.params.id);
     contact.publicKey ? (status = "safe") : (status = "unsafe");
   };
   onMount(() => {
     checkStatus();
 
-    app.storage.on("chatguard_current-route", checkStatus);
-    app.storage.on("chatguard_contacts", async () => {
-      const user = app.storage.getMap("chatguard_contacts", dom.url.params.id);
+    LocalStorage.on("chatguard_current-route", checkStatus);
+    LocalStorage.on("chatguard_contacts", async () => {
+      const user = LocalStorage.getMap("chatguard_contacts", dom.url.params.id);
       if ($state.loading && user.publicKey) {
         status = "safe";
         const ack = cipher.createDRSAPAcknowledgment(dom.url.params.id);

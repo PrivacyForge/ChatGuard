@@ -5,12 +5,13 @@ import { config } from "src/config";
 import Cipher from "src/class/Cipher";
 import LoadingScreen from "src/components/LoadingScreen.svelte";
 import { get } from "svelte/store";
+import LocalStorage from "src/utils/LocalStorage";
 
 (async function init() {
   const app = await new ChatGuard().register();
   if (!app) return;
-  const dom = new DomManipulator(document.body, app.storage);
-  const cipher = new Cipher(app.storage, config);
+  const dom = new DomManipulator(document.body);
+  const cipher = new Cipher(config);
 
   new LoadingScreen({ target: document.body, props: { app } });
 
@@ -58,7 +59,7 @@ import { get } from "svelte/store";
       }
       const id = new URLSearchParams(window.location.search).get(app.root.idProvider) || "";
       dom.url.params.id = id;
-      if (app.storage.getMap("chatguard_contacts", dom.url.params.id).publicKey) {
+      if (LocalStorage.getMap("chatguard_contacts", dom.url.params.id).publicKey) {
         document.querySelector(app.selector.textField)?.dispatchEvent(new Event("input"));
       }
     });

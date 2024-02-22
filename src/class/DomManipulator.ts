@@ -1,4 +1,4 @@
-import type { LocalStorage } from "src/class/Storage";
+import LocalStorage from "src/utils/LocalStorage";
 
 interface RenderMap {
   name: string;
@@ -18,7 +18,7 @@ class DomManipulator {
   observerCalls: MutationCallback[] = [];
   clickMap: Record<string, Function[]> = {};
 
-  constructor(private readonly main: HTMLElement, private readonly storage: LocalStorage) {
+  constructor(private readonly main: HTMLElement) {
     document.addEventListener(
       "click",
       (e) => {
@@ -102,7 +102,7 @@ class DomManipulator {
     if (this.url.path === window.location.href) return;
     this.url.path = window.location.href;
     mutate(this.url.path);
-    this.storage.set("chatguard_current-route", this.url.path);
+    LocalStorage.set("chatguard_current-route", this.url.path);
   }
   public destroyed(name: string) {
     this.renderMap[name].rendered = false;
