@@ -51,14 +51,21 @@ export class Cipher {
   public async resolveDRSAPHandshake(packet: string, from: string) {
     const [_prefix, timestamp, toId, publicKey] = packet.split("__");
     if (toId === from) return;
-    const { timestamp: oldTimestamp } = LocalStorage.getMap("chatguard_contacts", from);
-    if (+timestamp < +(oldTimestamp || 0)) return;
+    const oldContact = LocalStorage.getMap("chatguard_contacts", from);
+    if (+timestamp < +(oldContact.timestamp || 0)) return;
     const allHandshakes = LocalStorage.get("chatguard_contacts");
     let isFound = false;
     for (let handshake in allHandshakes) {
-      if (publicKey === allHandshakes[handshake].publicKey) return (isFound = true);
+      if (publicKey === allHandshakes[handshake].publicKey) isFound = true;
     }
-    if (isFound) return;
+    if (isFound) {
+      LocalStorage.setMap("chatguard_contacts", from, {
+        ...oldContact,
+        acknowledged: true,
+      });
+
+      return;
+    }
 
     LocalStorage.setMap("chatguard_contacts", from, {
       publicKey,

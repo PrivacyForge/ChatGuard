@@ -3,6 +3,7 @@
   "useTabs": false,
   "tabWidth": 2,
   "svelteBracketNewLine": false,
+  "singleQuote": false,
   "svelteSortOrder": "scripts-markup-styles",
   "svelteStrictMode": false,
   "htmlWhitespaceSensitivity": "strict"

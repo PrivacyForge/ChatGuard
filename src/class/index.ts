@@ -1,9 +1,9 @@
 import forge from "node-forge";
 import { selectors } from "src/config";
 import { writable } from "svelte/store";
-import { getDeviceType } from "src/utils";
+import { getDeviceType } from "src/utils/getDeviceType";
 import type { Selector } from "src/types/Config";
-import BrowserStorage from 'src/utils/BrowserStorage'
+import BrowserStorage from "src/utils/BrowserStorage";
 import LocalStorage from "src/utils/LocalStorage";
 
 class ChatGuard {
@@ -29,11 +29,6 @@ class ChatGuard {
           if (error) return alert("Error in chatGuard generating key pair");
           const publicKey = forge.pki.publicKeyToPem(keyPair.publicKey);
           const privateKey = forge.pki.privateKeyToPem(keyPair.privateKey);
-          LocalStorage.setMap("chatguard_contacts", "_me_", {
-            publicKey: publicKey.replace(/[\r\n]/g, ""),
-            timestamp: new Date().getTime(),
-            enable: true,
-          });
           BrowserStorage.set({
             ...store,
             enable: true,
@@ -46,6 +41,12 @@ class ChatGuard {
         });
       });
     }
+    store = await BrowserStorage.get();
+    LocalStorage.setMap("chatguard_contacts", "_me_", {
+      publicKey: store.user?.publicKey,
+      timestamp: new Date().getTime(),
+      enable: true,
+    });
     return this;
   }
 }
