@@ -14,9 +14,8 @@
   let status: "safe" | "unsafe" = "unsafe";
 
   const checkStatus = () => {
-    const user = app.storage.getMap("chatguard_contacts", dom.url.params.id);
-    if (user.publicKey) return (status = "safe");
-    status = "unsafe";
+    const contact = app.storage.getMap("chatguard_contacts", dom.url.params.id);
+    contact.publicKey ? (status = "safe") : (status = "unsafe");
   };
   onMount(() => {
     checkStatus();
