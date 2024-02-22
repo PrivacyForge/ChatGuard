@@ -1,7 +1,7 @@
 <script lang="ts">
   import { onMount } from "svelte";
   import Switch from "./Switch.svelte";
-  import { chromeStorage } from "src/store";
+  import BrowserStorage from 'src/utils/BrowserStorage'
   import Cipher from "src/class/Cipher";
 
   let enable: string = "on";
@@ -9,12 +9,12 @@
   let error = "";
 
   onMount(async () => {
-    const store = await chromeStorage.get();
+    const store = await BrowserStorage.get();
     enable = store.enable ? "on" : "off";
     mounted = true;
   });
   const handleExportConfig = async () => {
-    const store = await chromeStorage.get();
+    const store = await BrowserStorage.get();
     const config = JSON.stringify(store.user);
     const a = document.createElement("a");
     const file = new Blob([config], { type: "text/plain" });
@@ -24,7 +24,7 @@
     URL.revokeObjectURL(a.href);
   };
   const handleImportConfig = async (e: Event) => {
-    const store = await chromeStorage.get();
+    const store = await BrowserStorage.get();
     const target = e.target as HTMLInputElement;
     const fr = new FileReader();
     fr.onload = function () {
@@ -37,7 +37,7 @@
         const isPublicValid = Cipher.validatePublicPem(config.publicKey);
         const isPrivateValid = Cipher.validatePrivatePem(config.privateKey);
         if (!isPrivateValid || !isPublicValid) return (error = "invalid config file");
-        chromeStorage.set({ ...store, user: config });
+        BrowserStorage.set({ ...store, user: config });
         alert("Successfully load the config");
         error = "";
       } catch (e) {
@@ -49,8 +49,8 @@
   const handleReset = () => {};
 
   const handleCheckbox = async (en: string) => {
-    const user = await chromeStorage.get();
-    chromeStorage.set({ ...user, enable: en === "on" ? true : false });
+    const user = await BrowserStorage.get();
+    BrowserStorage.set({ ...user, enable: en === "on" ? true : false });
   };
 
   $: mounted && handleCheckbox(enable);

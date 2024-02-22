@@ -1,10 +1,10 @@
 import forge from "node-forge";
-import { chromeStorage } from "src/store";
 import { LocalStorage } from "src/class/Storage";
 import { selectors } from "src/config";
 import { writable } from "svelte/store";
-import { getDeviceType } from "src/utils/getDevice";
+import { getDeviceType } from "src/utils";
 import type { Selector } from "src/types/Config";
+import BrowserStorage from 'src/utils/BrowserStorage'
 
 class ChatGuard {
   storage = new LocalStorage();
@@ -22,7 +22,7 @@ class ChatGuard {
   }
 
   public async register() {
-    let store = await chromeStorage.get();
+    let store = await BrowserStorage.get();
     if (!store.enable) return null;
     if (!store.user) {
       await new Promise<void>((res) => {
@@ -35,7 +35,7 @@ class ChatGuard {
             timestamp: new Date().getTime(),
             enable: true,
           });
-          chromeStorage.set({
+          BrowserStorage.set({
             ...store,
             enable: true,
             user: {

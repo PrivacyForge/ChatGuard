@@ -1,13 +1,13 @@
 import forge from "node-forge";
-import { chromeStorage } from "src/store";
 import type { Config } from "src/types/Config";
 import type { LocalStorage } from "./Storage";
+import BrowserStorage from 'src/utils/BrowserStorage'
 
 export class Cipher {
   constructor(private readonly storage: LocalStorage, private readonly config: Config) {}
 
   public async createDRSAP(message: string, to: string) {
-    let store = await chromeStorage.get();
+    let store = await BrowserStorage.get();
     const secretKey = forge.random.getBytesSync(16);
     const hexSecret = forge.util.bytesToHex(secretKey);
 
@@ -22,7 +22,7 @@ export class Cipher {
     return template;
   }
   public async resolveDRSAP(packet: string) {
-    let store = await chromeStorage.get();
+    let store = await BrowserStorage.get();
     const packetArray = packet.split(this.config.ENCRYPT_PREFIX)[1].split("");
     const r1 = packetArray.splice(0, 128).join("");
     const r2 = packetArray.splice(0, 128).join("");
@@ -43,7 +43,7 @@ export class Cipher {
   }
 
   public async createDRSAPHandshake(to: string) {
-    const store = await chromeStorage.get();
+    const store = await BrowserStorage.get();
     const cleanedPublicKey = store.user!.publicKey.replace(/[\r\n]/g, "");
     const packet = `${this.config.HANDSHAKE_PREFIX}__${new Date().getTime()}__${to}__${cleanedPublicKey}`;
     return packet;
