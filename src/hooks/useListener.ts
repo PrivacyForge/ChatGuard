@@ -1,5 +1,12 @@
 import useObserver from "./useObserver";
 
+/**
+ *  This hook allow you to have event listener on element in a client side rendering app
+ *  it will add a listener to a element no mather if it removed and recreated again
+ *
+ * @example
+ *  const { on , onClick } = useListener()
+ */
 const useListener = (appRoot: HTMLElement) => {
   const eventsListener: Record<string, ((e: Event) => void)[]> = {};
   const clickMap: Record<string, Function[]> = {};

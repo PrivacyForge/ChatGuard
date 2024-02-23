@@ -5,10 +5,9 @@
   import LockButton from "./LockButton.svelte";
   import LocalStorage from "src/utils/LocalStorage";
   import { clickTo, typeTo } from "src/utils/userAction";
-  import type DomManipulator from "src/class/DomManipulator";
+  import { url } from "src/store/url.store";
 
   export let app: ChatGuard;
-  export let dom: DomManipulator;
   export let cipher: Cipher;
   export let id: string;
   const state = app.state;
@@ -16,7 +15,7 @@
   let status: "safe" | "unsafe" = "unsafe";
 
   const checkStatus = () => {
-    const contact = LocalStorage.getMap("chatguard_contacts", dom.url.params.id);
+    const contact = LocalStorage.getMap("chatguard_contacts", $url.id);
     contact.publicKey ? (status = "safe") : (status = "unsafe");
   };
   onMount(() => {
@@ -24,10 +23,10 @@
 
     LocalStorage.on("chatguard_current-route", checkStatus);
     LocalStorage.on("chatguard_contacts", async () => {
-      const user = LocalStorage.getMap("chatguard_contacts", dom.url.params.id);
+      const user = LocalStorage.getMap("chatguard_contacts", $url.id);
       if ($state.loading && user.publicKey) {
         status = "safe";
-        const ack = cipher.createDRSAPAcknowledgment(dom.url.params.id);
+        const ack = cipher.createDRSAPAcknowledgment($url.id);
         await typeTo(app.selector.textField, ack);
         clickTo(app.selector.submitButton);
         app.state.update((state) => ({ ...state, loading: false, value: "", encrypted: "", submit: true }));
@@ -39,7 +38,7 @@
     if ($state.loading) return;
     const textField = app.selector.textField;
     const submitButton = app.selector.submitButton;
-    const packet = await cipher.createDRSAPHandshake(dom.url.params.id);
+    const packet = await cipher.createDRSAPHandshake($url.id);
     await typeTo(textField, packet);
     clickTo(submitButton);
     app.state.update((state) => ({ ...state, loading: true, value: "", encrypted: "", submit: true }));

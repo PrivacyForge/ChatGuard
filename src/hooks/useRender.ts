@@ -8,7 +8,12 @@ interface RenderMap {
   patentSelector: string;
   render: (parent: HTMLElement, id: string) => void;
 }
-
+/**
+ *  a render hook that allow you to render in a page with client side rendering and dont have duplicate element
+ *
+ * @example
+ *  const { render } = useRender()
+ */
 const useRender = (appRoot: HTMLElement) => {
   const renderMap: Record<string, RenderMap> = {};
   const { onObserve } = useObserver(appRoot);
