@@ -8,7 +8,7 @@ function get(key: string) {
 function set(key: string, value: any) {
   localStorage.setItem(key, JSON.stringify(value));
   const listeners = getStore(listenersStore);
-  listeners[key].forEach((callback) => {
+  listeners[key]?.forEach((callback) => {
     callback();
   });
 }
@@ -23,14 +23,14 @@ function setMap(key: string, mapKey: string, value: any) {
   map[mapKey] = value;
   localStorage.setItem(key, JSON.stringify(map));
   const listeners = getStore(listenersStore);
-  listeners[key].forEach((callback) => {
+  listeners[key]?.forEach((callback) => {
     callback();
   });
 }
 
 function on(key: string, callback: (data: Record<string, any>) => void) {
   listenersStore.update((listeners) => {
-    listeners[key] = [...listeners[key], callback];
+    listeners[key] = [...(listeners[key] || []), callback];
     return listeners;
   });
 }

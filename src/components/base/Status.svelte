@@ -18,10 +18,9 @@
     const contact = LocalStorage.getMap("chatguard_contacts", $url.id);
     contact.publicKey ? (status = "safe") : (status = "unsafe");
   };
-  onMount(() => {
-    checkStatus();
+  url.subscribe(checkStatus);
 
-    LocalStorage.on("chatguard_current-route", checkStatus);
+  onMount(() => {
     LocalStorage.on("chatguard_contacts", async () => {
       const user = LocalStorage.getMap("chatguard_contacts", $url.id);
       if ($state.loading && user.publicKey) {
