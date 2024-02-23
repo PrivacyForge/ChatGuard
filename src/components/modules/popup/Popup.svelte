@@ -1,6 +1,6 @@
 <script lang="ts">
   import logo from "src/assets/icons/icon128.png";
-  import Settings from "src/components/Settings.svelte";
+  import Settings from "src/components/modules/popup/Settings.svelte";
 </script>
 
 <div class="wrapper">

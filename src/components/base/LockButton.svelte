@@ -1,6 +1,6 @@
 <script lang="ts">
-  import Lock from "./icon/Lock.svelte";
-  import Loading from "./icon/Loading.svelte";
+  import Lock from "../icon/Lock.svelte";
+  import Loading from "../icon/Loading.svelte";
 
   export let icon: "safe" | "resend" | "unsafe";
   export let loading: boolean;

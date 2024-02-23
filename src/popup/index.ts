@@ -1,4 +1,4 @@
-import Popup from "src/pages/Popup/Popup.svelte";
+import Popup from "src/components/modules/popup/Popup.svelte";
 
 const target = document.getElementById("app") as HTMLDivElement;
 

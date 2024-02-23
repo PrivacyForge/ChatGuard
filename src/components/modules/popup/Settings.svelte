@@ -1,7 +1,7 @@
 <script lang="ts">
   import { onMount } from "svelte";
-  import Switch from "./Switch.svelte";
-  import BrowserStorage from 'src/utils/BrowserStorage'
+  import Switch from "../../base/Switch.svelte";
+  import BrowserStorage from "src/utils/BrowserStorage";
   import Cipher from "src/class/Cipher";
 
   let enable: string = "on";
