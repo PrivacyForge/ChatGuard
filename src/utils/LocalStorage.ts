@@ -1,5 +1,5 @@
 import { get as getStore } from "svelte/store";
-import { listenersStore } from "src/store";
+import { listenersStore } from "src/store/localstorageListener.store";
 
 function get(key: string) {
   return JSON.parse(localStorage.getItem(key) || "null");
@@ -8,7 +8,9 @@ function get(key: string) {
 function set(key: string, value: any) {
   localStorage.setItem(key, JSON.stringify(value));
   const listeners = getStore(listenersStore);
-  listeners[key] && listeners[key]();
+  listeners[key].forEach((callback) => {
+    callback();
+  });
 }
 
 function getMap(key: string, mapKey: string) {
@@ -21,13 +23,14 @@ function setMap(key: string, mapKey: string, value: any) {
   map[mapKey] = value;
   localStorage.setItem(key, JSON.stringify(map));
   const listeners = getStore(listenersStore);
-  listeners[key] && listeners[key]();
+  listeners[key].forEach((callback) => {
+    callback();
+  });
 }
 
-// Bug! - Accepts just one callback per key
 function on(key: string, callback: (data: Record<string, any>) => void) {
   listenersStore.update((listeners) => {
-    listeners[key] = callback;
+    listeners[key] = [...listeners[key], callback];
     return listeners;
   });
 }
