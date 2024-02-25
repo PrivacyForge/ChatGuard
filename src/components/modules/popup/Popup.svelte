@@ -1,25 +1,28 @@
 <script lang="ts">
-  import logo from "src/assets/icons/icon128.png";
-  import Settings from "src/components/modules/popup/Settings.svelte";
+  import { url } from "svelte-pathfinder";
+  import AdvancedSetting from "./AdvancedSetting.svelte";
+  import Settings from "./Settings.svelte";
+  import NavigationTab from "src/components/base/NavigationTab.svelte";
+
+  interface Router {
+    name: string;
+    component: any;
+  }
+  const router: Record<string, Router> = {
+    "/": { name: "settings", component: Settings },
+    "/advanced-setting": { name: "advanced settings", component: AdvancedSetting },
+  };
 </script>
 
-<div class="wrapper">
-  <div class="header">
-    <img width="50px" src={logo} alt="logo" />
-    <div>
-      <h1 class="title">ChatGuard</h1>
-      <p class="slogan">safe way to chat</p>
-    </div>
-  </div>
-  <Settings />
-  <p class="info"
-    ><span class="error">warning</span>
-    : when you export your config its important to keep it in the safe place its containing your private key that can decrypt
-    the messages
-  </p>
+<div class="container">
+  {#if $url !== "/"}
+    <NavigationTab current={router[$url].name} />
+  {/if}
+  <svelte:component this={router[$url].component} />
 </div>
 
-<style lang="scss" module>
+<style lang="scss">
+  @import url("https://fonts.googleapis.com/css2?family=Kranky&display=swap");
   :global(*) {
     margin: 0;
     padding: 0;
@@ -29,34 +32,8 @@
     background-color: #ffffff;
     color: #111217;
   }
-
-  .wrapper {
-    padding: 2rem;
+  .container {
     width: 24rem;
-    display: flex;
-    flex-direction: column;
-    font-size: 1.2rem;
-    .header {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-      .title {
-        font-size: 1.5rem;
-      }
-      .slogan {
-        opacity: 0.7;
-        padding-left: 0.2rem;
-        font-size: 0.8rem;
-      }
-    }
-    .info {
-      text-align: center;
-      margin-top: 2rem;
-      font-size: 0.8rem;
-      opacity: 0.7;
-      .error {
-        color: red;
-      }
-    }
+    height: 24rem;
   }
 </style>

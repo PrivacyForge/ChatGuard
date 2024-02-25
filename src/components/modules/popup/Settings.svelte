@@ -1,158 +1,82 @@
 <script lang="ts">
-  import { onMount } from "svelte";
+  import logo from "src/assets/icons/icon128.png";
+  import HeaderWave from "src/components/svg/HeaderWave.svelte";
   import Switch from "../../base/Switch.svelte";
   import BrowserStorage from "src/utils/BrowserStorage";
-  import Cipher from "src/class/Cipher";
+  import { refreshPage } from "src/utils/refreshPage";
+  import { onMount } from "svelte";
+  import { goto } from "svelte-pathfinder";
 
   let enable: string = "on";
   let mounted: boolean = false;
-  let error = "";
 
   onMount(async () => {
     const store = await BrowserStorage.get();
     enable = store.enable ? "on" : "off";
     mounted = true;
   });
-  const handleExportConfig = async () => {
-    const store = await BrowserStorage.get();
-    const config = JSON.stringify(store.user);
-    const a = document.createElement("a");
-    const file = new Blob([config], { type: "text/plain" });
-    a.href = URL.createObjectURL(file);
-    a.download = "chatguard.conf";
-    a.click();
-    URL.revokeObjectURL(a.href);
-  };
-  const handleImportConfig = async (e: Event) => {
-    const store = await BrowserStorage.get();
-    const target = e.target as HTMLInputElement;
-    const fr = new FileReader();
-    fr.onload = function () {
-      if (typeof fr.result !== "string") return (error = "invalid config file");
-
-      const configText = fr.result || "";
-      try {
-        const config = JSON.parse(configText);
-        if (!config.privateKey || !config.publicKey) return (error = "invalid config file");
-        const isPublicValid = Cipher.validatePublicPem(config.publicKey);
-        const isPrivateValid = Cipher.validatePrivatePem(config.privateKey);
-        if (!isPrivateValid || !isPublicValid) return (error = "invalid config file");
-        BrowserStorage.set({ ...store, user: config });
-        alert("Successfully load the config");
-        error = "";
-      } catch (e) {
-        error = "invalid config file";
-      }
-    };
-    fr.readAsText((target as any).files[0]);
-  };
-  const handleReset = () => {};
-
   const handleCheckbox = async (en: string) => {
     const user = await BrowserStorage.get();
     BrowserStorage.set({ ...user, enable: en === "on" ? true : false });
   };
-
+  const handleChangeCheckbox = () => {
+    refreshPage();
+  };
   $: mounted && handleCheckbox(enable);
 </script>
 
-<div class="settings">
-  <p class="description">Refresh the page for changes to apply</p>
-  <div class="general">
-    <h5 class="title">General</h5>
-    <Switch design="slider" bind:value={enable} label="Enable" />
-  </div>
-  <div class="config">
-    <h5 class="title">Danger Zone</h5>
-
-    <div class="buttons">
-      <button on:click={handleExportConfig} class="button">export config</button>
-      <input on:change={handleImportConfig} id="conf" type="file" hidden />
-      <label class="label" for="conf">
-        <button class="button">import config</button>
-      </label>
+<HeaderWave />
+<div class="wrapper">
+  <div class="header">
+    <img width="80px" src={logo} alt="logo" />
+    <div>
+      <h1 class="title">Chat Guard</h1>
+      <p class="slogan">Chat safer, Enjoy more</p>
+      <Switch design="inner" bind:value={enable} on:change={handleChangeCheckbox} />
     </div>
-    {#if error}
-      <p class="error">
-        {error}
-      </p>
-    {/if}
   </div>
+  <button class="button" on:click={() => goto("/advanced-setting")}>Advanced Settings</button>
+  <span class="version">v0.5.6</span>
 </div>
 
 <style lang="scss" module>
-  .settings {
-    margin-top: 2rem;
-    .description {
-      font-size: 0.9rem;
-      opacity: 0.5;
-    }
-    .general {
+  .wrapper {
+    height: 100%;
+    padding: 2.5rem 2rem 1.5rem 2rem;
+    display: flex;
+    flex-direction: column;
+    .header {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      text-align: center;
+      align-items: center;
+      gap: 1rem;
+      z-index: 100;
       .title {
-        width: fit-content;
-        position: relative;
-        padding-block: 1rem;
-        &::after {
-          content: "";
-          position: absolute;
-          left: calc(100% + 0.5rem);
-          top: 50%;
-          transform: translateY(-50%);
-          width: 100vh;
-          height: 1px;
-          background-color: rgb(221, 221, 221);
-          z-index: -1;
-        }
+        font-family: Kranky;
+        font-size: 1.7rem;
       }
-    }
-    .config {
-      .error {
-        padding-top: 0.5rem;
-        color: red;
+      .slogan {
+        opacity: 0.7;
+        padding: 0 0 1rem 0.2rem;
         font-size: 0.8rem;
       }
-      .label {
-        position: relative;
-        &::after {
-          position: absolute;
-          content: "";
-          left: 0;
-          right: 0;
-          width: 100%;
-          height: 100%;
-          cursor: pointer;
-        }
-      }
-      .title {
-        width: fit-content;
-        position: relative;
-        color: red;
-        padding-block: 1rem;
-        &::after {
-          content: "";
-          position: absolute;
-          left: calc(100% + 0.5rem);
-          top: 50%;
-          transform: translateY(-50%);
-          width: 100vh;
-          height: 1px;
-          background-color: rgb(221, 221, 221);
-          z-index: -1;
-        }
-      }
-      .buttons {
-        display: flex;
-        justify-content: center;
-        gap: 1rem;
-        .button {
-          padding: 0.5rem 1.2rem;
-          border-radius: 50rem;
-          border: none;
-          background-color: #0f7dff;
-          color: #fff;
-          cursor: pointer;
-        }
-      }
+    }
+    .button {
+      padding: 0.5rem 0;
+      width: 100%;
+      background-color: transparent;
+      border: solid 0.1rem #0f7dff;
+      color: #0f7dff;
+      cursor: pointer;
+      border-radius: 0.3rem;
+      margin-top: auto;
+    }
+    .version {
+      margin-top: 1rem;
+      opacity: 0.5;
+      text-align: center;
     }
   }
 </style>
