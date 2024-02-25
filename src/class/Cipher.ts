@@ -149,5 +149,13 @@ export class Cipher {
 
     return decoder.decode(decryptedData);
   }
+
+  static async generateKeyPair() {
+    const keyPair = await forge.pki.rsa.generateKeyPair({ bits: 512, workers: 2 });
+    const publicKey = forge.pki.publicKeyToPem(keyPair.publicKey);
+    const privateKey = forge.pki.privateKeyToPem(keyPair.privateKey);
+
+    return { privateKey, publicKey };
+  }
 }
 export default Cipher;

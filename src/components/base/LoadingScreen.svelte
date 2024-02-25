@@ -1,10 +1,9 @@
 <script lang="ts">
-  import type ChatGuard from "src/class";
+  import { chatStore as state } from "src/store/chat.store";
 
-  export let app: ChatGuard;
-  const state = app.state;
   let isShow = false;
   let timeout: any = null;
+  
   $: $state.loading ? handleOn() : handleDelayOff();
 
   const handleOn = () => {
@@ -18,7 +17,7 @@
     }, 2000);
   };
   const handleCancel = () => {
-    app.state.update((prev) => ({ ...prev, loading: false }));
+    state.update((prev) => ({ ...prev, loading: false }));
     isShow = false;
   };
 </script>

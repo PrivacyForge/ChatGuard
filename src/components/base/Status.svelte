@@ -1,16 +1,16 @@
 <script lang="ts">
-  import type ChatGuard from "src/class";
   import { onMount } from "svelte";
-  import type Cipher from "src/class/Cipher";
   import LockButton from "./LockButton.svelte";
   import LocalStorage from "src/utils/LocalStorage";
   import { clickTo, typeTo } from "src/utils/userAction";
   import { url } from "src/store/url.store";
+  import { chatStore as state } from "src/store/chat.store";
+  import type { Field } from "src/types/Config";
+  import type Cipher from "src/class/Cipher";
 
-  export let app: ChatGuard;
   export let cipher: Cipher;
+  export let selector: Field;
   export let id: string;
-  const state = app.state;
 
   let status: "safe" | "unsafe" = "unsafe";
 
@@ -26,21 +26,21 @@
       if ($state.loading && user.publicKey) {
         status = "safe";
         const ack = cipher.createDRSAPAcknowledgment($url.id);
-        await typeTo(app.selector.textField, ack);
-        clickTo(app.selector.submitButton);
-        app.state.update((state) => ({ ...state, loading: false, value: "", encrypted: "", submit: true }));
+        await typeTo(selector.textField, ack);
+        clickTo(selector.submitButton);
+        state.update((state) => ({ ...state, loading: false, value: "", encrypted: "", submit: true }));
       }
     });
   });
 
   const handleSendHandshake = async () => {
     if ($state.loading) return;
-    const textField = app.selector.textField;
-    const submitButton = app.selector.submitButton;
+    const textField = selector.textField;
+    const submitButton = selector.submitButton;
     const packet = await cipher.createDRSAPHandshake($url.id);
     await typeTo(textField, packet);
     clickTo(submitButton);
-    app.state.update((state) => ({ ...state, loading: true, value: "", encrypted: "", submit: true }));
+    state.update((state) => ({ ...state, loading: true, value: "", encrypted: "", submit: true }));
   };
 </script>
 
