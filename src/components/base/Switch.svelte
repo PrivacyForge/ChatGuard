@@ -1,5 +1,6 @@
 <script lang="ts">
-  export let label: string;
+  import { createEventDispatcher } from "svelte";
+
   export let design = "inner label";
   export let options: string[] = [];
   export let fontSize = 16;
@@ -8,12 +9,14 @@
   let checked = true;
 
   const uniqueID = Math.floor(Math.random() * 100);
+  const dispatch = createEventDispatcher();
 
   function handleClick(event: Event) {
     const target = event.target as HTMLElement;
     const state = target.getAttribute("aria-checked");
     checked = state === "true" ? false : true;
     value = checked ? "on" : "off";
+    dispatch("change", value);
   }
 
   $: value === "on" ? (checked = true) : (checked = false);
@@ -21,15 +24,18 @@
 
 {#if design == "inner"}
   <div class="s s--inner">
-    <span id={`switch-${uniqueID}`}>{label}</span>
-    <button role="switch" aria-checked={checked} aria-labelledby={`switch-${uniqueID}`} on:click={handleClick}>
+    <button
+      style="cursor: pointer;"
+      role="switch"
+      aria-checked={checked}
+      aria-labelledby={`switch-${uniqueID}`}
+      on:click={handleClick}>
       <span>on</span>
       <span>off</span>
     </button>
   </div>
 {:else if design == "slider"}
   <div class="s s--slider" style="font-size:{fontSize}px">
-    <span id={`switch-${uniqueID}`}>{label}</span>
     <button role="switch" aria-checked={checked} aria-labelledby={`switch-${uniqueID}`} on:click={handleClick}>
     </button>
   </div>
@@ -41,7 +47,6 @@
       aria-labelledby={`label-${uniqueID}`}
       style="font-size:{fontSize}px"
       id={`group-${uniqueID}`}>
-      <div class="legend" id={`label-${uniqueID}`}>{label}</div>
       {#each options as option}
         <input type="radio" id={`${option}-${uniqueID}`} value={option} bind:group={value} />
         <label for={`${option}-${uniqueID}`}>
@@ -57,10 +62,14 @@
     --accent-color: #0f7dff;
     --gray: #ccc;
   }
+  .option {
+    cursor: pointer;
+  }
   /* Inner Design Option */
   .s--inner button {
     padding: 0.5em;
     background-color: #fff;
+    border-radius: 0.2rem;
     border: 1px solid var(--gray);
   }
   [role="switch"][aria-checked="true"] :first-child,
@@ -72,13 +81,14 @@
   .s--inner button span {
     user-select: none;
     pointer-events: none;
-    padding: 0.25em;
+    padding: 0.25em 0.8rem;
   }
 
   /* Slider Design Option */
 
   .s--slider {
     display: flex;
+    justify-content: center;
     align-items: center;
   }
 

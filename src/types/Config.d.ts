@@ -16,6 +16,7 @@ export interface Selector {
 }
 
 export interface Config {
+  CONTACTS_STORAGE_KEY: string;
   ENCRYPT_PREFIX: string;
   HANDSHAKE_PREFIX: string;
   ACKNOWLEDGMENT_PREFIX: string;

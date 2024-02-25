@@ -1,6 +1,23 @@
 import type { Config, Selector } from "src/types/Config";
 
+export const initLog = `
+ ██████ ██   ██  █████  ████████          
+██      ██   ██ ██   ██    ██             
+██      ███████ ███████    ██             
+██      ██   ██ ██   ██    ██             
+ ██████ ██   ██ ██   ██    ██             
+                                          
+                                          
+ ██████  ██    ██  █████  ██████  ██████  
+██       ██    ██ ██   ██ ██   ██ ██   ██ 
+██   ███ ██    ██ ███████ ██████  ██   ██ 
+██    ██ ██    ██ ██   ██ ██   ██ ██   ██ 
+ ██████   ██████  ██   ██ ██   ██ ██████  
+                                                                    
+`;
+
 export const config: Config = {
+  CONTACTS_STORAGE_KEY: "chatguard_contacts",
   ENCRYPT_PREFIX: `::CGM::`,
   HANDSHAKE_PREFIX: `::HSH::`,
   ACKNOWLEDGMENT_PREFIX: `::ACK::`,

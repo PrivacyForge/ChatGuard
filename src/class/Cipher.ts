@@ -1,10 +1,10 @@
 import forge from "node-forge";
-import type { Config } from "src/types/Config";
+import { config } from "src/config";
 import BrowserStorage from "src/utils/BrowserStorage";
 import LocalStorage from "src/utils/LocalStorage";
 
 export class Cipher {
-  constructor(private readonly config: Config) {}
+  constructor() {}
 
   public async createDRSAP(message: string, to: string) {
     let store = await BrowserStorage.get();
@@ -12,18 +12,18 @@ export class Cipher {
     const hexSecret = forge.util.bytesToHex(secretKey);
 
     const ownPublicKey = forge.pki.publicKeyFromPem(store.user!.publicKey);
-    const { publicKey: publicKeyPem } = LocalStorage.getMap("chatguard_contacts", to);
+    const { publicKey: publicKeyPem } = LocalStorage.getMap(config.CONTACTS_STORAGE_KEY, to);
     if (!publicKeyPem) return null;
     const toPublicKey = forge.pki.publicKeyFromPem(publicKeyPem);
     const r1 = forge.util.bytesToHex(ownPublicKey.encrypt(secretKey));
     const r2 = forge.util.bytesToHex(toPublicKey.encrypt(secretKey));
     const encryptedMessage = await this.encryptAES(message, hexSecret);
-    const template = this.config.ENCRYPT_PREFIX + r1 + r2 + encryptedMessage;
+    const template = config.ENCRYPT_PREFIX + r1 + r2 + encryptedMessage;
     return template;
   }
   public async resolveDRSAP(packet: string) {
     let store = await BrowserStorage.get();
-    const packetArray = packet.split(this.config.ENCRYPT_PREFIX)[1].split("");
+    const packetArray = packet.split(config.ENCRYPT_PREFIX)[1].split("");
     const r1 = packetArray.splice(0, 128).join("");
     const r2 = packetArray.splice(0, 128).join("");
 
@@ -45,21 +45,21 @@ export class Cipher {
   public async createDRSAPHandshake(to: string) {
     const store = await BrowserStorage.get();
     const cleanedPublicKey = store.user!.publicKey.replace(/[\r\n]/g, "");
-    const packet = `${this.config.HANDSHAKE_PREFIX}__${new Date().getTime()}__${to}__${cleanedPublicKey}`;
+    const packet = `${config.HANDSHAKE_PREFIX}__${new Date().getTime()}__${to}__${cleanedPublicKey}`;
     return packet;
   }
   public async resolveDRSAPHandshake(packet: string, from: string) {
     const [_prefix, timestamp, toId, publicKey] = packet.split("__");
     if (toId === from) return;
-    const oldContact = LocalStorage.getMap("chatguard_contacts", from);
+    const oldContact = LocalStorage.getMap(config.CONTACTS_STORAGE_KEY, from);
     if (+timestamp < +(oldContact.timestamp || 0)) return;
-    const allHandshakes = LocalStorage.get("chatguard_contacts");
+    const allHandshakes = LocalStorage.get(config.CONTACTS_STORAGE_KEY);
     let isFound = false;
     for (let handshake in allHandshakes) {
       if (publicKey === allHandshakes[handshake].publicKey) isFound = true;
     }
     if (isFound) {
-      LocalStorage.setMap("chatguard_contacts", from, {
+      LocalStorage.setMap(config.CONTACTS_STORAGE_KEY, from, {
         ...oldContact,
         acknowledged: true,
       });
@@ -67,7 +67,7 @@ export class Cipher {
       return;
     }
 
-    LocalStorage.setMap("chatguard_contacts", from, {
+    LocalStorage.setMap(config.CONTACTS_STORAGE_KEY, from, {
       publicKey,
       timestamp,
       enable: true,
@@ -75,16 +75,16 @@ export class Cipher {
     return this.createDRSAPAcknowledgment(from);
   }
   public createDRSAPAcknowledgment(toId: string) {
-    return `${this.config.ACKNOWLEDGMENT_PREFIX}__${toId}`;
+    return `${config.ACKNOWLEDGMENT_PREFIX}__${toId}`;
   }
   public resolveDRSAPAcknowledgment(packet: string, from: string) {
     const [_, id] = packet.split("__");
     if (from === id) return;
 
-    const user = LocalStorage.getMap("chatguard_contacts", from);
+    const user = LocalStorage.getMap(config.CONTACTS_STORAGE_KEY, from);
     if (!user.publicKey) return;
     user.acknowledged = true;
-    LocalStorage.setMap("chatguard_contacts", from, user);
+    LocalStorage.setMap(config.CONTACTS_STORAGE_KEY, from, user);
   }
   public static validatePublicPem(pem: string) {
     try {

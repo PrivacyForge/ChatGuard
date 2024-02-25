@@ -7,6 +7,7 @@
   import { chatStore as state } from "src/store/chat.store";
   import type { Field } from "src/types/Config";
   import type Cipher from "src/class/Cipher";
+  import { config } from "src/config";
 
   export let cipher: Cipher;
   export let selector: Field;
@@ -15,14 +16,14 @@
   let status: "safe" | "unsafe" = "unsafe";
 
   const checkStatus = () => {
-    const contact = LocalStorage.getMap("chatguard_contacts", $url.id);
+    const contact = LocalStorage.getMap(config.CONTACTS_STORAGE_KEY, $url.id);
     contact.publicKey ? (status = "safe") : (status = "unsafe");
   };
   url.subscribe(checkStatus);
 
   onMount(() => {
-    LocalStorage.on("chatguard_contacts", async () => {
-      const user = LocalStorage.getMap("chatguard_contacts", $url.id);
+    LocalStorage.on(config.CONTACTS_STORAGE_KEY, async () => {
+      const user = LocalStorage.getMap(config.CONTACTS_STORAGE_KEY, $url.id);
       if ($state.loading && user.publicKey) {
         status = "safe";
         const ack = cipher.createDRSAPAcknowledgment($url.id);

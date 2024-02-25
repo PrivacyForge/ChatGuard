@@ -1,5 +1,5 @@
 import Status from "src/components/base/Status.svelte";
-import { config } from "src/config";
+import { config, initLog } from "src/config";
 import Cipher from "src/class/Cipher";
 import LoadingScreen from "src/components/base/LoadingScreen.svelte";
 import { get } from "svelte/store";
@@ -32,7 +32,7 @@ async function register() {
 
   store = await BrowserStorage.get();
 
-  LocalStorage.setMap("chatguard_contacts", "_me_", {
+  LocalStorage.setMap(config.CONTACTS_STORAGE_KEY, "_me_", {
     publicKey: store.user?.publicKey,
     timestamp: new Date().getTime(),
     enable: true,
@@ -53,14 +53,14 @@ async function register() {
 
   const idProvider = getIdProvider();
 
-  const cipher = new Cipher(config);
+  const cipher = new Cipher();
   const appRoot = document.querySelector(selector.app) as HTMLElement;
   const { on, onClick } = useListener(appRoot);
   const { onObserve } = useObserver(appRoot);
   const { render } = useRender(appRoot);
   const { url, urlStore } = useUrl(idProvider);
-
   new LoadingScreen({ target: document.body });
+  console.log(initLog);
 
   render(selector.header, (target, id) => {
     new Status({ target, props: { cipher, selector, id } });
@@ -98,7 +98,7 @@ async function register() {
   });
 
   url.subscribe((newUrl) => {
-    if (LocalStorage.getMap("chatguard_contacts", newUrl.id).publicKey) {
+    if (LocalStorage.getMap(config.CONTACTS_STORAGE_KEY, newUrl.id).publicKey) {
       document.querySelector(selector.textField)?.dispatchEvent(new Event("input"));
     }
   });
@@ -148,7 +148,6 @@ async function register() {
       }
       // HandShakes
       if (textNodeContent.startsWith(config.HANDSHAKE_PREFIX)) {
-        console.log(urlStore);
         changeTextNode(target, "⏳ Loading ...");
         await cipher.resolveDRSAPHandshake(textNodeContent, urlStore.id);
         changeTextNode(target, "🤝 encryption Handshake");

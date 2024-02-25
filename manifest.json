@@ -18,7 +18,8 @@
     }
   ],
   "action": {
+    "default_title": "ChatGuard",
     "default_popup": "src/popup/popup.html"
   },
-  "permissions": ["storage"]
+  "permissions": ["storage", "tabs"]
 }
