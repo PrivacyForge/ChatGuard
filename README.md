@@ -1,32 +1,13 @@
+
+> " Freedom of speech is not just a right; it's a cornerstone of democracy. In its purest form, it allows ideas to clash, perspectives to evolve, and societies to progress. Yet, with this great power comes the responsibility to navigate the delicate balance between expression and respect. How do we safeguard this essential freedom while fostering a culture of inclusivity and understanding? "
+
+
 # Chat Guard
 
-" Freedom of speech is not just a right; it's a cornerstone of democracy. In its purest form, it allows ideas to clash, perspectives to evolve, and societies to progress. Yet, with this great power comes the responsibility to navigate the delicate balance between expression and respect. How do we safeguard this essential freedom while fostering a culture of inclusivity and understanding? "
-
-## Overview
 
 Chat Guard is browser Extension allow to have end to end encrypted conversation in almost any platform you want
 
 Welcome to Chat Guard for. This guide will walk you through the steps to download and install the Chat Guard on various browsers and devices.
-
-## Table of Contents
-
-1. [Chrome](#chrome)
-   - [From the Official Chrome Web Store](#from-the-official-chrome-web-store)
-   - [Sideload Extension (Using the Extension File)](#sideload-extension-using-the-extension-file)
-2. [Firefox](#firefox)
-
-   - [From the Official Mozilla Add-ons](#from-the-official-mozilla-add-ons)
-   - [Sideload Extension (Using the Extension File)](#sideload-extension-using-the-extension-file)
-
-3. [Safari](#safari)
-
-   - [From the Official Safari Extension Gallery](#from-the-official-safari-extension-gallery)
-   - [Sideload Extension (Using the Extension File)](#sideload-extension-using-the-extension-file)
-
-4. [Mobile Browsers](#mobile-browsers)
-   - [Chrome Mobile](#chrome-mobile)
-   - [Kiwi Browser](#kiwi-browser)
-   - [Safari (iOS)](#safari-ios)
 
 ## Chrome
 
