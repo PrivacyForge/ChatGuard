@@ -1,7 +1,7 @@
-import Status from "src/components/base/Status.svelte";
+import Actions from "src/components/modules/content/Actions.svelte";
 import { config, initLog } from "src/config";
 import Cipher from "src/class/Cipher";
-import LoadingScreen from "src/components/base/LoadingScreen.svelte";
+import LoadingScreen from "src/components/modules/content/LoadingScreen.svelte";
 import { get } from "svelte/store";
 import LocalStorage from "src/utils/LocalStorage";
 import useObserver from "src/hooks/useObserver";
@@ -63,7 +63,7 @@ async function register() {
   console.log(initLog);
 
   render(selector.header, (target, id) => {
-    new Status({ target, props: { cipher, selector, id } });
+    new Actions({ target, props: { cipher, selector, id } });
   });
 
   onClick(selector.submitButton, () => {

@@ -2,7 +2,7 @@
   import { url } from "svelte-pathfinder";
   import AdvancedSetting from "./AdvancedSetting.svelte";
   import Settings from "./Settings.svelte";
-  import NavigationTab from "src/components/base/NavigationTab.svelte";
+  import NavigationTab from "src/components/modules/popup/NavigationTab.svelte";
 
   interface Router {
     name: string;
@@ -33,6 +33,7 @@
     color: #111217;
   }
   .container {
+    max-width: 24rem;
     width: 24rem;
     height: 24rem;
   }

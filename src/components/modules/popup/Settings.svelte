@@ -1,7 +1,7 @@
 <script lang="ts">
   import logo from "src/assets/icons/icon128.png";
-  import HeaderWave from "src/components/svg/HeaderWave.svelte";
-  import Switch from "../../base/Switch.svelte";
+  import HeaderWave from "src/components/modules/popup/HeaderWave.svelte";
+  import Switch from "./Switch.svelte";
   import BrowserStorage from "src/utils/BrowserStorage";
   import { refreshPage } from "src/utils/refreshPage";
   import { onMount } from "svelte";
@@ -36,7 +36,7 @@
     </div>
   </div>
   <button class="button" on:click={() => goto("/advanced-setting")}>Advanced Settings</button>
-  <span class="version">v0.5.6</span>
+  <span class="version">v0.6.0</span>
 </div>
 
 <style lang="scss" module>
