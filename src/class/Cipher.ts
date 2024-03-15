@@ -2,11 +2,12 @@ import forge from "node-forge";
 import { config } from "src/config";
 import BrowserStorage from "src/utils/BrowserStorage";
 import LocalStorage from "src/utils/LocalStorage";
+import logger from "src/utils/logger";
 
 export class Cipher {
-  constructor() {}
-
   public async createDRSAP(message: string, to: string) {
+    if (message.trim() === "") return "";
+
     let store = await BrowserStorage.get();
     const secretKey = forge.random.getBytesSync(16);
     const hexSecret = forge.util.bytesToHex(secretKey);
@@ -52,7 +53,7 @@ export class Cipher {
     const [_prefix, timestamp, toId, publicKey] = packet.split("__");
     if (toId === from) return;
     const oldContact = LocalStorage.getMap(config.CONTACTS_STORAGE_KEY, from);
-    if (+timestamp < +(oldContact.timestamp || 0)) return;
+    if (+timestamp < +(oldContact.timestamp || 0)) return logger.debug(`Handshake ${toId} is old`);
     const allHandshakes = LocalStorage.get(config.CONTACTS_STORAGE_KEY);
     let isFound = false;
     for (let handshake in allHandshakes) {
@@ -63,7 +64,7 @@ export class Cipher {
         ...oldContact,
         acknowledged: true,
       });
-
+      logger.info(`Already have Handshake ${toId}`);
       return;
     }
 
@@ -72,6 +73,7 @@ export class Cipher {
       timestamp,
       enable: true,
     });
+    logger.info(`New Handshake ${toId} registered`);
     return this.createDRSAPAcknowledgment(from);
   }
   public createDRSAPAcknowledgment(toId: string) {
@@ -84,6 +86,7 @@ export class Cipher {
     const user = LocalStorage.getMap(config.CONTACTS_STORAGE_KEY, from);
     if (!user.publicKey) return;
     user.acknowledged = true;
+    logger.info(`Acknowledgment for ${id} Handshake`);
     LocalStorage.setMap(config.CONTACTS_STORAGE_KEY, from, user);
   }
   public static validatePublicPem(pem: string) {
@@ -111,7 +114,7 @@ export class Cipher {
       encoder.encode(secretKey),
       { name: "AES-CBC" },
       false,
-      ["encrypt"]
+      ["encrypt"],
     );
 
     const iv = window.crypto.getRandomValues(new Uint8Array(16));
@@ -138,13 +141,13 @@ export class Cipher {
       new TextEncoder().encode(secretKey),
       { name: "AES-CBC" },
       false,
-      ["decrypt"]
+      ["decrypt"],
     );
 
     const decryptedData = await window.crypto.subtle.decrypt(
       { name: "AES-CBC", iv: iv },
       cryptoKey,
-      encryptedData.slice(16)
+      encryptedData.slice(16),
     );
 
     return decoder.decode(decryptedData);
