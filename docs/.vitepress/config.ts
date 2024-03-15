@@ -13,7 +13,7 @@ export default defineConfig({
     nav: [
       { text: "Home", link: "/" },
       { text: "Download & Install", link: "/getting-started/installation" },
-      { text: "Documentation", link: "/api/chat-guard" },
+      { text: "Documentation", link: "/api/cipher" },
     ],
 
     sidebar: [
@@ -40,12 +40,7 @@ export default defineConfig({
       {
         text: "API",
         collapsed: true,
-        items: [
-          { text: "ChatGuard", link: "/api/chat-guard" },
-          { text: "Cipher", link: "/api/cipher" },
-          { text: "DomManipulator", link: "/api/dom-manipulator" },
-          { text: "Storage", link: "/api/storage" },
-        ],
+        items: [{ text: "Cipher", link: "/api/cipher" }],
       },
       {
         text: "Contribution",
