@@ -12,7 +12,7 @@
   },
   "content_scripts": [
     {
-      "matches": ["https://web.bale.ai/*", "https://web.telegram.org/k/*", "https://web.splus.ir/*"],
+      "matches": ["https://web.bale.ai/*", "https://web.telegram.org/*", "https://web.splus.ir/*"],
       "js": ["src/content/index.ts"]
     }
   ],

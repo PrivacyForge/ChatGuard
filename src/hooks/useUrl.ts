@@ -1,6 +1,5 @@
 import { url } from "src/store/url.store";
 import { get } from "svelte/store";
-import { setInterval } from "worker-timers";
 
 /**
  *  a hook that allow you to update url, and get the updated url as object or svelte store

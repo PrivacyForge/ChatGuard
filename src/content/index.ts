@@ -11,7 +11,7 @@ import useListener from "src/hooks/useListener";
 import { changeTextNode } from "src/utils/changeTextNode";
 import useUrl from "src/hooks/useUrl";
 import BrowserStorage from "src/utils/BrowserStorage";
-import { getDeviceType, getIdProvider, getSelector } from "src/utils";
+import { getConfig, getDeviceType } from "src/utils";
 import { chatStore } from "src/store/chat.store";
 import logger from "src/utils/logger";
 
@@ -47,12 +47,11 @@ async function register() {
   if (!store.enable) return null;
 
   await register();
-
   const type = getDeviceType();
-  const selector = getSelector(type);
   const isTouch = type === "mobile" ? true : false;
-  const idProvider = getIdProvider();
-  logger.info({ type, isTouch, idProvider });
+  const { idProvider, selector, name } = getConfig();
+  if (!selector || !idProvider) return logger.error(`config notfound for ${location.hostname}`);
+  logger.info({ type, isTouch, idProvider, name });
 
   const cipher = new Cipher();
   const appRoot = document.querySelector(selector.app) as HTMLElement;
@@ -97,8 +96,8 @@ async function register() {
     const e = event as KeyboardEvent;
 
     if (e.key === "Enter" && state.value && !e.shiftKey && e.detail !== 11 && state.encrypted && !isTouch) {
-      typeTo(selector.textField, state.encrypted);
       chatStore.update((prev) => ({ ...prev, value: "", encrypted: "", submit: true }));
+      typeTo(selector.textField, state.encrypted);
     }
   });
 
@@ -114,7 +113,8 @@ async function register() {
 
   const onMessageReceive = async () => {
     const messages = document.querySelectorAll(selector.message);
-    messages.forEach(async (message, index) => {
+    messages.forEach(async (msg, index) => {
+      const message = msg as HTMLElement;
       // Messages
       const targets = Array.from(messages[index].querySelectorAll(selector.innerMessageText));
       const target = targets.find((el) => {
@@ -134,11 +134,11 @@ async function register() {
 
       // Messages
       if (textNodeContent.startsWith(config.ENCRYPT_PREFIX)) {
-        changeTextNode(target, "⏳ Loading ...");
+        changeTextNode(target, "...");
         try {
           const packet = await cipher.resolveDRSAP(textNodeContent);
           if (!packet) changeTextNode(target, "⛔ Error in decryption");
-          else changeTextNode(target, packet);
+          else changeTextNode(target, "🔒" + packet);
           (target as any).dir = "auto";
         } catch (error) {
           changeTextNode(target, "⛔ Error in decryption");
@@ -146,17 +146,15 @@ async function register() {
         return;
       }
       // Acknowledgment
-      if (textNodeContent.startsWith(config.ACKNOWLEDGMENT_PREFIX) && !message.getAttribute("acknowledgment-read")) {
+      if (textNodeContent.startsWith(config.ACKNOWLEDGMENT_PREFIX)) {
+        message.style.display = "none";
         cipher.resolveDRSAPAcknowledgment(textNodeContent, urlStore.id);
-        changeTextNode(target, "✉️ acknowledgment");
-        message.setAttribute("acknowledgment-read", "true");
         return;
       }
       // HandShakes
       if (textNodeContent.startsWith(config.HANDSHAKE_PREFIX)) {
-        changeTextNode(target, "⏳ Loading ...");
-        await cipher.resolveDRSAPHandshake(textNodeContent, urlStore.id);
-        changeTextNode(target, "🤝 encryption Handshake");
+        message.style.display = "none";
+        cipher.resolveDRSAPHandshake(textNodeContent, urlStore.id);
         return;
       }
     });
