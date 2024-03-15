@@ -14,7 +14,7 @@ hero:
       link: /getting-started/installation
     - theme: alt
       text: Documentation
-      link: /api/chat-guard
+      link: /api/cipher
 
 features:
   - title: Supporting major messengers
