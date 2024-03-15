@@ -1,4 +1,4 @@
-interface Field {
+export interface Field {
   app: string;
   textField: string;
   textFieldWrapper: string;

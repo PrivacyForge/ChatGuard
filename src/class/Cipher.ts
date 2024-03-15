@@ -6,7 +6,7 @@ import logger from "src/utils/logger";
 
 export class Cipher {
   public async createDRSAP(message: string, to: string) {
-    if (message.trim() === "") return "";
+    if (message.trim() === "") return null;
 
     let store = await BrowserStorage.get();
     const secretKey = forge.random.getBytesSync(16);
@@ -60,11 +60,12 @@ export class Cipher {
       if (publicKey === allHandshakes[handshake].publicKey) isFound = true;
     }
     if (isFound) {
+      logger.info(`Already have Handshake ${toId}`);
+      if (!oldContact.publicKey) return;
       LocalStorage.setMap(config.CONTACTS_STORAGE_KEY, from, {
         ...oldContact,
         acknowledged: true,
       });
-      logger.info(`Already have Handshake ${toId}`);
       return;
     }
 
@@ -114,7 +115,7 @@ export class Cipher {
       encoder.encode(secretKey),
       { name: "AES-CBC" },
       false,
-      ["encrypt"],
+      ["encrypt"]
     );
 
     const iv = window.crypto.getRandomValues(new Uint8Array(16));
@@ -141,13 +142,13 @@ export class Cipher {
       new TextEncoder().encode(secretKey),
       { name: "AES-CBC" },
       false,
-      ["decrypt"],
+      ["decrypt"]
     );
 
     const decryptedData = await window.crypto.subtle.decrypt(
       { name: "AES-CBC", iv: iv },
       cryptoKey,
-      encryptedData.slice(16),
+      encryptedData.slice(16)
     );
 
     return decoder.decode(decryptedData);

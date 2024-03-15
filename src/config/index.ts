@@ -46,7 +46,7 @@ export const selectors: Record<string, Selector> = {
     },
     idProvider: "uid",
   },
-  "web.telegram.org": {
+  "web.telegram.org/k/": {
     selector: {
       desktop: {
         app: "#page-chats",
@@ -69,6 +69,21 @@ export const selectors: Record<string, Selector> = {
         header: "#MiddleColumn > div.messages-layout > div.MiddleHeader",
         message: "[data-message-id]",
         innerMessageText: "div",
+        submitButton:
+          "#MiddleColumn > div.messages-layout > div.Transition.slide > div > div.middle-column-footer > div > button",
+      },
+    },
+    idProvider: "#",
+  },
+  "web.telegram.org/a/": {
+    selector: {
+      desktop: {
+        app: "#root",
+        textField: "#editable-message-text",
+        textFieldWrapper: "#message-input-text",
+        header: "#MiddleColumn > div.messages-layout > div.MiddleHeader",
+        message: "[data-message-id]",
+        innerMessageText: ".text-content",
         submitButton:
           "#MiddleColumn > div.messages-layout > div.Transition.slide > div > div.middle-column-footer > div > button",
       },
