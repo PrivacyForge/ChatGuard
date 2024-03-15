@@ -13,6 +13,7 @@ import useUrl from "src/hooks/useUrl";
 import BrowserStorage from "src/utils/BrowserStorage";
 import { getDeviceType, getIdProvider, getSelector } from "src/utils";
 import { chatStore } from "src/store/chat.store";
+import logger from "src/utils/logger";
 
 async function register() {
   let store = await BrowserStorage.get();
@@ -28,6 +29,7 @@ async function register() {
         privateKey,
       },
     });
+    logger.info("initial login, private,public key created");
   }
 
   store = await BrowserStorage.get();
@@ -39,7 +41,7 @@ async function register() {
   });
 }
 
-(async function init() {
+(async function main() {
   let store = await BrowserStorage.get();
 
   if (!store.enable) return null;
@@ -48,10 +50,9 @@ async function register() {
 
   const type = getDeviceType();
   const selector = getSelector(type);
-
   const isTouch = type === "mobile" ? true : false;
-
   const idProvider = getIdProvider();
+  logger.info({ type, isTouch, idProvider });
 
   const cipher = new Cipher();
   const appRoot = document.querySelector(selector.app) as HTMLElement;
@@ -60,7 +61,7 @@ async function register() {
   const { render } = useRender(appRoot);
   const { url, urlStore } = useUrl(idProvider);
   new LoadingScreen({ target: document.body });
-  console.log(initLog);
+  if (import.meta.env.MODE !== "development") console.log(initLog);
 
   render(selector.header, (target, id) => {
     new Actions({ target, props: { cipher, selector, id } });
@@ -71,6 +72,7 @@ async function register() {
     if (!state.encrypted) return;
     typeTo(selector.textField, state.encrypted);
     chatStore.update((prev) => ({ ...prev, value: "", encrypted: "", submit: true }));
+    logger.info("Send button clicked");
   });
 
   on(selector.textFieldWrapper, "input", async (event: Event) => {
@@ -86,6 +88,9 @@ async function register() {
     }
     const encrypted = await cipher.createDRSAP(state.value, urlStore.id);
     if (encrypted) chatStore.update((prev) => ({ ...prev, encrypted }));
+
+    logger.debug(state.value);
+    logger.debug({ encrypted });
   });
   on(selector.textField, "keydown", (event) => {
     const state = get(chatStore);
@@ -127,6 +132,7 @@ async function register() {
 
       const textNodeContent = Array.from(target.childNodes).find((node) => node.nodeType === 3)?.textContent || "";
 
+      // Messages
       if (textNodeContent.startsWith(config.ENCRYPT_PREFIX)) {
         changeTextNode(target, "⏳ Loading ...");
         try {
