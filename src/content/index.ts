@@ -146,14 +146,14 @@ async function register() {
         return;
       }
       // Acknowledgment
-      if (textNodeContent.startsWith(config.ACKNOWLEDGMENT_PREFIX) && message.getAttribute("data-chatguard-read")) {
+      if (textNodeContent.startsWith(config.ACKNOWLEDGMENT_PREFIX) && !message.getAttribute("data-chatguard-read")) {
         message.style.display = "none";
         message.setAttribute("data-chatguard-read", "true");
         cipher.resolveDRSAPAcknowledgment(textNodeContent, urlStore.id);
         return;
       }
       // HandShakes
-      if (textNodeContent.startsWith(config.HANDSHAKE_PREFIX) && message.getAttribute("data-chatguard-read")) {
+      if (textNodeContent.startsWith(config.HANDSHAKE_PREFIX) && !message.getAttribute("data-chatguard-read")) {
         message.style.display = "none";
         message.setAttribute("data-chatguard-read", "true");
         cipher.resolveDRSAPHandshake(textNodeContent, urlStore.id);
