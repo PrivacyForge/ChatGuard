@@ -32,10 +32,12 @@
     <div>
       <h1 class="title">Chat Guard</h1>
       <p class="slogan">Chat safer, Enjoy more</p>
-      <Switch design="inner" bind:value={enable} on:change={handleChangeCheckbox} />
+      <Switch bind:value={enable} on:change={handleChangeCheckbox} />
     </div>
   </div>
-  <button class="button" on:click={() => goto("/advanced-setting")}>Advanced Settings</button>
+  <md-outlined-button role="button" class="button" on:pointerup={() => goto("/advanced-setting")}>
+    Advanced Settings
+  </md-outlined-button>
   <span class="version">v0.6.0</span>
 </div>
 
@@ -50,9 +52,12 @@
       flex-direction: column;
       justify-content: center;
       text-align: center;
-      align-items: center;
+      align-items: stretch;
       gap: 1rem;
       z-index: 100;
+      & > img {
+        align-self: center;
+      }
       .title {
         font-family: Kranky;
         font-size: 1.7rem;
@@ -64,13 +69,7 @@
       }
     }
     .button {
-      padding: 0.5rem 0;
-      width: 100%;
-      background-color: transparent;
-      border: solid 0.1rem #0f7dff;
-      color: #0f7dff;
-      cursor: pointer;
-      border-radius: 0.3rem;
+      --md-outlined-button-outline-color: var(--md-sys-color-primary);
       margin-top: auto;
     }
     .version {

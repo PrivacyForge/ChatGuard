@@ -9,8 +9,8 @@
     component: any;
   }
   const router: Record<string, Router> = {
-    "/": { name: "settings", component: Settings },
-    "/advanced-setting": { name: "advanced settings", component: AdvancedSetting },
+    "/": { name: "Settings", component: Settings },
+    "/advanced-setting": { name: "Advanced Settings", component: AdvancedSetting },
   };
 </script>
 
