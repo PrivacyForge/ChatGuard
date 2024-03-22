@@ -14,15 +14,16 @@
   }
 
   $: value === "on" ? (checked = true) : (checked = false);
+  $: console.log(checked);
 </script>
 
 <div class="switch-container">
   <span>OFF</span>
-  <md-switch role="switch" aria-checked={checked} on:change={handleChange} />
+  <md-switch role="switch" aria-checked={checked} selected={checked} on:change={handleChange} />
   <span>ON</span>
 </div>
 
-<style scoped>
+<style module>
   .switch-container {
     display: flex;
     justify-content: center;

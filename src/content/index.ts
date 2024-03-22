@@ -25,7 +25,7 @@ import { register } from "./scripts/register";
 
   const cipher = new Cipher();
   const appRoot = document.querySelector(selector.app) as HTMLElement;
-  const { onObserve } = useObserver(appRoot);
+  const { onObserve: onRootObserver } = useObserver(appRoot);
   const { render } = useRender(appRoot);
   const { url, urlStore } = useUrl(idProvider);
   if (import.meta.env.MODE !== "development") console.log(initLog);
@@ -42,7 +42,8 @@ import { register } from "./scripts/register";
       document.querySelector(selector.textField)?.dispatchEvent(new Event("input"));
     }
   });
-  onObserve(() => {
+
+  onRootObserver(() => {
     // On message receive will run and parse it
     const messages = Array.from(document.querySelectorAll(selector.message));
     messages.forEach(async (message, index) => parseMessage(urlStore, message as HTMLElement, messages, index));

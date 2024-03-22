@@ -6,6 +6,7 @@
   import { refreshPage } from "src/utils/refreshPage";
   import { onMount } from "svelte";
   import { goto } from "svelte-pathfinder";
+  import "@material/web/button/outlined-button";
 
   let enable: string = "on";
   let mounted: boolean = false;
@@ -28,7 +29,7 @@
 <HeaderWave />
 <div class="wrapper">
   <div class="header">
-    <img width="80px" src={logo} alt="logo" />
+    <img width="80px" height="80px" src={logo} alt="logo" />
     <div>
       <h1 class="title">Chat Guard</h1>
       <p class="slogan">Chat safer, Enjoy more</p>

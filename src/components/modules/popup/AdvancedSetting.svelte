@@ -38,7 +38,7 @@
       const configText = fr.result || "";
       try {
         const config = JSON.parse(configText);
-        if (!config.privateKey || !config.publicKey) return (error = "invalid config file");
+        if (!config.privateKey || !config.publicKey || !config.guardId) return (error = "invalid config file");
         const isPublicValid = Cipher.validatePublicPem(config.publicKey);
         const isPrivateValid = Cipher.validatePrivatePem(config.privateKey);
         if (!isPrivateValid || !isPublicValid) return (error = "invalid config file");
@@ -57,13 +57,15 @@
   <div class="configs">
     <h2>Configs</h2>
     <div>
-      <button on:click={exportChatGuardConfig} class="button">export config</button>
+      <md-filled-button role="button" on:pointerup={exportChatGuardConfig} class="button"
+        >export config</md-filled-button>
       <input on:change={importChatGuardConfig} id="conf" type="file" hidden />
       <label class="label" for="conf">
-        <button class="button">import config</button>
+        <md-filled-button role="button" class="button">import config</md-filled-button>
       </label>
     </div>
-    <button on:click={resetChatGuardConfig} class="reset-button">reset config</button>
+    <md-outlined-button role="button" on:pointerup={resetChatGuardConfig} class="reset-button"
+      >reset config</md-outlined-button>
     {#if error}
       <p class="error">
         {error}
@@ -88,25 +90,14 @@
         gap: 1rem;
       }
       .reset-button {
-        padding: 0.5rem 1.2rem;
-        border-radius: 0.4rem;
-        border: none;
-        background-color: red;
-        color: #fff;
-        cursor: pointer;
+        width: 100%;
       }
       .button {
         width: 50%;
-        padding: 0.5rem 1.2rem;
-        border-radius: 0.4rem;
-        border: none;
-        background-color: #0f7dff;
-        color: #fff;
-        cursor: pointer;
       }
       .label {
-        width: 50%;
         position: relative;
+        width: 50%;
         .button {
           width: 100% !important;
         }

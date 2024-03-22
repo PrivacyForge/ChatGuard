@@ -21,7 +21,7 @@
   <svelte:component this={router[$url].component} />
 </div>
 
-<style lang="scss">
+<style lang="scss" module>
   @import url("https://fonts.googleapis.com/css2?family=Kranky&display=swap");
   :global(*) {
     margin: 0;
