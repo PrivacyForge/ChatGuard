@@ -16,11 +16,12 @@ export const initLog = `
                                                                     
 `;
 
+export const version = "V1";
 export const config: Config = {
   CONTACTS_STORAGE_KEY: "chatguard_contacts",
-  ENCRYPT_PREFIX: `::CGM::`,
-  HANDSHAKE_PREFIX: `::HSH::`,
-  ACKNOWLEDGMENT_PREFIX: `::ACK::`,
+  ENCRYPT_PREFIX: `::CGM_${version}::`,
+  HANDSHAKE_PREFIX: `::HSH_${version}::`,
+  ACKNOWLEDGMENT_PREFIX: `::ACK_${version}::`,
 };
 export const selectors: Record<string, Selector> = {
   "web.bale.ai": {
@@ -85,9 +86,23 @@ export const selectors: Record<string, Selector> = {
         message: "[data-message-id]",
         innerMessageText: ".text-content",
         submitButton:
-          "#MiddleColumn > div.messages-layout > div.Transition.slide > div > div.middle-column-footer > div > button",
+          "#MiddleColumn > div.messages-layout > div.Transition > div > div.middle-column-footer > div.Composer.shown.mounted > button",
       },
     },
     idProvider: "#",
+  },
+  "twitter.com": {
+    selector: {
+      desktop: {
+        app: "#react-root",
+        textField: "[contenteditable] span",
+        textFieldWrapper: "[contenteditable]",
+        header: "[role=main] > div > div > div > :nth-child(2) > div > div > div > div > div > div > div",
+        message: "[data-testid=messageEntry] > div > :nth-child(2) [role=presentation]",
+        innerMessageText: "span",
+        submitButton: "[role=complementary] > :nth-child(2) > [role=button]",
+      },
+    },
+    idProvider: "/",
   },
 };

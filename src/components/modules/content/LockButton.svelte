@@ -11,7 +11,7 @@
   on:click|stopPropagation
   on:mouseenter={() => (hover = true)}
   on:mouseleave={() => (hover = false)}
-  class="round-button">
+  class="ctc_round-button">
   {#if loading}
     <Loading />
   {:else}
@@ -20,7 +20,7 @@
 </button>
 
 <style module lang="scss">
-  .round-button {
+  .ctc_round-button {
     display: flex;
     align-items: center;
     justify-content: center;

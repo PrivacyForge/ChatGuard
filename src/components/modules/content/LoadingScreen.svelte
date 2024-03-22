@@ -3,7 +3,7 @@
 
   let isShow = false;
   let timeout: any = null;
-  
+
   $: $state.loading ? handleOn() : handleDelayOff();
 
   const handleOn = () => {
@@ -22,19 +22,19 @@
   };
 </script>
 
-<div class="loading" class:show={isShow}>
-  <div class="wrapper">
+<div class="ctc_loading" class:show={isShow}>
+  <div class="ctc_wrapper">
     {#if !$state.loading && isShow}
       <svg
-        class="success-icon"
+        class="ctc_success-icon"
         version="1.1"
         id="Layer_1"
         xmlns="http://www.w3.org/2000/svg"
         xmlns:xlink="http://www.w3.org/1999/xlink"
         x="0px"
         y="0px"
-        width="122.881px"
-        height="122.88px"
+        width="100px"
+        height="100px"
         viewBox="0 0 122.881 122.88"
         enable-background="new 0 0 122.881 122.88"
         xml:space="preserve"
@@ -50,8 +50,8 @@
         xmlns="http://www.w3.org/2000/svg"
         xmlns:xlink="http://www.w3.org/1999/xlink"
         style="margin: auto; background: none; display: block; shape-rendering: auto;"
-        width="200px"
-        height="200px"
+        width="100px"
+        height="100px"
         viewBox="0 0 100 100"
         preserveAspectRatio="xMidYMid">
         <path d="M10 50A40 40 0 0 0 90 50A40 42 0 0 1 10 50" fill="#ffffff" stroke="none">
@@ -65,13 +65,13 @@
         </path>
       </svg>
       <h4>Waiting for Handshake</h4>
-      <button on:click={handleCancel} class="button">Cancel Waiting</button>
+      <button on:click={handleCancel} class="ctc_button">Cancel Waiting</button>
     {/if}
   </div>
 </div>
 
-<style lang="scss">
-  .loading {
+<style lang="scss" scoped>
+  .ctc_loading {
     position: fixed;
     top: 0;
     left: 0;
@@ -89,41 +89,39 @@
     pointer-events: none;
     opacity: 0;
     transition: all 250ms ease;
+    * {
+      margin: 0;
+      padding: 0;
+      font-size: 16px;
+      font-weight: 800;
+    }
     &.show {
       opacity: 1;
       pointer-events: all;
       visibility: visible;
-      .wrapper {
+      .ctc_wrapper {
         transform: scale(1) !important;
       }
     }
-    .wrapper {
+    .ctc_wrapper {
       text-align: center;
       display: flex;
       justify-content: center;
       align-items: center;
       flex-direction: column;
+      gap: 16px;
       transform: scale(0);
       transition: all 250ms ease;
       p {
         margin: 0;
       }
-      .button {
+      .ctc_button {
         padding: 0.8rem 2rem;
         border-radius: 50rem;
         border: none;
         background-color: #0f7dff;
         color: #fff;
         cursor: pointer;
-      }
-
-      .success-icon {
-        width: 8rem;
-        height: 8rem;
-      }
-      .icon {
-        width: 8rem;
-        height: 8rem;
       }
     }
   }

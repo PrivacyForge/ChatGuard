@@ -1,4 +1,5 @@
 interface User {
+  guardId: string;
   publicKey: string;
   privateKey: string;
 }

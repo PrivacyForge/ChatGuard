@@ -8,6 +8,7 @@
   import type { Field } from "src/types/Config";
   import type Cipher from "src/class/Cipher";
   import { config } from "src/config";
+  import { wait } from "src/utils/wait";
 
   export let cipher: Cipher;
   export let selector: Field;
@@ -26,8 +27,10 @@
       const user = LocalStorage.getMap(config.CONTACTS_STORAGE_KEY, $url.id);
       if ($state.loading && user.publicKey) {
         status = "safe";
-        const ack = cipher.createDRSAPAcknowledgment($url.id);
-        await typeTo(selector.textField, ack);
+        const ack = await cipher.createDRSAPAcknowledgment($url.id);
+        typeTo(selector.textField, "...");
+        await wait(500);
+        typeTo(selector.textField, ack);
         clickTo(selector.submitButton);
         state.update((state) => ({ ...state, loading: false, value: "", encrypted: "", submit: true }));
       }
@@ -38,19 +41,22 @@
     if ($state.loading) return;
     const textField = selector.textField;
     const submitButton = selector.submitButton;
+    console.log($url.id);
     const packet = await cipher.createDRSAPHandshake($url.id);
-    await typeTo(textField, packet);
+    typeTo(textField, "...");
+    await wait(500);
+    typeTo(textField, packet);
     clickTo(submitButton);
     state.update((state) => ({ ...state, loading: true, value: "", encrypted: "", submit: true }));
   };
 </script>
 
-<div {id} class="wrapper">
+<div {id} class="ctc_wrapper">
   <LockButton on:click={handleSendHandshake} icon={status} loading={$state.loading} />
 </div>
 
 <style lang="scss">
-  .wrapper {
+  .ctc_wrapper {
     position: relative;
     padding: 1rem;
     display: flex;

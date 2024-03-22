@@ -46,13 +46,22 @@ export class Cipher {
   public async createDRSAPHandshake(to: string) {
     const store = await BrowserStorage.get();
     const cleanedPublicKey = store.user!.publicKey.replace(/[\r\n]/g, "");
-    const packet = `${config.HANDSHAKE_PREFIX}__${new Date().getTime()}__${to}__${cleanedPublicKey}`;
+    const timestamp = new Date().getTime().toString();
+    const packet =
+      config.HANDSHAKE_PREFIX + store.user?.guardId + cleanedPublicKey + timestamp.length + timestamp + btoa(to);
     return packet;
   }
-  public async resolveDRSAPHandshake(packet: string, from: string) {
-    const [_prefix, timestamp, toId, publicKey] = packet.split("__");
-    if (toId === from) return;
-    const oldContact = LocalStorage.getMap(config.CONTACTS_STORAGE_KEY, from);
+  public async resolveDRSAPHandshake(packet: string, forId: string) {
+    const store = await BrowserStorage.get();
+    const handshakeArray = packet.split(config.HANDSHAKE_PREFIX)[1].split("");
+    const guardId = handshakeArray.splice(0, 36).join("");
+    const publicKey = handshakeArray.splice(0, 178).join("");
+    const timestampLength = handshakeArray.splice(0, 2).join("");
+    const timestamp = handshakeArray.splice(0, +timestampLength).join("");
+    const toId = atob(handshakeArray.join(""));
+
+    if (store.user?.guardId === guardId) return;
+    const oldContact = LocalStorage.getMap(config.CONTACTS_STORAGE_KEY, forId);
     if (+timestamp < +(oldContact.timestamp || 0)) return logger.debug(`Handshake ${toId} is old`);
     const allHandshakes = LocalStorage.get(config.CONTACTS_STORAGE_KEY);
     let isFound = false;
@@ -62,33 +71,39 @@ export class Cipher {
     if (isFound) {
       logger.info(`Already have Handshake ${toId}`);
       if (!oldContact.publicKey) return;
-      LocalStorage.setMap(config.CONTACTS_STORAGE_KEY, from, {
+      LocalStorage.setMap(config.CONTACTS_STORAGE_KEY, forId, {
         ...oldContact,
         acknowledged: true,
       });
       return;
     }
 
-    LocalStorage.setMap(config.CONTACTS_STORAGE_KEY, from, {
+    LocalStorage.setMap(config.CONTACTS_STORAGE_KEY, forId, {
       publicKey,
       timestamp,
       enable: true,
     });
     logger.info(`New Handshake ${toId} registered`);
-    return this.createDRSAPAcknowledgment(from);
+    return this.createDRSAPAcknowledgment(forId);
   }
-  public createDRSAPAcknowledgment(toId: string) {
-    return `${config.ACKNOWLEDGMENT_PREFIX}__${toId}`;
+  public async createDRSAPAcknowledgment(toId: string) {
+    const store = await BrowserStorage.get();
+    return config.ACKNOWLEDGMENT_PREFIX + store.user?.guardId + btoa(toId);
   }
-  public resolveDRSAPAcknowledgment(packet: string, from: string) {
-    const [_, id] = packet.split("__");
-    if (from === id) return;
+  public async resolveDRSAPAcknowledgment(packet: string, forId: string) {
+    const store = await BrowserStorage.get();
 
-    const user = LocalStorage.getMap(config.CONTACTS_STORAGE_KEY, from);
+    const acknowledgeArray = packet.split(config.ACKNOWLEDGMENT_PREFIX)[1].split("");
+    const guardId = acknowledgeArray.splice(0, 36).join("");
+    const id = acknowledgeArray.join("");
+
+    if (guardId === store.user?.guardId) return;
+
+    const user = LocalStorage.getMap(config.CONTACTS_STORAGE_KEY, forId);
     if (!user.publicKey) return;
     user.acknowledged = true;
     logger.info(`Acknowledgment for ${id} Handshake`);
-    LocalStorage.setMap(config.CONTACTS_STORAGE_KEY, from, user);
+    LocalStorage.setMap(config.CONTACTS_STORAGE_KEY, forId, user);
   }
   public static validatePublicPem(pem: string) {
     try {

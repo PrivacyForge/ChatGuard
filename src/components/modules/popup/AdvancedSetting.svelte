@@ -2,10 +2,7 @@
   import BrowserStorage from "src/utils/BrowserStorage";
   import Cipher from "src/class/Cipher";
   import { refreshPage } from "src/utils/refreshPage";
-  import { config } from "src/config";
-  import LocalStorage from "src/utils/LocalStorage";
 
-  const selectorKey = ["app", "textField", "textFieldWrapper", "submitButton", "header", "message", "innerMessageText"];
   let error = "";
 
   const resetChatGuardConfig = async () => {
@@ -73,20 +70,6 @@
       </p>
     {/if}
   </div>
-  <form class="selectors">
-    <h2>Selectors</h2>
-    <div class="fieldWrapper">
-      {#each selectorKey as selector}
-        <input type="text" placeholder={selector} />
-      {/each}
-    </div>
-    <div class="fieldWrapper">
-      <h4 class="title">Prefixes</h4>
-      {#each Object.keys(config) as configKey}
-        <input type="text" placeholder={configKey} />
-      {/each}
-    </div>
-  </form>
 </div>
 
 <style lang="scss" module>
@@ -140,19 +123,6 @@
       .error {
         color: red;
         font-size: 0.8rem;
-      }
-    }
-    .selectors {
-      margin-top: 2rem;
-      .fieldWrapper {
-        display: flex;
-        flex-direction: column;
-        gap: 0.8rem;
-        margin-top: 1rem;
-        input {
-          border: solid 0.1rem #00000012;
-          padding: 0.5rem 0.8rem;
-        }
       }
     }
   }

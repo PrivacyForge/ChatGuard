@@ -12,13 +12,18 @@ const useUrl = (idProvider: string) => {
 
   setInterval(() => {
     const urlStore = get(url);
-    if (urlStore.href === window.location.href) return;
-    const href = window.location.href;
+    if (urlStore.href === location.href) return;
+    const href = location.href;
     if (idProvider === "#") {
-      const id = window.location.hash.slice(1, window.location.hash.length);
+      const id = location.hash.slice(1, window.location.hash.length);
       return url.set({ id, href });
     }
-    const id = new URLSearchParams(window.location.search).get(idProvider) || "";
+    if (idProvider === "/") {
+      const id = location.pathname.split("/").at(-1);
+      if (!id) return;
+      return url.set({ id, href });
+    }
+    const id = new URLSearchParams(location.search).get(idProvider) || "";
     url.set({ id, href });
   }, 100);
 

@@ -1,6 +1,6 @@
 import { writable } from "svelte/store";
 
-interface Url {
+export interface Url {
   href: string; // Full path
   id: string; // id from id provider
 }
