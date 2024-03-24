@@ -4,23 +4,25 @@
   import { clickTo, typeTo } from "src/utils/userAction";
   import { url } from "src/store/url.store";
   import { chatStore as state } from "src/store/chat.store";
-  import type { Field } from "src/types/Config";
+  import type { Contact, Field } from "src/types/Config";
   import type Cipher from "src/class/Cipher";
   import { config } from "src/config";
   import { wait } from "src/utils/wait";
-  import { getConfig } from "src/utils";
+  import Lock from "src/components/icon/Lock.svelte";
 
   export let cipher: Cipher;
   export let selector: Field;
   export let id: string;
 
   let status: "safe" | "unsafe" = "unsafe";
+  let currentContact: null | Contact = null;
   let isMenuOpen = false;
   let openFromLeft = false;
 
   const checkStatus = () => {
     const contact = LocalStorage.getMap(config.CONTACTS_STORAGE_KEY, $url.id);
     contact.publicKey ? (status = "safe") : (status = "unsafe");
+    currentContact = contact;
   };
   url.subscribe(checkStatus);
 
@@ -41,7 +43,7 @@
       if ($state.loading && user.publicKey) {
         status = "safe";
         const ack = await cipher.createDRSAPAcknowledgment($url.id);
-        typeTo(selector.textField, "...");
+        typeTo(selector.textField, "Sending ...");
         await wait(500);
         typeTo(selector.textField, ack);
         clickTo(selector.submitButton);
@@ -50,20 +52,26 @@
     });
   });
   onDestroy(() => {
-    document.removeEventListener("click", handleCloseMenu);
+    document.removeEventListener("pointerdown", handleCloseMenu);
   });
 
   const handleSendHandshake = async () => {
     if ($state.loading) return;
     const textField = selector.textField;
     const submitButton = selector.submitButton;
-    console.log($url.id);
     const packet = await cipher.createDRSAPHandshake($url.id);
-    typeTo(textField, "...");
+    typeTo(textField, "Sending ...");
     await wait(500);
     typeTo(textField, packet);
     clickTo(submitButton);
     state.update((state) => ({ ...state, loading: true, value: "", encrypted: "", submit: true }));
+    isMenuOpen = false;
+  };
+  const handleToggleConversation = () => {
+    const contact = LocalStorage.getMap(config.CONTACTS_STORAGE_KEY, $url.id);
+    const newContact = { ...contact, enable: !contact.enable };
+    LocalStorage.setMap(config.CONTACTS_STORAGE_KEY, $url.id, newContact);
+    currentContact = newContact;
   };
 </script>
 
@@ -71,50 +79,47 @@
   <button
     class="ctc_button"
     data-menu-item="true"
-    class:active={status === "safe"}
+    class:active={status === "safe" && currentContact?.enable}
     on:click|stopPropagation|preventDefault={() => (isMenuOpen = !isMenuOpen)}>
   </button>
   <!-- svelte-ignore a11y-click-events-have-key-events -->
   <!-- svelte-ignore a11y-no-static-element-interactions -->
   <div on:click|stopPropagation class="ctc_menu" class:open={isMenuOpen} class:fromLeft={openFromLeft}>
-    <div data-menu-item="true" class="ctc_menu__item">Send HandShake</div>
-    <div data-menu-item="true" class="ctc_menu__item">Enable</div>
+    {#if status === "safe"}
+      <div on:click|stopPropagation={handleToggleConversation} data-menu-item="true" class="ctc_menu__item">
+        <div class="ctc_radio" class:enable={currentContact?.enable}></div>
+        <span>Enable</span>
+      </div>
+    {/if}
+    <div on:click|stopPropagation={handleSendHandshake} data-menu-item="true" class="ctc_menu__item">
+      <Lock />
+      <span>
+        {status === "safe" ? "retry" : "make"} HandShake
+      </span>
+    </div>
   </div>
 </div>
-
-<!-- <LockButton on:click={handleSendHandshake} icon={status} loading={$state.loading} /> -->
 
 <style lang="scss">
   .ctc_wrapper {
     position: relative;
     .ctc_button {
       position: relative;
-      width: 32px;
-      height: 32px;
-      background-color: #fff;
+      margin: 0 10px;
+      width: 28px;
+      height: 28px;
       border-radius: 100%;
-      border: solid 5px #0f7dff;
+      border: solid 5px rgb(255, 48, 48);
+      background-color: transparent;
       opacity: 0.8;
       cursor: pointer;
       transition: all 200ms;
+      outline: none;
       &.active {
-        &::after {
-          background-color: #0f7dff;
-        }
+        border: solid 5px #0f7dff;
       }
       &:hover {
         opacity: 1;
-      }
-      &::after {
-        content: "";
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        width: 16px;
-        height: 16px;
-        background-color: rgb(255, 48, 48);
-        border-radius: 100%;
       }
     }
     .ctc_menu {
@@ -122,8 +127,9 @@
       flex-direction: column;
       position: absolute;
       top: calc(100% + 8px);
-      width: 160px;
+      width: 180px;
       background-color: #fff;
+      box-shadow: 0 4px 32px #00000028;
       color: #000;
       transform: scale(0);
       text-align: left;
@@ -142,11 +148,46 @@
         transform: scale(1);
       }
       .ctc_menu__item {
+        position: relative;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
         cursor: pointer;
         font-size: 14px;
-        padding: 8px 16px;
+        padding: 6px 14px;
+        &::after {
+          content: "";
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+        }
         &:hover {
           background-color: rgb(232, 232, 232);
+        }
+      }
+      .ctc_radio {
+        position: relative;
+        width: 16px;
+        height: 16px;
+        margin: 2px;
+        border-radius: 100%;
+        border: 2px solid #0f7dff;
+        &.enable {
+          &::after {
+            background-color: #0f7dff;
+          }
+        }
+        &::after {
+          content: "";
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          width: 10px;
+          height: 10px;
+          border-radius: 100%;
         }
       }
     }

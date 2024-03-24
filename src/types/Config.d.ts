@@ -21,3 +21,10 @@ export interface Config {
   HANDSHAKE_PREFIX: string;
   ACKNOWLEDGMENT_PREFIX: string;
 }
+
+export interface Contact {
+  acknowledged: boolean;
+  enable: boolean;
+  publicKey: string;
+  timeStamp: string;
+}

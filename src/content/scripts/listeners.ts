@@ -4,9 +4,11 @@ import useListener from "src/hooks/useListener";
 import { chatStore } from "src/store/chat.store";
 import type { Url } from "src/store/url.store";
 import { getConfig, getDeviceType } from "src/utils";
+import LocalStorage from "src/utils/LocalStorage";
 import logger from "src/utils/logger";
 import { typeTo } from "src/utils/userAction";
 import { get } from "svelte/store";
+import { url } from "src/store/url.store";
 
 export const registerEventListener = (urlStore: Url) => {
   const cipher = new Cipher();
@@ -43,11 +45,20 @@ export const registerEventListener = (urlStore: Url) => {
     logger.debug({ encrypted });
   });
   on(selector.textField, "keydown", (event) => {
-    console.log(event);
     const state = get(chatStore);
+    const urlState = get(url);
     const e = event as KeyboardEvent;
+    const contact = LocalStorage.getMap(config.CONTACTS_STORAGE_KEY, urlState.id);
 
-    if (e.key === "Enter" && state.value && !e.shiftKey && e.detail !== 11 && state.encrypted && !isTouch) {
+    if (
+      e.key === "Enter" &&
+      contact.enable &&
+      state.value &&
+      !e.shiftKey &&
+      e.detail !== 11 &&
+      state.encrypted &&
+      !isTouch
+    ) {
       logger.info("submit");
       chatStore.update((prev) => ({ ...prev, value: "", encrypted: "", submit: true }));
       typeTo(selector.textField, state.encrypted);

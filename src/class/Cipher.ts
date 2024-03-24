@@ -81,6 +81,7 @@ export class Cipher {
     LocalStorage.setMap(config.CONTACTS_STORAGE_KEY, forId, {
       publicKey,
       timestamp,
+      acknowledged: false,
       enable: true,
     });
     logger.info(`New Handshake ${toId} registered`);
