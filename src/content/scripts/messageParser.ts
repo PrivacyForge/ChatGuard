@@ -26,7 +26,7 @@ export const parseMessage = async (urlStore: Url, message: Element, messages: El
 
   // Messages
   if (textNodeContent.startsWith(config.ENCRYPT_PREFIX)) {
-    changeTextNode(target, "...");
+    changeTextNode(target, "Parsing ...");
     try {
       const packet = await cipher.resolveDRSAP(textNodeContent);
       if (!packet) changeTextNode(target, "⛔ Error in decryption");
@@ -35,12 +35,6 @@ export const parseMessage = async (urlStore: Url, message: Element, messages: El
     } catch (error) {
       changeTextNode(target, "⛔ Error in decryption");
     }
-    return;
-  }
-  // Acknowledgment
-  if (textNodeContent.startsWith(config.ACKNOWLEDGMENT_PREFIX)) {
-    cipher.resolveDRSAPAcknowledgment(textNodeContent, urlStore.id);
-    changeTextNode(target, "✉️ acknowledgment");
     return;
   }
   // HandShakes

@@ -12,6 +12,7 @@ export interface Selector {
     desktop: Field;
     mobile?: Field;
   };
+  path: string;
   idProvider: string;
 }
 
@@ -19,11 +20,9 @@ export interface Config {
   CONTACTS_STORAGE_KEY: string;
   ENCRYPT_PREFIX: string;
   HANDSHAKE_PREFIX: string;
-  ACKNOWLEDGMENT_PREFIX: string;
 }
 
 export interface Contact {
-  acknowledged: boolean;
   enable: boolean;
   publicKey: string;
   timeStamp: string;

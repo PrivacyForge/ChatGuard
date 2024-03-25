@@ -1,5 +1,7 @@
 import { getElement } from "src/utils/getElement";
 import useObserver from "./useObserver";
+import { getConfig } from "src/utils";
+import { selectors } from "src/config";
 
 interface RenderMap {
   id: string;
@@ -15,6 +17,7 @@ interface RenderMap {
  *  const { render } = useRender()
  */
 const useRender = (appRoot: HTMLElement) => {
+  const { name } = getConfig();
   const renderMap: Record<string, RenderMap> = {};
   const { onObserve } = useObserver(appRoot);
 
@@ -30,7 +33,9 @@ const useRender = (appRoot: HTMLElement) => {
 
     for (let els in renderMap) {
       const parentElement = document.querySelector(renderMap[els].patentSelector);
-      if (parentElement && !renderMap[els].rendered) {
+      const currentPath = "/" + location.pathname.split("/")[1];
+      const validPathToRender = selectors[name].path === "*" || currentPath === selectors[name].path;
+      if (parentElement && !renderMap[els].rendered && validPathToRender) {
         renderMap[els].render(parentElement as HTMLElement, els);
         renderMap[els].rendered = true;
       }

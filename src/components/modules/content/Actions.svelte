@@ -18,6 +18,9 @@
   let currentContact: null | Contact = null;
   let isMenuOpen = false;
   let openFromLeft = false;
+  let intervalId: any | null = null;
+
+  $: !$state.loading && clearInterval(intervalId);
 
   const checkStatus = () => {
     const contact = LocalStorage.getMap(config.CONTACTS_STORAGE_KEY, $url.id);
@@ -38,24 +41,20 @@
       openFromLeft = true;
     }
     document.addEventListener("pointerdown", handleCloseMenu);
-    LocalStorage.on(config.CONTACTS_STORAGE_KEY, async () => {
-      const user = LocalStorage.getMap(config.CONTACTS_STORAGE_KEY, $url.id);
-      if ($state.loading && user.publicKey) {
-        status = "safe";
-        const ack = await cipher.createDRSAPAcknowledgment($url.id);
-        typeTo(selector.textField, "Sending ...");
-        await wait(500);
-        typeTo(selector.textField, ack);
-        clickTo(selector.submitButton);
-        state.update((state) => ({ ...state, loading: false, value: "", encrypted: "", submit: true }));
-      }
-    });
   });
   onDestroy(() => {
+    clearInterval(intervalId);
     document.removeEventListener("pointerdown", handleCloseMenu);
   });
 
-  const handleSendHandshake = async () => {
+  const handleSendHandshake = async (e: MouseEvent) => {
+    // deselect everything and remove focus on everything
+    // in some app when input event fire it will send the selected node into the input like twitter
+    const target = e.target as HTMLElement;
+    target.blur();
+    const selection = document.getSelection();
+    selection?.removeAllRanges();
+
     if ($state.loading) return;
     const textField = selector.textField;
     const submitButton = selector.submitButton;
@@ -66,6 +65,13 @@
     clickTo(submitButton);
     state.update((state) => ({ ...state, loading: true, value: "", encrypted: "", submit: true }));
     isMenuOpen = false;
+    intervalId = setInterval(() => {
+      const user = LocalStorage.getMap(config.CONTACTS_STORAGE_KEY, $url.id);
+      if ($state.loading && user.publicKey) {
+        checkStatus();
+        state.update((state) => ({ ...state, loading: false, value: "", encrypted: "", submit: false }));
+      }
+    }, 100);
   };
   const handleToggleConversation = () => {
     const contact = LocalStorage.getMap(config.CONTACTS_STORAGE_KEY, $url.id);
@@ -91,7 +97,7 @@
         <span>Enable</span>
       </div>
     {/if}
-    <div on:click|stopPropagation={handleSendHandshake} data-menu-item="true" class="ctc_menu__item">
+    <div on:click|stopPropagation|preventDefault={handleSendHandshake} data-menu-item="true" class="ctc_menu__item">
       <Lock />
       <span>
         {status === "safe" ? "retry" : "make"} HandShake

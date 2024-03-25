@@ -60,7 +60,7 @@ export class Cipher {
     const timestamp = handshakeArray.splice(0, +timestampLength).join("");
     const toId = atob(handshakeArray.join(""));
 
-    if (store.user?.guardId === guardId) return;
+    if (store.user?.guardId === guardId || forId === "") return;
     const oldContact = LocalStorage.getMap(config.CONTACTS_STORAGE_KEY, forId);
     if (+timestamp < +(oldContact.timestamp || 0)) return logger.debug(`Handshake ${toId} is old`);
     const allHandshakes = LocalStorage.get(config.CONTACTS_STORAGE_KEY);
@@ -73,7 +73,6 @@ export class Cipher {
       if (!oldContact.publicKey) return;
       LocalStorage.setMap(config.CONTACTS_STORAGE_KEY, forId, {
         ...oldContact,
-        acknowledged: true,
       });
       return;
     }
@@ -81,31 +80,12 @@ export class Cipher {
     LocalStorage.setMap(config.CONTACTS_STORAGE_KEY, forId, {
       publicKey,
       timestamp,
-      acknowledged: false,
       enable: true,
     });
     logger.info(`New Handshake ${toId} registered`);
-    return this.createDRSAPAcknowledgment(forId);
+    return true;
   }
-  public async createDRSAPAcknowledgment(toId: string) {
-    const store = await BrowserStorage.get();
-    return config.ACKNOWLEDGMENT_PREFIX + store.user?.guardId + btoa(toId);
-  }
-  public async resolveDRSAPAcknowledgment(packet: string, forId: string) {
-    const store = await BrowserStorage.get();
 
-    const acknowledgeArray = packet.split(config.ACKNOWLEDGMENT_PREFIX)[1].split("");
-    const guardId = acknowledgeArray.splice(0, 36).join("");
-    const id = acknowledgeArray.join("");
-
-    if (guardId === store.user?.guardId) return;
-
-    const user = LocalStorage.getMap(config.CONTACTS_STORAGE_KEY, forId);
-    if (!user.publicKey) return;
-    user.acknowledged = true;
-    logger.info(`Acknowledgment for ${id} Handshake`);
-    LocalStorage.setMap(config.CONTACTS_STORAGE_KEY, forId, user);
-  }
   public static validatePublicPem(pem: string) {
     try {
       forge.pki.publicKeyFromPem(pem);

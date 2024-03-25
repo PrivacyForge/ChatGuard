@@ -21,7 +21,6 @@ export const config: Config = {
   CONTACTS_STORAGE_KEY: "chatguard_contacts",
   ENCRYPT_PREFIX: `::CGM_${version}::`,
   HANDSHAKE_PREFIX: `::HSH_${version}::`,
-  ACKNOWLEDGMENT_PREFIX: `::ACK_${version}::`,
 };
 export const selectors: Record<string, Selector> = {
   "web.bale.ai": {
@@ -45,6 +44,7 @@ export const selectors: Record<string, Selector> = {
         innerMessageText: "span",
       },
     },
+    path: "*",
     idProvider: "uid",
   },
   "web.telegram.org/k/": {
@@ -59,6 +59,7 @@ export const selectors: Record<string, Selector> = {
         innerMessageText: ".message",
       },
     },
+    path: "*",
     idProvider: "#",
   },
   "web.splus.ir": {
@@ -74,6 +75,7 @@ export const selectors: Record<string, Selector> = {
           "#MiddleColumn > div.messages-layout > div.Transition.slide > div > div.middle-column-footer > div > button",
       },
     },
+    path: "*",
     idProvider: "#",
   },
   "web.telegram.org/a/": {
@@ -89,6 +91,7 @@ export const selectors: Record<string, Selector> = {
           "#MiddleColumn > div.messages-layout > div.Transition > div > div.middle-column-footer > div.Composer.shown.mounted > button",
       },
     },
+    path: "*",
     idProvider: "#",
   },
   "twitter.com": {
@@ -103,6 +106,7 @@ export const selectors: Record<string, Selector> = {
         submitButton: "[role=complementary] > :nth-child(2) > [role=button]",
       },
     },
+    path: "/messages",
     idProvider: "/",
   },
 };
