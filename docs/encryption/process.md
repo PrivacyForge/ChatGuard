@@ -27,16 +27,6 @@ The DRSAP handshake consists of the following components:
 5. **To User ID:** The user ID of the recipient.
 6. **Public Key PEM:** The public key of the sender in PEM format.
 
-### DRSAP Handshake Acknowledgment Content
-
-![ack](../public/images/Acknowledgement.png)
-
-After receiving a handshake, a client sends an acknowledgment packet containing:
-
-1. **Prefix:** `::ACK::` to identify the message as an acknowledgment.
-2. **Separator:** `__` for separating different parts of the acknowledgment.
-3. **To User ID:** The user ID of the sender.
-
 ## DRSAP Encrypted Message Content
 
 ![packet](../public/images/Packet.png)

@@ -58,25 +58,7 @@ Resolves a DRSAP handshake packet and validates the sender's public key.
   - `packet`: The DRSAP handshake packet.
   - `from`: The sender's identifier.
 
-- **Returns:** A Promise that resolves to an acknowledgment packet or `undefined` if validation fails.
-
-#### `createDRSAPAcknowledgment(toId: string): string`
-
-Creates a DRSAP acknowledgment packet for acknowledging receipt of a DRSAP handshake.
-
-- **Parameters:**
-
-  - `toId`: The recipient's identifier.
-
-- **Returns:** The DRSAP acknowledgment packet.
-
-#### `resolveDRSAPAcknowledgment(packet: string, from: string): void`
-
-Resolves a DRSAP acknowledgment packet and updates the acknowledgment status in local storage.
-
-- **Parameters:**
-  - `packet`: The DRSAP acknowledgment packet.
-  - `from`: The sender's identifier.
+- **Returns:** A Promise that resolves to an boolean packet or `undefined` if validation fails.
 
 #### `static validatePublicPem(pem: string): boolean`
 
