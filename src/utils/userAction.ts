@@ -1,19 +1,13 @@
 import { getElement } from "./getElement";
 import { wait } from "./wait";
+import userEvent from "@testing-library/user-event";
+
+const user = userEvent.setup();
 
 export const typeTo = (selector: string, message: string) => {
-  const el = document.querySelector(selector) as HTMLElement;
-  el.innerText = message;
-  (el as any).value = message;
-  const event = new Event("input", { bubbles: true });
-  el.dispatchEvent(event);
-  const range = document.createRange();
-  range.selectNodeContents(el);
-  range.collapse(false);
-  const selection = window.getSelection();
-  selection?.removeAllRanges();
-  selection?.addRange(range);
+  user.paste(message);
 };
+
 export const submitInput = (selector: string) => {
   const el = document.querySelector(selector) as HTMLElement;
   const res = el.dispatchEvent(
