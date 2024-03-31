@@ -1,11 +1,9 @@
 import { getElement } from "./getElement";
-import { wait } from "./wait";
-import userEvent from "@testing-library/user-event";
-
-const user = userEvent.setup();
 
 export const typeTo = (selector: string, message: string) => {
-  user.paste(message);
+  const textFiled = document.querySelector(selector);
+  textFiled!.textContent = message;
+  textFiled?.dispatchEvent(new Event("input", { cancelable: false, bubbles: true }));
 };
 
 export const submitInput = (selector: string) => {

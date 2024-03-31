@@ -70,7 +70,7 @@ export const selectors: Record<string, Selector> = {
         textFieldWrapper: "#message-input-text",
         header: "#MiddleColumn > div.messages-layout > div.MiddleHeader",
         message: "[data-message-id]",
-        innerMessageText: "div",
+        innerMessageText: ".text-content",
         submitButton:
           "#MiddleColumn > div.messages-layout > div.Transition.slide > div > div.middle-column-footer > div > button",
       },
