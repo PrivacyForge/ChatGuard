@@ -35,6 +35,6 @@ Simple and easy to use browser extension that allow end to end encryption on [te
 ## Donation
 
 I appreciate every donation for this project
-every donation will be spend on growing the project and releasing it on different platform like safari,...
+every donation will be spend on growing the project and releasing it on different platform like safari, etc.
 
 <a href="https://www.coffeebede.com/mosidev"><img  width="250px" class="img-fluid" src="https://coffeebede.ir/DashboardTemplateV2/app-assets/images/banner/default-yellow.svg" /></a>
