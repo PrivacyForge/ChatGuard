@@ -1,5 +1,9 @@
 
 > " Freedom of speech is not just a right; it's a cornerstone of democracy. In its purest form, it allows ideas to clash, perspectives to evolve, and societies to progress. Yet, with this great power comes the responsibility to navigate the delicate balance between expression and respect. How do we safeguard this essential freedom while fostering a culture of inclusivity and understanding? "
+>
+<p align="center">
+<img align="center" src="https://github.com/PrivacyForge/ChatGuard/assets/58364608/f4fcd89f-e3e1-42e8-aa6d-58d2e13e8a6a" />
+</p>
 
 # ChatGuard
 
