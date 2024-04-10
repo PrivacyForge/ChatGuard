@@ -2,12 +2,12 @@
 > " Freedom of speech is not just a right; it's a cornerstone of democracy. In its purest form, it allows ideas to clash, perspectives to evolve, and societies to progress. Yet, with this great power comes the responsibility to navigate the delicate balance between expression and respect. How do we safeguard this essential freedom while fostering a culture of inclusivity and understanding? "
 >
 <p align="center">
-<img align="center" src="https://github.com/PrivacyForge/ChatGuard/assets/58364608/f4fcd89f-e3e1-42e8-aa6d-58d2e13e8a6a" />
+<img align="center" src="https://github.com/PrivacyForge/ChatGuard/assets/58364608/ba87ae47-df98-4204-848b-66bb2f05964b" />
 </p>
 
 # ChatGuard
 
-Simple and easy to use browser extension that allow end to end encryption on [telegram/k](https://telegram.com/k), [telegram/a](https://telegram.com/a), [twitter](https://twitter.com), [bale](https://web.bale.ai/chat) ,[soroush](https://web.splus.ir/), [eitaa](https://web.eitaa.com/)
+Simple and easy to use browser extension that allow end to end encryption on [telegram/k](https://telegram.com/k), [telegram/a](https://telegram.com/a), [bale](https://web.bale.ai/chat) ,[soroush](https://web.splus.ir/), [eitaa](https://web.eitaa.com/)
 
 ### ChatGuard is a global solution to make almost any standard web messenger to be end to end encrypted
 
