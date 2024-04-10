@@ -36,7 +36,7 @@ Welcome to Chat Guard for. This guide will walk you through the steps to downloa
 
 ### Sideload Extension (Using the Extension File)
 
-1. Download the extension file (usually a .zip or .crx file) from [download page](https://github.com/PrivacyForge/ChatGuard/releases/tag/v0.5.3-beta).
+1. Download the extension file (usually a .zip or .crx file) from [download page](https://github.com/PrivacyForge/ChatGuard/releases/tag/v0.9.2-beta).
 
 2. Open Chrome and go to `chrome://extensions/`.
 

@@ -6,7 +6,7 @@
     "email": "mostafa.kheibary@gmail.com",
     "url": "https://github.com/mostafa-kheibary"
   },
-  "version": "0.6.0",
+  "version": "0.9.2",
   "type": "module",
   "scripts": {
     "dev": "vite",
