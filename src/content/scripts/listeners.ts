@@ -28,6 +28,7 @@ export const registerEventListener = (urlStore: Url) => {
     const state = get(chatStore);
     const contact = LocalStorage.getMap(config.CONTACTS_STORAGE_KEY, urlStore.id);
     let textFieldElement = document.querySelector(selector.textField) as HTMLElement;
+    const messageLengthIsOk = (textFieldElement.textContent || "").length <= 1200;
 
     if (!textFieldElement.textContent?.trim() || !contact.enable) return;
     if (state.clickSubmit || state.submit)
@@ -35,6 +36,8 @@ export const registerEventListener = (urlStore: Url) => {
 
     e.preventDefault();
     e.stopImmediatePropagation();
+
+    if (!messageLengthIsOk) return alert("character length should be bellow 1200 character");
 
     const encrypted = await cipher.createDRSAP(textFieldElement.textContent || "", urlStore.id);
     if (!encrypted) return;
@@ -58,22 +61,26 @@ export const registerEventListener = (urlStore: Url) => {
 
       const contact = LocalStorage.getMap(config.CONTACTS_STORAGE_KEY, urlStore.id);
       let textFieldElement = document.querySelector(selector.textField) as HTMLElement;
+      const messageLengthIsOk = (textFieldElement.textContent || "").length <= 1200;
 
-      if (e.key === "Enter" && contact.enable && textFieldElement.textContent?.trim() && !e.shiftKey && !isTouch) {
-        e.preventDefault();
-        e.stopImmediatePropagation();
-        const encrypted = await cipher.createDRSAP(textFieldElement.textContent || "", urlStore.id);
-        if (!encrypted) return;
-        typeTo(selector.textField, encrypted);
-        textFieldElement = document.querySelector(selector.textField) as HTMLElement;
-        textFieldElement.style.display = "none";
-        await wait(20);
-        chatStore.update((prev) => ({ ...prev, submit: true }));
-        clickTo(selector.submitButton);
-        textFieldElement.focus();
-        textFieldElement.style.display = "block";
-        logger.info("Message sent, Form submitted");
+      if (e.key !== "Enter" || !contact.enable || !textFieldElement.textContent?.trim() || e.shiftKey || isTouch) {
+        return;
       }
+      e.preventDefault();
+      e.stopImmediatePropagation();
+
+      if (!messageLengthIsOk) return alert("character length should be bellow 1200 character");
+      const encrypted = await cipher.createDRSAP(textFieldElement.textContent || "", urlStore.id);
+      if (!encrypted) return;
+      typeTo(selector.textField, encrypted);
+      textFieldElement = document.querySelector(selector.textField) as HTMLElement;
+      textFieldElement.style.display = "none";
+      await wait(20);
+      chatStore.update((prev) => ({ ...prev, submit: true }));
+      clickTo(selector.submitButton);
+      textFieldElement.focus();
+      textFieldElement.style.display = "block";
+      logger.info("Message sent, Form submitted");
     },
     { capture: true }
   );
