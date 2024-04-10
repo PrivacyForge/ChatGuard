@@ -48,28 +48,24 @@
   });
 
   const handleSendHandshake = async (e: MouseEvent) => {
-    // deselect everything and remove focus on everything
-    // in some app when input event fire it will send the selected node into the input like twitter
-    const target = e.target as HTMLElement;
-    target.blur();
-    const selection = document.getSelection();
-    selection?.removeAllRanges();
-
+    let textFiled = document.querySelector(selector.textField) as HTMLElement;
+    textFiled.focus();
     if ($state.loading) return;
-    const textField = selector.textField;
     const submitButton = selector.submitButton;
     const packet = await cipher.createDRSAPHandshake($url.id);
-    typeTo(textField, "Sending ...");
-    await wait(500);
-    typeTo(textField, packet);
+    typeTo(selector.textField, packet);
+    textFiled = document.querySelector(selector.textField) as HTMLElement;
+    textFiled.style.display = "none";
+    await wait(50);
+    state.update((state) => ({ ...state, loading: true, submit: true }));
+    textFiled.style.display = "block";
     clickTo(submitButton);
-    state.update((state) => ({ ...state, loading: true, value: "", encrypted: "", submit: true }));
     isMenuOpen = false;
     intervalId = setInterval(() => {
       const user = LocalStorage.getMap(config.CONTACTS_STORAGE_KEY, $url.id);
       if ($state.loading && user.publicKey) {
         checkStatus();
-        state.update((state) => ({ ...state, loading: false, value: "", encrypted: "", submit: false }));
+        state.update((state) => ({ ...state, loading: false }));
       }
     }, 100);
   };
@@ -143,7 +139,7 @@
       transition: all 200ms ease;
       padding: 8px 0;
       border-radius: 8px;
-      z-index: 1000;
+      z-index: 10000000;
       right: 0;
       &.fromLeft {
         right: auto;

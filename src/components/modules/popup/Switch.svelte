@@ -14,7 +14,6 @@
   }
 
   $: value === "on" ? (checked = true) : (checked = false);
-  $: console.log(checked);
 </script>
 
 <div class="switch-container">

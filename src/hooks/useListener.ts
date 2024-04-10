@@ -22,7 +22,7 @@ const useListener = (appRoot: HTMLElement) => {
           const { top, left, width, height } = el.getBoundingClientRect();
           const { pageX, pageY } = e;
           if (pageX >= left && pageX <= left + width && pageY >= top && pageY <= top + height) {
-            clickMap[selector].forEach((callback) => callback());
+            clickMap[selector].forEach((callback) => callback(e));
           }
         }
       }

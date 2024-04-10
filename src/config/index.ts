@@ -28,7 +28,6 @@ export const selectors: Record<string, Selector> = {
       desktop: {
         app: "#app_main_wrapper",
         textField: "#editable-message-text",
-        textFieldWrapper: "#editable-message-text",
         submitButton: "#chat_footer :nth-child(2) :nth-child(5)",
         header: "#toolbarWrapper",
         message: "[data-sid]",
@@ -37,7 +36,6 @@ export const selectors: Record<string, Selector> = {
       mobile: {
         app: "#app_main_wrapper",
         textField: "#main-message-input",
-        textFieldWrapper: "#main-message-input",
         submitButton: "#chat_footer :nth-child(2) > div:last-child",
         header: "#toolbarWrapper",
         message: "[data-sid]",
@@ -52,7 +50,6 @@ export const selectors: Record<string, Selector> = {
       desktop: {
         app: "#page-chats",
         textField: ".input-message-input[data-peer-id][contenteditable]",
-        textFieldWrapper: ".input-message-container",
         submitButton: ".btn-send-container button",
         header: "[data-type=chat] .sidebar-header",
         message: "[data-type=chat] [data-peer-id][data-mid]",
@@ -67,10 +64,9 @@ export const selectors: Record<string, Selector> = {
       desktop: {
         app: "#root",
         textField: "#editable-message-text",
-        textFieldWrapper: "#message-input-text",
         header: "#MiddleColumn > div.messages-layout > div.MiddleHeader",
         message: "[data-message-id]",
-        innerMessageText: ".text-content",
+        innerMessageText: ".contWrap",
         submitButton:
           "#MiddleColumn > div.messages-layout > div.Transition.slide > div > div.middle-column-footer > div > button",
       },
@@ -83,7 +79,6 @@ export const selectors: Record<string, Selector> = {
       desktop: {
         app: "#root",
         textField: "#editable-message-text",
-        textFieldWrapper: "#message-input-text",
         header: "#MiddleColumn > div.messages-layout > div.MiddleHeader",
         message: "[data-message-id]",
         innerMessageText: ".text-content",
@@ -94,12 +89,25 @@ export const selectors: Record<string, Selector> = {
     path: "*",
     idProvider: "#",
   },
+  "web.eitaa.com": {
+    selector: {
+      desktop: {
+        app: "#main-columns",
+        textField: ".chats-container .input-message-input",
+        header: ".chats-container .sidebar-header",
+        message: ".bubble[data-mid]",
+        innerMessageText: ".message",
+        submitButton: ".btn-send-container button",
+      },
+    },
+    path: "*",
+    idProvider: "#",
+  },
   "twitter.com": {
     selector: {
       desktop: {
         app: "#react-root",
-        textField: "[contenteditable] span",
-        textFieldWrapper: "[contenteditable]",
+        textField: "[contenteditable]",
         header: "[role=main] > div > div > div > :nth-child(2) > div > div > div > div > div > div > div",
         message: "[data-testid=messageEntry] > div > :nth-child(2) [role=presentation]",
         innerMessageText: "span",

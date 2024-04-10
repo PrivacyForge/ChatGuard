@@ -19,7 +19,6 @@ export const parseMessage = async (urlStore: Url, message: Element, messages: El
     if (find) return el;
     return false;
   }) as HTMLElement | null;
-
   if (!target) return;
 
   const textNodeContent = Array.from(target.childNodes).find((node) => node.nodeType === 3)?.textContent || "";

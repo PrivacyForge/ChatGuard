@@ -6,9 +6,10 @@ import type { Url } from "src/store/url.store";
 import { getConfig, getDeviceType } from "src/utils";
 import LocalStorage from "src/utils/LocalStorage";
 import logger from "src/utils/logger";
-import { typeTo } from "src/utils/userAction";
+import { clickTo, typeTo } from "src/utils/userAction";
 import { get } from "svelte/store";
-import { url } from "src/store/url.store";
+import { wait } from "src/utils/wait";
+import { logSelectors } from "src/utils/logSelectors";
 
 export const registerEventListener = (urlStore: Url) => {
   const cipher = new Cipher();
@@ -16,52 +17,64 @@ export const registerEventListener = (urlStore: Url) => {
   const isTouch = type === "mobile" ? true : false;
   const { selector } = getConfig();
   const appRoot = document.querySelector(selector.app) as HTMLElement;
-  const { on, onClick } = useListener(appRoot);
+  const { on } = useListener(appRoot);
 
-  onClick(selector.submitButton, () => {
+  if (import.meta.env.MODE === "development") {
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "W" && e.shiftKey) logSelectors();
+    });
+  }
+  on(selector.submitButton, "click", async (e: Event) => {
     const state = get(chatStore);
-    if (!state.encrypted) return;
-    typeTo(selector.textField, state.encrypted);
-    chatStore.update((prev) => ({ ...prev, value: "", encrypted: "", submit: true }));
-    logger.info("Send button clicked");
+    const contact = LocalStorage.getMap(config.CONTACTS_STORAGE_KEY, urlStore.id);
+    let textFieldElement = document.querySelector(selector.textField) as HTMLElement;
+
+    if (!textFieldElement.textContent?.trim() || !contact.enable) return;
+    if (state.clickSubmit || state.submit)
+      return chatStore.update((prev) => ({ ...prev, clickSubmit: false, submit: false }));
+
+    e.preventDefault();
+    e.stopImmediatePropagation();
+
+    const encrypted = await cipher.createDRSAP(textFieldElement.textContent || "", urlStore.id);
+    if (!encrypted) return;
+    typeTo(selector.textField, encrypted);
+    textFieldElement = document.querySelector(selector.textField) as HTMLElement;
+    textFieldElement.style.display = "none";
+    chatStore.update((prev) => ({ ...prev, clickSubmit: true }));
+    await wait(50);
+    textFieldElement.style.display = "block";
+    clickTo(selector.submitButton);
+    logger.info("Message sent, Send button clicked");
   });
 
-  on(selector.textFieldWrapper, "input", async (event: Event) => {
-    console.log(event);
-    chatStore.update((state) => ({ ...state, value: (event.target as HTMLElement).textContent || "" }));
-    const state = get(chatStore);
+  document.addEventListener(
+    "keydown",
+    async (event) => {
+      const e = event as KeyboardEvent;
+      // check if we writing text to our textfield or not
+      let isEqual = (e.target as HTMLElement).isEqualNode(document.querySelector(selector.textField));
+      if (!isEqual) return;
 
-    if (state.value.startsWith(config.ENCRYPT_PREFIX) && !state.submit) {
-      const packet = await cipher.resolveDRSAP(state.value);
-      if (packet) typeTo(selector.textField, packet);
-    }
-    if (state.submit) {
-      return chatStore.update((prev) => ({ ...prev, submit: false }));
-    }
-    const encrypted = await cipher.createDRSAP(state.value, urlStore.id);
-    if (encrypted) chatStore.update((prev) => ({ ...prev, encrypted }));
+      const contact = LocalStorage.getMap(config.CONTACTS_STORAGE_KEY, urlStore.id);
+      let textFieldElement = document.querySelector(selector.textField) as HTMLElement;
 
-    logger.debug(state.value);
-    logger.debug({ encrypted });
-  });
-  on(selector.textField, "keydown", (event) => {
-    const state = get(chatStore);
-    const urlState = get(url);
-    const e = event as KeyboardEvent;
-    const contact = LocalStorage.getMap(config.CONTACTS_STORAGE_KEY, urlState.id);
-
-    if (
-      e.key === "Enter" &&
-      contact.enable &&
-      state.value &&
-      !e.shiftKey &&
-      e.detail !== 11 &&
-      state.encrypted &&
-      !isTouch
-    ) {
-      logger.info("submit");
-      chatStore.update((prev) => ({ ...prev, value: "", encrypted: "", submit: true }));
-      typeTo(selector.textField, state.encrypted);
-    }
-  });
+      if (e.key === "Enter" && contact.enable && textFieldElement.textContent?.trim() && !e.shiftKey && !isTouch) {
+        e.preventDefault();
+        e.stopImmediatePropagation();
+        const encrypted = await cipher.createDRSAP(textFieldElement.textContent || "", urlStore.id);
+        if (!encrypted) return;
+        typeTo(selector.textField, encrypted);
+        textFieldElement = document.querySelector(selector.textField) as HTMLElement;
+        textFieldElement.style.display = "none";
+        await wait(20);
+        chatStore.update((prev) => ({ ...prev, submit: true }));
+        clickTo(selector.submitButton);
+        textFieldElement.focus();
+        textFieldElement.style.display = "block";
+        logger.info("Message sent, Form submitted");
+      }
+    },
+    { capture: true }
+  );
 };

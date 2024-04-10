@@ -1,21 +1,34 @@
 <script lang="ts">
-  import BrowserStorage from "src/utils/BrowserStorage";
+  import BrowserStorage, { type IStorage } from "src/utils/BrowserStorage";
   import Cipher from "src/class/Cipher";
   import { refreshPage } from "src/utils/refreshPage";
+  import { onMount } from "svelte";
 
   let error = "";
+  let browserStore: IStorage | null = null;
+
+  onMount(async () => {
+    const store = await BrowserStorage.get();
+    browserStore = store;
+  });
 
   const resetChatGuardConfig = async () => {
+    const isOK = confirm("Are you sure you want to reset your config");
+    if (!isOK) return;
+
     const store = await BrowserStorage.get();
     const { privateKey, publicKey } = await Cipher.generateKeyPair();
-    BrowserStorage.set({
+    const browserData = {
       ...store,
       enable: true,
       user: {
         publicKey: publicKey.replace(/[\r\n]/g, ""),
+        guardId: crypto.randomUUID(),
         privateKey,
       },
-    });
+    };
+    browserStore = browserData;
+    BrowserStorage.set(browserData);
     refreshPage();
   };
   const exportChatGuardConfig = async () => {
@@ -43,6 +56,7 @@
         const isPrivateValid = Cipher.validatePrivatePem(config.privateKey);
         if (!isPrivateValid || !isPublicValid) return (error = "invalid config file");
         BrowserStorage.set({ ...store, user: config });
+        browserStore = { ...store, user: config };
         refreshPage();
         error = "";
       } catch (e) {
@@ -90,6 +104,7 @@
         gap: 1rem;
       }
       .reset-button {
+        --md-sys-color-primary: red;
         width: 100%;
       }
       .button {

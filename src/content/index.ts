@@ -12,6 +12,7 @@ import logger from "src/utils/logger";
 import { parseMessage } from "./scripts/messageParser";
 import { registerEventListener } from "./scripts/listeners";
 import { register } from "./scripts/register";
+import { logSelectors } from "src/utils/logSelectors";
 
 (async function main() {
   let store = await BrowserStorage.get();

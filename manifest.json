@@ -16,7 +16,7 @@
         "https://web.bale.ai/*",
         "https://web.telegram.org/*",
         "https://web.splus.ir/*",
-        "https://twitter.com/*"
+        "https://web.eitaa.com/*"
       ],
       "js": ["src/content/index.ts"]
     }

@@ -1,7 +1,6 @@
 export interface Field {
   app: string;
   textField: string;
-  textFieldWrapper: string;
   submitButton: string;
   header: string;
   message: string;
