@@ -1,14 +1,14 @@
 import Cipher from "src/class/Cipher";
 import { config } from "src/config";
+import { useConfig } from "src/hooks/useConfig";
 import type { Url } from "src/store/url.store";
-import { getConfig } from "src/utils";
 import { changeTextNode } from "src/utils/changeTextNode";
 
 export const parseMessage = async (urlStore: Url, message: Element, messages: Element[], index: number) => {
   const cipher = new Cipher();
-  const { selector } = getConfig();
+  const { getSelector } = useConfig();
 
-  const targets = Array.from(messages[index].querySelectorAll(selector.innerMessageText));
+  const targets = Array.from(messages[index].querySelectorAll(getSelector("innerMessageText")));
   const target = targets.find((el) => {
     let find = null;
     el.childNodes.forEach((node: Node) => {

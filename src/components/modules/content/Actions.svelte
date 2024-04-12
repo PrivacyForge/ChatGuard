@@ -4,14 +4,14 @@
   import { clickTo, typeTo } from "src/utils/userAction";
   import { url } from "src/store/url.store";
   import { chatStore as state } from "src/store/chat.store";
-  import type { Contact, Field } from "src/types/Config";
+  import type { Contact } from "src/types/Config";
   import type Cipher from "src/class/Cipher";
   import { config } from "src/config";
   import { wait } from "src/utils/wait";
   import Lock from "src/components/icon/Lock.svelte";
+  import { useConfig } from "src/hooks/useConfig";
 
   export let cipher: Cipher;
-  export let selector: Field;
   export let id: string;
 
   let status: "safe" | "unsafe" = "unsafe";
@@ -21,6 +21,7 @@
   let intervalId: any | null = null;
 
   $: !$state.loading && clearInterval(intervalId);
+  const { getSelector } = useConfig();
 
   const checkStatus = () => {
     const contact = LocalStorage.getMap(config.CONTACTS_STORAGE_KEY, $url.id);
@@ -48,18 +49,17 @@
   });
 
   const handleSendHandshake = async (e: MouseEvent) => {
-    let textFiled = document.querySelector(selector.textField) as HTMLElement;
+    let textFiled = document.querySelector(getSelector("textField")) as HTMLElement;
     textFiled.focus();
     if ($state.loading) return;
-    const submitButton = selector.submitButton;
     const packet = await cipher.createDRSAPHandshake($url.id);
-    typeTo(selector.textField, packet);
-    textFiled = document.querySelector(selector.textField) as HTMLElement;
+    typeTo(getSelector("textField"), packet);
+    textFiled = document.querySelector(getSelector("textField")) as HTMLElement;
     textFiled.style.display = "none";
     await wait(50);
     state.update((state) => ({ ...state, loading: true, submit: true }));
     textFiled.style.display = "block";
-    clickTo(submitButton);
+    clickTo(getSelector("submitButton"));
     isMenuOpen = false;
     intervalId = setInterval(() => {
       const user = LocalStorage.getMap(config.CONTACTS_STORAGE_KEY, $url.id);
@@ -77,15 +77,15 @@
   };
 </script>
 
-<div {id} class="ctc_wrapper">
+<!-- svelte-ignore a11y-click-events-have-key-events -->
+<!-- svelte-ignore a11y-no-static-element-interactions -->
+<div on:click|stopPropagation|preventDefault on:mousedown|stopPropagation|preventDefault {id} class="ctc_wrapper">
   <button
     class="ctc_button"
     data-menu-item="true"
     class:active={status === "safe" && currentContact?.enable}
     on:click|stopPropagation|preventDefault={() => (isMenuOpen = !isMenuOpen)}>
   </button>
-  <!-- svelte-ignore a11y-click-events-have-key-events -->
-  <!-- svelte-ignore a11y-no-static-element-interactions -->
   <div on:click|stopPropagation class="ctc_menu" class:open={isMenuOpen} class:fromLeft={openFromLeft}>
     {#if status === "safe"}
       <div on:click|stopPropagation={handleToggleConversation} data-menu-item="true" class="ctc_menu__item">

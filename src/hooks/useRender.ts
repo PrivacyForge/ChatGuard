@@ -1,7 +1,7 @@
 import { getElement } from "src/utils/getElement";
 import useObserver from "./useObserver";
-import { getConfig } from "src/utils";
 import { selectors } from "src/config";
+import { useConfig } from "./useConfig";
 
 interface RenderMap {
   id: string;
@@ -17,7 +17,7 @@ interface RenderMap {
  *  const { render } = useRender()
  */
 const useRender = (appRoot: HTMLElement) => {
-  const { name } = getConfig();
+  const { name } = useConfig();
   const renderMap: Record<string, RenderMap> = {};
   const { onObserve } = useObserver(appRoot);
 

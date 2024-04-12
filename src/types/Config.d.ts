@@ -1,16 +1,18 @@
+export type FieldItem = ((device: "desktop" | "mobile") => string) | string;
+
 export interface Field {
-  app: string;
-  textField: string;
-  submitButton: string;
-  header: string;
-  message: string;
-  innerMessageText: string;
+  textField: FieldItem;
+  submitButton: FieldItem;
+  header: FieldItem;
+  message: FieldItem;
+  innerMessageText: FieldItem;
+}
+export interface Events {
+  onSubmitClick: FieldItem;
 }
 export interface Selector {
-  selector: {
-    desktop: Field;
-    mobile?: Field;
-  };
+  selector: Field;
+  events: Events;
   path: string;
   idProvider: string;
 }
