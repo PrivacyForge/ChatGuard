@@ -37,4 +37,10 @@ Simple and easy to use browser extension that allow end to end encryption on [te
 I appreciate every donation for this project
 every donation will be spend on growing the project and releasing it on different platform like safari, etc.
 
+Ethereum wallet (eth):
+```
+0x4850d6B360d0fA6bb6ED1Df240f46dE08A7aDF0a
+```
+Coffeebede:
+
 <a href="https://www.coffeebede.com/mosidev"><img  width="250px" class="img-fluid" src="https://coffeebede.ir/DashboardTemplateV2/app-assets/images/banner/default-yellow.svg" /></a>
