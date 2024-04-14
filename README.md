@@ -14,6 +14,8 @@ Simple and easy to use browser extension that allow end to end encryption on [te
 ## How to use Chat Guard ?
 
 1. Download and install the extension with [official documentation](https://chat-guard.vercel.app/getting-started/installation)
+   
+[![firefox store](./docs/public/images/firefoxStore.svg)](https://addons.mozilla.org/en-GB/firefox/addon/chatguard/)
 
 1. Open one of the [supported messenger](https://chat-guard.vercel.app/getting-started/support)
 1. Both user must use the action menu and click to the "Create Handshake" to initiate a encryption handshake
