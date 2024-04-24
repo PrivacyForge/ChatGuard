@@ -6,6 +6,7 @@
 
 Simple and easy to use browser extension that allow end to end encryption on [telegram/k](https://telegram.com/k), [telegram/a](https://telegram.com/a), [bale](https://web.bale.ai/chat) ,[soroush](https://web.splus.ir/), [eitaa](https://web.eitaa.com/), [shad](https://web.shad.ir/), [rubika](https://web.rubika.ir/), [igap](https://web.igap.net/)
 
+[demo](https://github.com/PrivacyForge/ChatGuard/assets/58364608/7008ea5c-4fb4-49e9-a70b-749d88a38eab)
 ## Features 
 - End-to-End Encryption (E2E): Enjoy secure and private conversations without compromising your data.
 - Cross-Application Compatibility: While currently limited to Bale Messenger during the beta phase, ChatGuard aims to extend its support to a wide range of messaging applications.
