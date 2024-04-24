@@ -12,7 +12,7 @@ dist
 dist-ssr
 *.local
 .env
-
+README_MOZILA.md
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
