@@ -13,6 +13,7 @@ import { useConfig } from "src/hooks/useConfig";
 //   currentElement.appendChild(textEl);
 // }
 export const typeTo = async (textFiledSelector: string, message: string) => {
+  const { getEvent } = useConfig();
   const textFiled = document.querySelector(textFiledSelector) as HTMLElement;
   textFiled.focus();
   const textEl = document.createElement("span");
@@ -20,7 +21,7 @@ export const typeTo = async (textFiledSelector: string, message: string) => {
   textEl.textContent = message;
   textEl.style.display = "none";
   textFiled.replaceChildren(textEl);
-  textFiled.dispatchEvent(new Event("input", { cancelable: false, bubbles: true }));
+  textFiled.dispatchEvent(new Event(getEvent("onInput"), { cancelable: false, bubbles: true }));
 };
 
 export const clickTo = (elementSelector: string) => {

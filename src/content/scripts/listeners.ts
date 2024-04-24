@@ -7,7 +7,6 @@ import { getDeviceType } from "src/utils";
 import LocalStorage from "src/utils/LocalStorage";
 import logger from "src/utils/logger";
 import { clickTo, typeTo } from "src/utils/userAction";
-import { get } from "svelte/store";
 import { wait } from "src/utils/wait";
 import { makeElementInvisible, makeElementVisible } from "src/utils/elementVisibility";
 import { useConfig } from "src/hooks/useConfig";
@@ -15,20 +14,16 @@ import { useConfig } from "src/hooks/useConfig";
 export const registerEventListener = (urlStore: Url) => {
   const cipher = new Cipher();
   const type = getDeviceType();
-  const { getEvent, getSelector } = useConfig();
+  const { getSelector } = useConfig();
   const isTouch = type === "mobile" ? true : false;
-  const appRoot = document.body as HTMLElement;
-  const { on } = useListener(appRoot);
+  const { onClick } = useListener();
 
   const handleSubmitClicked = async (e: Event) => {
-    const state = get(chatStore);
     const contact = LocalStorage.getMap(config.CONTACTS_STORAGE_KEY, urlStore.id);
     let textFieldElement = document.querySelector(getSelector("textField")) as HTMLElement;
     const messageLengthIsOk = (textFieldElement.textContent || "").length <= 1200;
 
     if (!textFieldElement.textContent?.trim() || !contact.enable) return;
-    if (state.clickSubmit || state.submit)
-      return chatStore.update((prev) => ({ ...prev, clickSubmit: false, submit: false }));
 
     e.preventDefault();
     e.stopImmediatePropagation();
@@ -78,5 +73,5 @@ export const registerEventListener = (urlStore: Url) => {
   };
 
   document.addEventListener("keydown", handleTextFieldKeyDown, { capture: true });
-  on(getSelector("submitButton"), getEvent("onSubmitClick"), handleSubmitClicked);
+  onClick(getSelector("submitButton"), handleSubmitClicked);
 };

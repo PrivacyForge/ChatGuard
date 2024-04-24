@@ -6,7 +6,8 @@ type CallBackFunction = (mutations: MutationRecord[]) => void;
  * @example
  *  const { onObserve } = useObserver()
  */
-const useObserver = (targetElement: HTMLElement) => {
+const useObserver = () => {
+  const targetElement = document.body;
   const callbacks: CallBackFunction[] = [];
 
   const onObserve = (callback: CallBackFunction) => {

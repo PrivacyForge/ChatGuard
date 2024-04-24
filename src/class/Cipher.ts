@@ -48,13 +48,13 @@ export class Cipher {
     const cleanedPublicKey = store.user!.publicKey.replace(/[\r\n]/g, "");
     const timestamp = new Date().getTime().toString();
     const packet =
-      config.HANDSHAKE_PREFIX + store.user?.guardId + cleanedPublicKey + timestamp.length + timestamp + btoa(to);
+      config.HANDSHAKE_PREFIX + btoa(store.user!.guardId) + cleanedPublicKey + timestamp.length + timestamp + btoa(to);
     return packet;
   }
   public async resolveDRSAPHandshake(packet: string, forId: string) {
     const store = await BrowserStorage.get();
     const handshakeArray = packet.split(config.HANDSHAKE_PREFIX)[1].split("");
-    const guardId = handshakeArray.splice(0, 36).join("");
+    const guardId = atob(handshakeArray.splice(0, 48).join(""));
     const publicKey = handshakeArray.splice(0, 178).join("");
     const timestampLength = handshakeArray.splice(0, 2).join("");
     const timestamp = handshakeArray.splice(0, +timestampLength).join("");

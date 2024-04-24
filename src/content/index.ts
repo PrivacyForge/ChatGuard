@@ -1,8 +1,7 @@
 import Actions from "src/components/modules/content/Actions.svelte";
-import { config, initLog } from "src/config";
+import { initLog } from "src/config";
 import Cipher from "src/class/Cipher";
 import LoadingScreen from "src/components/modules/content/LoadingScreen.svelte";
-import LocalStorage from "src/utils/LocalStorage";
 import useObserver from "src/hooks/useObserver";
 import useRender from "src/hooks/useRender";
 import useUrl from "src/hooks/useUrl";
@@ -25,10 +24,9 @@ import { useConfig } from "src/hooks/useConfig";
   logger.info({ type, isTouch, idProvider, name });
 
   const cipher = new Cipher();
-  const appRoot = document.body;
-  const { onObserve: onRootObserver } = useObserver(appRoot);
-  const { render } = useRender(appRoot);
-  const { url, urlStore } = useUrl(idProvider);
+  const { onObserve: onRootObserver } = useObserver();
+  const { render } = useRender();
+  const { urlStore } = useUrl(idProvider);
   if (import.meta.env.MODE !== "development") console.log(initLog);
 
   new LoadingScreen({ target: document.body });
@@ -39,11 +37,6 @@ import { useConfig } from "src/hooks/useConfig";
   });
   // event listener for user action (type,click,sending message)
   registerEventListener(urlStore);
-  url.subscribe((newUrl) => {
-    if (LocalStorage.getMap(config.CONTACTS_STORAGE_KEY, newUrl.id).publicKey) {
-      document.querySelector(getSelector("textField"))?.dispatchEvent(new Event("input"));
-    }
-  });
 
   onRootObserver(() => {
     // On message receive will run and parse it

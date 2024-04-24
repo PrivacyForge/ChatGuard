@@ -9,6 +9,7 @@ export interface Field {
 }
 export interface Events {
   onSubmitClick: FieldItem;
+  onInput: FieldItem;
 }
 export interface Selector {
   selector: Field;

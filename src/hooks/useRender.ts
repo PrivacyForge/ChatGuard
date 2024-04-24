@@ -16,10 +16,10 @@ interface RenderMap {
  * @example
  *  const { render } = useRender()
  */
-const useRender = (appRoot: HTMLElement) => {
+const useRender = () => {
   const { name } = useConfig();
   const renderMap: Record<string, RenderMap> = {};
-  const { onObserve } = useObserver(appRoot);
+  const { onObserve } = useObserver();
 
   onObserve((mutations) => {
     mutations.forEach((mutation) => {

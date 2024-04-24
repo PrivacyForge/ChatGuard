@@ -26,13 +26,17 @@ export const selectors: Record<string, Selector> = {
   "web.bale.ai": {
     selector: {
       textField: (type) => (type === "mobile" ? "#main-message-input" : "#editable-message-text"),
-      submitButton: "#chat_footer :nth-child(2) :nth-child(5)",
+      submitButton: (type) =>
+        type === "mobile"
+          ? "#chat_footer > :has(#main-message-input) :nth-child(5)"
+          : "#chat_footer > :has(#editable-message-text) :nth-child(5)",
       header: "#toolbarWrapper",
       message: "[data-sid]",
       innerMessageText: "span",
     },
     events: {
       onSubmitClick: "click",
+      onInput: "input",
     },
     path: "*",
     idProvider: "uid",
@@ -47,6 +51,7 @@ export const selectors: Record<string, Selector> = {
     },
     events: {
       onSubmitClick: (type) => (type === "mobile" ? "mousedown" : "click"),
+      onInput: "input",
     },
     path: "*",
     idProvider: "#",
@@ -62,6 +67,7 @@ export const selectors: Record<string, Selector> = {
     },
     events: {
       onSubmitClick: "click",
+      onInput: "input",
     },
     path: "*",
     idProvider: "#",
@@ -77,6 +83,7 @@ export const selectors: Record<string, Selector> = {
     },
     events: {
       onSubmitClick: "click",
+      onInput: "input",
     },
     path: "*",
     idProvider: "#",
@@ -91,9 +98,55 @@ export const selectors: Record<string, Selector> = {
     },
     events: {
       onSubmitClick: (type) => (type === "mobile" ? "mousedown" : "click"),
+      onInput: "input",
     },
     path: "*",
     idProvider: "#",
+  },
+  "web.shad.ir": {
+    selector: {
+      textField: ".input-message-input [contenteditable]",
+      header: ".chat-info-container",
+      message: "[data-msg-id]",
+      innerMessageText: ".message [rb-message-text] div",
+      submitButton: ".btn-send-container button .c-ripple",
+    },
+    events: {
+      onSubmitClick: "click",
+      onInput: "keyup",
+    },
+    path: "*",
+    idProvider: "#",
+  },
+  "web.rubika.ir": {
+    selector: {
+      textField: ".input-message-input [contenteditable]",
+      header: ".chat-info-container",
+      message: "[data-msg-id]",
+      innerMessageText: ".message [rb-message-text] div",
+      submitButton: ".btn-send-container button .c-ripple",
+    },
+    events: {
+      onSubmitClick: "click",
+      onInput: "keyup",
+    },
+    path: "*",
+    idProvider: "#",
+  },
+  "web.igap.net": {
+    selector: {
+      textField: "#textarea_ref[contenteditable]",
+      header: "header > div",
+      message: "[data-message-id]",
+      innerMessageText: "[data-message-id] > div [dir]",
+      submitButton: "main > :last-child > :last-child",
+    },
+    events: {
+      onSubmitClick: "click",
+      onInput: "input",
+    },
+    path: "/app",
+    idProvider: "q",
   },
   "twitter.com": {
     selector: {
@@ -105,6 +158,7 @@ export const selectors: Record<string, Selector> = {
     },
     events: {
       onSubmitClick: "click",
+      onInput: "input",
     },
     path: "/messages",
     idProvider: "/",

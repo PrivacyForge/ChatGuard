@@ -19,6 +19,7 @@
   let isMenuOpen = false;
   let openFromLeft = false;
   let intervalId: any | null = null;
+  let position = { left: 0, top: 0 };
 
   $: !$state.loading && clearInterval(intervalId);
   const { getSelector } = useConfig();
@@ -37,10 +38,6 @@
   };
 
   onMount(() => {
-    const leftDistance = document.getElementById(id)?.getBoundingClientRect().left || 0;
-    if (leftDistance < window.innerWidth / 2) {
-      openFromLeft = true;
-    }
     document.addEventListener("pointerdown", handleCloseMenu);
   });
   onDestroy(() => {
@@ -48,6 +45,18 @@
     document.removeEventListener("pointerdown", handleCloseMenu);
   });
 
+  const handleMenuClicked = (e: MouseEvent) => {
+    const leftDistance = document.getElementById(id)?.getBoundingClientRect().left || 0;
+    if (leftDistance < window.innerWidth / 2) {
+      openFromLeft = true;
+    }
+    if (openFromLeft) position.left = e.clientX;
+    else {
+      position.left = window.innerWidth - e.clientX;
+    }
+    position.top = e.clientY;
+    isMenuOpen = !isMenuOpen;
+  };
   const handleSendHandshake = async (e: MouseEvent) => {
     let textFiled = document.querySelector(getSelector("textField")) as HTMLElement;
     textFiled.focus();
@@ -84,9 +93,14 @@
     class="ctc_button"
     data-menu-item="true"
     class:active={status === "safe" && currentContact?.enable}
-    on:click|stopPropagation|preventDefault={() => (isMenuOpen = !isMenuOpen)}>
+    on:click|stopPropagation|preventDefault={handleMenuClicked}>
   </button>
-  <div on:click|stopPropagation class="ctc_menu" class:open={isMenuOpen} class:fromLeft={openFromLeft}>
+  <div
+    on:click|stopPropagation
+    class="ctc_menu"
+    style="{openFromLeft ? 'left' : 'right'}:{position.left}px;top:{position.top}px;"
+    class:open={isMenuOpen}
+    class:fromLeft={openFromLeft}>
     {#if status === "safe"}
       <div on:click|stopPropagation={handleToggleConversation} data-menu-item="true" class="ctc_menu__item">
         <div class="ctc_radio" class:enable={currentContact?.enable}></div>
@@ -127,24 +141,24 @@
     .ctc_menu {
       display: flex;
       flex-direction: column;
-      position: absolute;
-      top: calc(100% + 8px);
-      width: 180px;
+      position: fixed;
+      width: fit-content;
       background-color: #fff;
       box-shadow: 0 4px 32px #00000028;
       color: #000;
       transform: scale(0);
       text-align: left;
       transform-origin: top right;
-      transition: all 200ms ease;
-      padding: 8px 0;
+      transition: transform 200ms ease;
+      padding: 8px;
       border-radius: 8px;
       z-index: 10000000;
-      right: 0;
       &.fromLeft {
-        right: auto;
         transform-origin: top left;
-        left: 0;
+        .ctc_menu__item {
+          justify-content: end;
+          flex-direction: row-reverse;
+        }
       }
       &.open {
         transform: scale(1);
@@ -155,8 +169,14 @@
         align-items: center;
         gap: 0.5rem;
         cursor: pointer;
-        font-size: 14px;
-        padding: 6px 14px;
+        padding: 6px 12px;
+        border-radius: 8px;
+        span,
+        svg {
+          color: #000 !important;
+          font-size: 14px !important;
+        }
+
         &::after {
           content: "";
           position: absolute;

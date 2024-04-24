@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "ChatGuard-beta",
   "description": "Browser Add on that allow (End to End) encrypted in web chat messenger",
-  "version": "0.9.3",
+  "version": "0.9.4",
   "author": "https://github.com/mostafa-kheibary",
   "icons": {
     "16": "src/assets/icons/icon16.png",
@@ -16,7 +16,10 @@
         "https://web.bale.ai/*",
         "https://web.telegram.org/*",
         "https://web.splus.ir/*",
-        "https://web.eitaa.com/*"
+        "https://web.eitaa.com/*",
+        "https://web.shad.ir/*",
+        "https://web.rubika.ir/*",
+        "https://web.igap.net/*"
       ],
       "js": ["src/content/index.ts"]
     }
@@ -31,7 +34,7 @@
   },
   "browser_specific_settings": {
     "gecko": {
-      "id": "c79371f2-44bd-472a-9e27-9adcc8b05813"
+      "id": "mostafa.kheibary@gmail.com"
     }
   },
   "permissions": ["storage", "tabs"]

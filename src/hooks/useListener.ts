@@ -1,3 +1,4 @@
+import { useConfig } from "./useConfig";
 import useObserver from "./useObserver";
 
 /**
@@ -7,20 +8,20 @@ import useObserver from "./useObserver";
  * @example
  *  const { on , onClick } = useListener()
  */
-const useListener = (appRoot: HTMLElement) => {
+const useListener = () => {
   const eventsListener: Record<string, ((e: Event) => void)[]> = {};
   const clickMap: Record<string, Function[]> = {};
-
-  const { onObserve } = useObserver(appRoot);
+  const { getEvent } = useConfig();
+  const { onObserve } = useObserver();
 
   document.addEventListener(
-    "click",
+    getEvent("onSubmitClick"),
     (e) => {
       for (const selector in clickMap) {
         const el = document.querySelector(selector);
         if (el) {
           const { top, left, width, height } = el.getBoundingClientRect();
-          const { pageX, pageY } = e;
+          const { pageX, pageY } = e as MouseEvent;
           if (pageX >= left && pageX <= left + width && pageY >= top && pageY <= top + height) {
             clickMap[selector].forEach((callback) => callback(e));
           }
