@@ -14,12 +14,13 @@ Simple and easy to use browser extension that allow end to end encryption on [te
 
 ## How to use Chat Guard ?
 
-1. Download and install the extension with [official documentation](https://chat-guard.vercel.app/getting-started/installation)
+1. Download and install the extension with [official documentation](https://github.com/PrivacyForge/ChatGuard/blob/main/docs/getting-started/installation.md)
    
 [![firefox store](./docs/public/images/firefoxStore.svg)](https://addons.mozilla.org/en-GB/firefox/addon/chatguard/)
 
-1. Open one of the [supported messenger](https://chat-guard.vercel.app/getting-started/support)
+1. Open one of the supported messenger
 1. Both user must use the action menu and click to the "Create Handshake" to initiate a encryption handshake
+[![handshake](https://github.com/PrivacyForge/ChatGuard/assets/58364608/6a258e06-836f-463c-8d81-cec1ba9cbc8c)](#)
 1. After the handshake complete successfully, you can enjoy a safe chat :)
 
 ## How Chat Guard encrypt the messages?
@@ -34,6 +35,9 @@ Simple and easy to use browser extension that allow end to end encryption on [te
 4. append the encrypted secret keys and encrypted message to one singular message and send it to the user
 
 #### Now other user can decrypt the secret key with their own private key and using the decrypted secret key, user can decrypt the actual message
+
+## Special Thanks
+to [Arman](https://github.com/ArmanTaheriGhaleTaki) that inspired me to embark on this project and provided me with the idea to pursue.
 
 ## Donation
 
