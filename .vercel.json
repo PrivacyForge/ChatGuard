@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "docs/.vitepress/dist",
+      "use": "@vercel/static"
+    }
+  ],
+  "routes": [{ "handle": "filesystem" }, { "src": "/.*", "dest": "/docs/.vitepress/dist/index.html" }]
+}
