@@ -1,10 +1,6 @@
-<p align="center">
-<img align="center" src="https://github.com/PrivacyForge/ChatGuard/assets/58364608/179c9315-3c5e-4944-8282-c9302c670be5" />
-</p>
-
 # ChatGuard
 
-Simple and easy to use browser extension that allow end to end encryption on [telegram/k](https://telegram.com/k), [telegram/a](https://telegram.com/a), [bale](https://web.bale.ai/chat) ,[soroush](https://web.splus.ir/), [eitaa](https://web.eitaa.com/), [shad](https://web.shad.ir/), [rubika](https://web.rubika.ir/), [igap](https://web.igap.net/)
+Simple and easy to use browser extension that allow end to end encryption on web messenger
 
 [demo](https://github.com/PrivacyForge/ChatGuard/assets/58364608/7008ea5c-4fb4-49e9-a70b-749d88a38eab)
 ## Features 
