@@ -1,46 +1,47 @@
 import { defineConfig } from "vitepress";
 
 export default defineConfig({
-  title: "Chat Guard",
-  description: "ChatGuard is a browser extension designed to make any messenger app to End to End encrypted",
+  title: "ChatGuard",
+  description: "ChatGuard is a browser extension designed to enable End to End encryption to your favorite messenger",
   appearance: "dark",
   cleanUrls: true,
   lang: "en-US",
-  head: [["link", { rel: "icon", href: "../public/images/logo.svg" }]],
+  head: [["link", { rel: "icon", href: "/images/logo.svg" }]],
+  locales: {
+    root: {
+      label: "English",
+      lang: "en",
+    },
+    fa: {
+      label: "فارسی",
+      lang: "fa",
+      link: "/fa",
+    },
+  },
   themeConfig: {
-    logo: "../public/images/logo.svg",
+    logo: "/images/logo.svg",
     siteTitle: "Chat Guard",
     nav: [
       { text: "Home", link: "/" },
-      { text: "Download & Install", link: "/getting-started/installation" },
-      { text: "Documentation", link: "/api/cipher" },
+      { text: "Download & Install", link: "/getting-started/how-to-install" },
     ],
-
     sidebar: [
       {
         text: "Getting Started",
         items: [
           {
-            text: "Installation",
-            link: "/getting-started/installation",
+            text: "How to install",
+            link: "/getting-started/how-to-install",
           },
           {
             text: "How to use",
-            link: "/getting-started/usage",
+            link: "/getting-started/how-to-use",
           },
         ],
       },
       {
         text: "Encryption",
-        items: [
-          { text: "Introduction", link: "/encryption/introduction" },
-          { text: "(DRSAP) Encryption Process", link: "/encryption/process" },
-        ],
-      },
-      {
-        text: "API",
-        collapsed: true,
-        items: [{ text: "Cipher", link: "/api/cipher" }],
+        items: [{ text: "Introduction", link: "/encryption/introduction" }],
       },
       {
         text: "Contribution",
@@ -52,10 +53,7 @@ export default defineConfig({
       },
     ],
 
-    socialLinks: [
-      { icon: "github", link: "https://github.com/PrivacyForge/ChatGuard" },
-      { icon: "twitter", link: "" },
-    ],
+    socialLinks: [{ icon: "github", link: "https://github.com/PrivacyForge/ChatGuard" }],
 
     footer: {
       message: "Released under the Apache-2.0 License.",

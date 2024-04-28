@@ -2,7 +2,7 @@
 
 ## Overview
 
-![encryption overview](../public/images/encryption-1.png)
+![encryption overview](/images/encryption-1.png)
 
 Our application prioritizes user privacy and security by implementing `end-to-end` encryption. This document outlines the hybrid encryption technique employed, combining both `symmetric` and `asymmetric` encryption methods.
 

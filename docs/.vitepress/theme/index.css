@@ -1,1 +1,9 @@
 @import url("https://fonts.googleapis.com/css2?family=Kranky&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Vazirmatn:wght@100..900&display=swap");
+
+*:lang(fa) {
+  font-family: "Vazirmatn", sans-serif;
+}
+.content-container:lang(fa) {
+  direction: rtl;
+}

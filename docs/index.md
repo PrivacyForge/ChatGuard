@@ -3,18 +3,15 @@
 layout: home
 
 hero:
-  name: <span style="font-family:Kranky;">Chat Guard</h1>
-  tagline: A browser extension designed to make any messenger app to End to End encrypted
+  name: <span style="font-family:Kranky;">ChatGuard</h1>
+  tagline: ChatGuard is a browser extension designed to enable End to End encryption to your favorite messenger
   image:
     src: /images/logo.svg
     alt: logo
   actions:
     - theme: brand
       text: Download & Install
-      link: /getting-started/installation
-    - theme: alt
-      text: Documentation
-      link: /api/cipher
+      link: /getting-started/how-to-install
 
 features:
   - title: Supporting major messengers
