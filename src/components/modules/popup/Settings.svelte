@@ -39,7 +39,7 @@
   <md-outlined-button role="button" class="button" on:pointerup={() => goto("/advanced-setting")}>
     Advanced Settings
   </md-outlined-button>
-  <span class="version">v0.9.4</span>
+  <span class="version">v0.9.5</span>
 </div>
 
 <style lang="scss" module>

@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "ChatGuard-beta",
   "description": "Browser Add on that allow (End to End) encrypted in web chat messenger",
-  "version": "0.9.4",
+  "version": "0.9.5",
   "author": "https://github.com/mostafa-kheibary",
   "icons": {
     "16": "src/assets/icons/icon16.png",
