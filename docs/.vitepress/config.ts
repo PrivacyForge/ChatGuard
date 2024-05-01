@@ -7,7 +7,6 @@ export default defineConfig({
   cleanUrls: true,
   lang: "en-US",
   head: [["link", { rel: "icon", href: "/images/logo.svg" }]],
-  mpa: true,
   locales: {
     root: {
       label: "English",
