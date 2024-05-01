@@ -1,7 +1,10 @@
 export const changeTextNode = (element: HTMLElement, replace: string) => {
-  element.childNodes.forEach((node) => {
-    if (node.nodeType === 3 && node.textContent) {
-      return (node.textContent = replace);
+  if (element.nodeType === 3 && element.textContent) {
+    element.textContent = replace;
+  } else if (element.childNodes.length > 0) {
+    const firstChild = element.childNodes[0];
+    if (firstChild) {
+      changeTextNode(firstChild as HTMLElement, replace);
     }
-  });
+  }
 };

@@ -45,8 +45,8 @@ export const selectors: Record<string, Selector> = {
     selector: {
       textField: ".input-message-input[data-peer-id][contenteditable]",
       submitButton: ".btn-send-container button",
-      header: "[data-type=chat] .sidebar-header",
-      message: "[data-type=chat] [data-peer-id][data-mid]",
+      header: ".chat .sidebar-header",
+      message: ".chat [data-peer-id][data-mid]",
       innerMessageText: ".message",
     },
     events: {

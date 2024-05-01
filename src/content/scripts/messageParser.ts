@@ -3,25 +3,17 @@ import { config } from "src/config";
 import { useConfig } from "src/hooks/useConfig";
 import type { Url } from "src/store/url.store";
 import { changeTextNode } from "src/utils/changeTextNode";
+import { findFirstTextNode, findTargetRecursive } from "src/utils/findMessageTarget";
 
 export const parseMessage = async (urlStore: Url, message: Element, messages: Element[], index: number) => {
   const cipher = new Cipher();
   const { getSelector } = useConfig();
 
   const targets = Array.from(messages[index].querySelectorAll(getSelector("innerMessageText")));
-  const target = targets.find((el) => {
-    let find = null;
-    el.childNodes.forEach((node: Node) => {
-      if (node.nodeType === 3 && node.textContent?.startsWith("::")) {
-        find = true;
-      }
-    });
-    if (find) return el;
-    return false;
-  }) as HTMLElement | null;
+  const target = targets.find((el) => findTargetRecursive(el)) as HTMLElement | null;
   if (!target) return;
 
-  const textNodeContent = Array.from(target.childNodes).find((node) => node.nodeType === 3)?.textContent || "";
+  const textNodeContent = findFirstTextNode(target);
 
   // Messages
   if (textNodeContent.startsWith(config.ENCRYPT_PREFIX)) {
