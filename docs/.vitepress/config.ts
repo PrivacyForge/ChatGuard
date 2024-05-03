@@ -6,7 +6,18 @@ export default defineConfig({
   appearance: "dark",
   cleanUrls: true,
   lang: "en-US",
-  head: [["link", { rel: "icon", href: "/images/logo.svg" }]],
+  head: [
+    ["link", { rel: "icon", href: "/images/logo.svg" }],
+    ["script", { async: "", src: "https://www.googletagmanager.com/gtag/js?id=G-J084XJ7N2C" }],
+    [
+      "script",
+      {},
+      `window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-J084XJ7N2C');`,
+    ],
+  ],
   locales: {
     root: {
       label: "English",
