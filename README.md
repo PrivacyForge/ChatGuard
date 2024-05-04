@@ -13,8 +13,8 @@ Simple and easy to use browser extension that allow end to end encryption on web
 ## How to use Chat Guard ?
 
 <div>
-    <img align=top src="./docs/public/images/chromeStore.svg"/>
-    <img align=top src="./docs/public/images/firefoxStore.svg"/>
+    <a href="https://chromewebstore.google.com/detail/chatguard-beta/fokigjblcpglhdmjimcpmjikdfmchccg"><img align=top src="./docs/public/images/chromeStore.svg"/></a>
+    <a href="https://addons.mozilla.org/en-GB/firefox/addon/chatguard/"><img align=top src="./docs/public/images/firefoxStore.svg"/></a>
 <div>
 <br />
 
