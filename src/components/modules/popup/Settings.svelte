@@ -1,12 +1,17 @@
 <script lang="ts">
   import logo from "src/assets/icons/icon128.png";
-  import HeaderWave from "src/components/modules/popup/HeaderWave.svelte";
   import Switch from "./Switch.svelte";
   import BrowserStorage from "src/utils/BrowserStorage";
   import { refreshPage } from "src/utils/refreshPage";
   import { onMount } from "svelte";
   import { goto } from "svelte-pathfinder";
+  import lockIcon from "../../../assets/icons/lock.svg";
+  import infoIcon from "../../../assets/icons/info.svg";
+  import githubLogo from "../../../assets/icons/github.svg";
+  import xLogo from "../../../assets/icons/x.svg";
   import "@material/web/button/outlined-button";
+  import "@material/web/iconbutton/icon-button";
+  import { openLink } from "src/utils/openLink";
 
   let enable: string = "on";
   let mounted: boolean = false;
@@ -23,60 +28,100 @@
   const handleChangeCheckbox = () => {
     refreshPage();
   };
+
   $: mounted && handleCheckbox(enable);
 </script>
 
-<HeaderWave />
 <div class="wrapper">
   <div class="header">
-    <img width="80px" height="80px" src={logo} alt="logo" />
-    <div>
-      <h1 class="title">Chat Guard</h1>
-      <p class="slogan">Chat safer, Enjoy more</p>
-      <Switch bind:value={enable} on:change={handleChangeCheckbox} />
+    <div class="header__left">
+      <img width="20px" src={infoIcon} alt="" />
+      <p
+        >How to use ? <span
+          class="link"
+          on:pointerup={() => openLink("https://chat-guard.vercel.app/getting-started/how-to-use")}>Check here</span
+        ></p>
+    </div>
+    <div class="header__rigth">
+      <md-icon-button on:pointerup={() => goto("/advanced-setting")}>
+        <img src={lockIcon} alt="" />
+      </md-icon-button>
     </div>
   </div>
-  <md-outlined-button role="button" class="button" on:pointerup={() => goto("/advanced-setting")}>
-    Advanced Settings
-  </md-outlined-button>
-  <span class="version">v0.9.5</span>
+
+  <div class="main">
+    <img width="80px" height="80px" src={logo} alt="logo" />
+    <h1 class="title">Chat Guard</h1>
+    <Switch bind:value={enable} on:change={handleChangeCheckbox} />
+  </div>
+
+  <div class="footer">
+    <img
+      class="link"
+      on:pointerup={() => openLink("https://github.com/PrivacyForge/ChatGuard")}
+      src={githubLogo}
+      alt="" />
+    <span class="version">v0.9.6</span>
+    <img class="link" on:pointerup={() => openLink("https://twitter.com/chatguard_proj")} src={xLogo} alt="" />
+  </div>
 </div>
 
 <style lang="scss" module>
+  $primary-color: #0072f7;
+  .link {
+    text-decoration: underline;
+    color: $primary-color;
+    cursor: pointer;
+  }
   .wrapper {
     height: 100%;
-    padding: 2.5rem 2rem 1.5rem 2rem;
     display: flex;
     flex-direction: column;
     .header {
+      padding: 0.8rem 1rem;
+    }
+    .header,
+    .header__left {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.5rem;
+
+      .header__left {
+        font-size: 0.8rem;
+        a {
+          color: $primary-color;
+        }
+      }
+    }
+    .main {
       display: flex;
       flex-direction: column;
       justify-content: center;
-      text-align: center;
-      align-items: stretch;
-      gap: 1rem;
-      z-index: 100;
-      & > img {
-        align-self: center;
-      }
+      align-items: center;
+      margin-top: 2rem;
       .title {
         font-family: Kranky;
         font-size: 1.7rem;
-      }
-      .slogan {
-        opacity: 0.7;
-        padding: 0 0 1rem 0.2rem;
-        font-size: 0.8rem;
+        margin-bottom: 1rem;
       }
     }
-    .button {
-      --md-outlined-button-outline-color: var(--md-sys-color-primary);
-      margin-top: auto;
-    }
-    .version {
-      margin-top: 1rem;
-      opacity: 0.5;
-      text-align: center;
+    .footer {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: #fff;
+      padding: 0.6rem 1rem;
+      background-color: $primary-color;
+      border-radius: 1.5rem 1.5rem 0 0;
+      .version {
+        opacity: 0.8;
+        text-align: center;
+      }
     }
   }
 </style>

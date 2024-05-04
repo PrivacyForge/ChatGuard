@@ -15,15 +15,15 @@
     display: flex;
     align-items: center;
     color: #000;
-    font-size: 1rem;
-    background-color: #fbfbfb;
-    border-bottom: 0.1rem solid #0f7bff0e;
+    font-size: 0.9rem;
+    border-bottom: 0.1rem solid #0f7bff16;
     .button {
-      padding: 1.2rem 1rem;
+      padding: 1rem 1rem;
       background-color: transparent;
       border: none;
       cursor: pointer;
       color: #0f7dff;
+      font-size: 1.1rem;
       transform: rotate(180deg);
     }
   }

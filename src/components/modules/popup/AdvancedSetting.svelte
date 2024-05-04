@@ -3,6 +3,9 @@
   import Cipher from "src/class/Cipher";
   import { refreshPage } from "src/utils/refreshPage";
   import { onMount } from "svelte";
+  import importIcon from "../../../assets/icons/import.svg";
+  import resetIcon from "../../../assets/icons/reset.svg";
+  import exportIcon from "../../../assets/icons/export.svg";
 
   let error = "";
   let browserStore: IStorage | null = null;
@@ -41,6 +44,9 @@
     a.click();
     URL.revokeObjectURL(a.href);
   };
+  const handleImportChatGuardConfig = () => {
+    document.getElementById("import-upload")?.click();
+  };
   const importChatGuardConfig = async (e: Event) => {
     const store = await BrowserStorage.get();
     const target = e.target as HTMLInputElement;
@@ -68,18 +74,30 @@
 </script>
 
 <div class="wrapper">
-  <div class="configs">
-    <h2>Configs</h2>
-    <div>
-      <md-filled-button role="button" on:pointerup={exportChatGuardConfig} class="button"
-        >export config</md-filled-button>
-      <input on:change={importChatGuardConfig} id="conf" type="file" hidden />
-      <label class="label" for="conf">
-        <md-filled-button role="button" class="button">import config</md-filled-button>
-      </label>
+  <div class="config">
+    <h2 class="title">Config</h2>
+    <div class="description">
+      <p
+        >The Config file includes your private key, public key, and Guard ID. You can export/import/reset your keys here
+        and use them on other devices or for backups.
+      </p>
     </div>
-    <md-outlined-button role="button" on:pointerup={resetChatGuardConfig} class="reset-button"
-      >reset config</md-outlined-button>
+    <input on:change={importChatGuardConfig} id="conf" type="file" hidden />
+    <label id="import-upload" class="label" for="conf"> </label>
+    <div class="config-buttons">
+      <md-filled-button role="button" on:pointerup={exportChatGuardConfig} class="button">
+        <img slot="icon" width="18px" src={exportIcon} alt="" />
+        Export
+      </md-filled-button>
+      <md-filled-button on:pointerup={handleImportChatGuardConfig} role="button" class="button">
+        <img slot="icon" width="18px" src={importIcon} alt="" />
+        Import
+      </md-filled-button>
+    </div>
+    <md-outlined-button role="button" on:pointerup={resetChatGuardConfig} class="reset-button">
+      <img slot="icon" width="18px" src={resetIcon} alt="" />
+      Reset
+    </md-outlined-button>
     {#if error}
       <p class="error">
         {error}
@@ -91,40 +109,44 @@
 <style lang="scss" module>
   .wrapper {
     height: 100%;
-    overflow-y: scroll;
+    overflow-y: auto;
     padding: 2rem;
 
-    .configs {
+    .config {
       display: flex;
       flex-direction: column;
-      gap: 1rem;
-      & > div {
+      gap: 0.5rem;
+      .title {
+        font-weight: 500;
+      }
+      .description {
         display: flex;
-        justify-content: center;
-        gap: 1rem;
+        flex-direction: column;
+        font-size: 0.8rem;
+        font-weight: 400;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+        .extra {
+          color: gray;
+        }
+      }
+      .config-buttons {
+        display: flex;
+        gap: 0.5rem;
+        align-items: center;
       }
       .reset-button {
         --md-sys-color-primary: red;
         width: 100%;
+        font-size: 0.8rem;
       }
       .button {
         width: 50%;
+        font-size: 0.8rem;
       }
       .label {
-        position: relative;
-        width: 50%;
-        .button {
-          width: 100% !important;
-        }
-        &::after {
-          position: absolute;
-          content: "";
-          left: 0;
-          right: 0;
-          width: 100%;
-          height: 100%;
-          cursor: pointer;
-        }
+        pointer-events: none;
+        visibility: hidden;
       }
       .error {
         color: red;
