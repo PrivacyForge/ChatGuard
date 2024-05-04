@@ -20,8 +20,15 @@ export const parseMessage = async (urlStore: Url, message: Element, messages: El
     changeTextNode(target, "Parsing ...");
     try {
       const packet = await cipher.resolveDRSAP(textNodeContent);
-      if (!packet) changeTextNode(target, "⛔ Error in decryption");
-      else changeTextNode(target, "🔒" + packet);
+      if (!packet) {
+        changeTextNode(target, "⛔ Error in decryption");
+      } else {
+        const status = document.createElement("span");
+        status.textContent = "🔒 ";
+        status.style.opacity = "0.4";
+        changeTextNode(target, packet);
+        target.prepend(status);
+      }
       (target as any).dir = "auto";
     } catch (error) {
       changeTextNode(target, "⛔ Error in decryption");
