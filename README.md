@@ -13,9 +13,11 @@ Simple and easy to use browser extension that allow end to end encryption on web
 ## How to use Chat Guard ?
 
 <div>
-    <img align=top src="./docs/public/images/chromeStore.svg"/>
-    <img align=top src="./docs/public/images/firefoxStore.svg"/>
+    <a href="https://chromewebstore.google.com/detail/chatguard-beta/fokigjblcpglhdmjimcpmjikdfmchccg"><img align=top src="./docs/public/images/chromeStore.svg"/></a>
+    <a href="https://addons.mozilla.org/en-GB/firefox/addon/chatguard/"><img align=top src="./docs/public/images/firefoxStore.svg"/></a>
 <div>
+<br />
+
 1. Download and install the extension with [official documentation](https://chat-guard.vercel.app/getting-started/how-to-install)
 1. Open one of the supported messenger
 1. Now fallow the documentation about starting a secure conversation in [how to use documentation](https://chat-guard.vercel.app/getting-started/how-to-use)
