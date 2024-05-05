@@ -12,19 +12,9 @@ Welcome to Chat Guard for. This guide will walk you through the steps to downloa
 
 ## Chrome
 
-::: tip
-Watch "[How to install chrome extension"](https://www.youtube.com/watch?v=yNFwFQrc27Q) on youtube
-:::
+[![chrome store](/images/chromeStore.svg)](https://chromewebstore.google.com/detail/chatguard-beta/fokigjblcpglhdmjimcpmjikdfmchccg)
 
-1. Download the latest extension file from [download page](https://github.com/PrivacyForge/ChatGuard/releases).
-
-2. Unzip the extension content into a folder
-
-3. Open Chrome and go to `chrome://extensions/`.
-
-4. Enable "Developer mode" at the top-right corner.
-
-5. Click "Load unpacked" and select the folder containing the extension files.
+1. Open the link above and Click on "Add to Chrome".
 
 ## Firefox
 
