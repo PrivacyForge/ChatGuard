@@ -6,6 +6,9 @@ export default defineConfig({
   appearance: "dark",
   cleanUrls: true,
   lang: "en-US",
+  sitemap: {
+    hostname: "https://chat-guard.vercel.app",
+  },
   head: [
     ["link", { rel: "icon", href: "/images/logo.svg" }],
     ["script", { async: "", src: "https://www.googletagmanager.com/gtag/js?id=G-J084XJ7N2C" }],
