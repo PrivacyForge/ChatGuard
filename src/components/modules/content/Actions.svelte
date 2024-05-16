@@ -3,7 +3,7 @@
   import LocalStorage from "src/utils/LocalStorage";
   import { clickTo, typeTo } from "src/utils/userAction";
   import { url } from "src/store/url.store";
-  import { chatStore as state } from "src/store/chat.store";
+  import { chatStore } from "src/store/chat.store";
   import type { Contact } from "src/types/Config";
   import type Cipher from "src/class/Cipher";
   import { config } from "src/config";
@@ -21,7 +21,6 @@
   let intervalId: any | null = null;
   let position = { left: 0, top: 0 };
 
-  $: !$state.loading && clearInterval(intervalId);
   const { getSelector } = useConfig();
 
   const checkStatus = () => {
@@ -57,26 +56,18 @@
     position.top = e.clientY;
     isMenuOpen = !isMenuOpen;
   };
-  const handleSendHandshake = async (e: MouseEvent) => {
+  const handleSendHandshake = async () => {
     let textFiled = document.querySelector(getSelector("textField")) as HTMLElement;
     textFiled.focus();
-    if ($state.loading) return;
-    const packet = await cipher.createDRSAPHandshake($url.id);
+    const packet = await cipher.createDRSAPHandshake("request");
     typeTo(getSelector("textField"), packet);
     textFiled = document.querySelector(getSelector("textField")) as HTMLElement;
     textFiled.style.display = "none";
     await wait(50);
-    state.update((state) => ({ ...state, loading: true, submit: true }));
-    textFiled.style.display = "block";
+    chatStore.update((state) => ({ ...state, submit: true }));
     clickTo(getSelector("submitButton"));
+    textFiled.style.display = "block";
     isMenuOpen = false;
-    intervalId = setInterval(() => {
-      const user = LocalStorage.getMap(config.CONTACTS_STORAGE_KEY, $url.id);
-      if ($state.loading && user.publicKey) {
-        checkStatus();
-        state.update((state) => ({ ...state, loading: false }));
-      }
-    }, 100);
   };
   const handleToggleConversation = () => {
     const contact = LocalStorage.getMap(config.CONTACTS_STORAGE_KEY, $url.id);
@@ -109,9 +100,7 @@
     {/if}
     <div on:click|stopPropagation|preventDefault={handleSendHandshake} data-menu-item="true" class="ctc_menu__item">
       <Lock />
-      <span>
-        {status === "safe" ? "retry" : "make"} HandShake
-      </span>
+      <span>Start Secret Chat</span>
     </div>
   </div>
 </div>

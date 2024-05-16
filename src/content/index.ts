@@ -1,7 +1,6 @@
 import Actions from "src/components/modules/content/Actions.svelte";
 import { initLog } from "src/config";
 import Cipher from "src/class/Cipher";
-import LoadingScreen from "src/components/modules/content/LoadingScreen.svelte";
 import useObserver from "src/hooks/useObserver";
 import useRender from "src/hooks/useRender";
 import useUrl from "src/hooks/useUrl";
@@ -12,6 +11,7 @@ import { parseMessage } from "./scripts/messageParser";
 import { registerEventListener } from "./scripts/listeners";
 import { register } from "./scripts/register";
 import { useConfig } from "src/hooks/useConfig";
+import { SvelteToast } from "@zerodevx/svelte-toast";
 
 (async function main() {
   let store = await BrowserStorage.get();
@@ -29,7 +29,7 @@ import { useConfig } from "src/hooks/useConfig";
   const { urlStore } = useUrl(idProvider);
   if (import.meta.env.MODE !== "development") console.log(initLog);
 
-  new LoadingScreen({ target: document.body });
+  new SvelteToast({ target: document.body, props: { options: {} } });
 
   render(getSelector("header"), (target, id) => {
     // Action Menu on the conversation header

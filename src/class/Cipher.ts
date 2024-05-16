@@ -2,9 +2,13 @@ import forge from "node-forge";
 import { config } from "src/config";
 import BrowserStorage from "src/utils/BrowserStorage";
 import LocalStorage from "src/utils/LocalStorage";
-import logger from "src/utils/logger";
 
 export class Cipher {
+  private handshakePrefixMap = {
+    response: config.RES_HANDSHAKE_PREFIX,
+    request: config.REQ_HANDSHAKE_PREFIX,
+  };
+
   public async createDRSAP(message: string, to: string) {
     if (message.trim() === "") return null;
 
@@ -43,49 +47,20 @@ export class Cipher {
     return message;
   }
 
-  public async createDRSAPHandshake(to: string) {
+  public async createDRSAPHandshake(type: "request" | "response") {
     const store = await BrowserStorage.get();
     const cleanedPublicKey = store.user!.publicKey.replace(/[\r\n]/g, "");
     const timestamp = new Date().getTime().toString();
-    const packet =
-      config.HANDSHAKE_PREFIX + btoa(store.user!.guardId) + cleanedPublicKey + timestamp.length + timestamp + btoa(to);
+    const packet = this.handshakePrefixMap[type] + btoa(store.user!.guardId) + cleanedPublicKey + timestamp;
     return packet;
   }
-  public async resolveDRSAPHandshake(packet: string, forId: string) {
-    const store = await BrowserStorage.get();
-    const handshakeArray = packet.split(config.HANDSHAKE_PREFIX)[1].split("");
+  public async resolveDRSAPHandshake(type: "request" | "response", packet: string) {
+    const handshakeArray = packet.split(this.handshakePrefixMap[type])[1].split("");
     const guardId = atob(handshakeArray.splice(0, 48).join(""));
     const publicKey = handshakeArray.splice(0, 178).join("");
-    const timestampLength = handshakeArray.splice(0, 2).join("");
-    const timestamp = handshakeArray.splice(0, +timestampLength).join("");
-    const toId = atob(handshakeArray.join(""));
-
-    if (store.user?.guardId === guardId || forId === "") return;
-    const oldContact = LocalStorage.getMap(config.CONTACTS_STORAGE_KEY, forId);
-    if (+timestamp < +(oldContact.timestamp || 0)) return logger.debug(`Handshake ${toId} is old`);
-    const allHandshakes = LocalStorage.get(config.CONTACTS_STORAGE_KEY);
-    let isFound = false;
-    for (let handshake in allHandshakes) {
-      if (publicKey === allHandshakes[handshake].publicKey) isFound = true;
-    }
-    if (isFound) {
-      logger.info(`Already have Handshake ${toId}`);
-      if (!oldContact.publicKey) return;
-      LocalStorage.setMap(config.CONTACTS_STORAGE_KEY, forId, {
-        ...oldContact,
-      });
-      return;
-    }
-
-    LocalStorage.setMap(config.CONTACTS_STORAGE_KEY, forId, {
-      publicKey,
-      timestamp,
-      enable: true,
-    });
-    logger.info(`New Handshake ${toId} registered`);
-    return true;
+    const timestamp = handshakeArray.join("");
+    return { guardId, timestamp, publicKey };
   }
-
   public static validatePublicPem(pem: string) {
     try {
       forge.pki.publicKeyFromPem(pem);
