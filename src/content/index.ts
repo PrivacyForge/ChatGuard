@@ -12,8 +12,27 @@ import { registerEventListener } from "./scripts/listeners";
 import { register } from "./scripts/register";
 import { useConfig } from "src/hooks/useConfig";
 import { SvelteToast } from "@zerodevx/svelte-toast";
+import { generateKey, encrypt, decrypt, createMessage, readKey, readMessage, readPrivateKey } from "openpgp";
 
 (async function main() {
+  const { privateKey, publicKey } = await generateKey({ curve: "ed25519", userIDs: [{ name: "mosi" }] });
+  const publicKeyaa = await readKey({ armoredKey: privateKey });
+  const privateKeyaa = await readPrivateKey({ armoredKey: privateKey });
+
+  const arMessage = await encrypt({
+    message: await createMessage({ text: "Hello, World!" }),
+    encryptionKeys: publicKeyaa,
+  });
+
+  const message = await readMessage({
+    armoredMessage: arMessage, // parse armored message
+  });
+  const { data: decrypted } = await decrypt({
+    message,
+    decryptionKeys: privateKeyaa,
+  });
+  console.log(decrypted);
+
   let store = await BrowserStorage.get();
   if (!store.enable) return null;
   await register();
