@@ -1,6 +1,5 @@
 import Actions from "src/components/modules/content/Actions.svelte";
 import { initLog } from "src/config";
-import Cipher from "src/class/Cipher";
 import useObserver from "src/hooks/useObserver";
 import useRender from "src/hooks/useRender";
 import useUrl from "src/hooks/useUrl";
@@ -11,28 +10,8 @@ import { parseMessage } from "./scripts/messageParser";
 import { registerEventListener } from "./scripts/listeners";
 import { register } from "./scripts/register";
 import { useConfig } from "src/hooks/useConfig";
-import { SvelteToast } from "@zerodevx/svelte-toast";
-import { generateKey, encrypt, decrypt, createMessage, readKey, readMessage, readPrivateKey } from "openpgp";
 
 (async function main() {
-  const { privateKey, publicKey } = await generateKey({ curve: "ed25519", userIDs: [{ name: "mosi" }] });
-  const publicKeyaa = await readKey({ armoredKey: privateKey });
-  const privateKeyaa = await readPrivateKey({ armoredKey: privateKey });
-
-  const arMessage = await encrypt({
-    message: await createMessage({ text: "Hello, World!" }),
-    encryptionKeys: publicKeyaa,
-  });
-
-  const message = await readMessage({
-    armoredMessage: arMessage, // parse armored message
-  });
-  const { data: decrypted } = await decrypt({
-    message,
-    decryptionKeys: privateKeyaa,
-  });
-  console.log(decrypted);
-
   let store = await BrowserStorage.get();
   if (!store.enable) return null;
   await register();
@@ -42,17 +21,14 @@ import { generateKey, encrypt, decrypt, createMessage, readKey, readMessage, rea
   if (!name || !idProvider) return logger.error(`config notfound for ${location.hostname}`);
   logger.info({ type, isTouch, idProvider, name });
 
-  const cipher = new Cipher();
   const { onObserve: onRootObserver } = useObserver();
   const { render } = useRender();
   const { urlStore } = useUrl(idProvider);
   if (import.meta.env.MODE !== "development") console.log(initLog);
 
-  new SvelteToast({ target: document.body, props: { options: {} } });
-
   render(getSelector("header"), (target, id) => {
     // Action Menu on the conversation header
-    new Actions({ target, props: { cipher, id } });
+    new Actions({ target, props: { id } });
   });
   // event listener for user action (type,click,sending message)
   registerEventListener(urlStore);
@@ -60,6 +36,6 @@ import { generateKey, encrypt, decrypt, createMessage, readKey, readMessage, rea
   onRootObserver(() => {
     // On message receive will run and parse it
     const messages = Array.from(document.querySelectorAll(getSelector("message")));
-    messages.forEach(async (message, index) => parseMessage(urlStore, message as HTMLElement, messages, index));
+    messages.forEach(async (_, index) => parseMessage(messages, index, store));
   });
 })();

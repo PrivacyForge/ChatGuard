@@ -19,10 +19,8 @@ export interface Selector {
 }
 
 export interface Config {
-  CONTACTS_STORAGE_KEY: string;
   ENCRYPT_PREFIX: string;
-  REQ_HANDSHAKE_PREFIX: string;
-  RES_HANDSHAKE_PREFIX: string;
+  HANDSHAKE_PREFIX: string;
 }
 
 export interface Contact {
@@ -32,7 +30,5 @@ export interface Contact {
 }
 
 export interface HandshakePacket {
-  guardId: string;
   publicKey: string;
-  timestamp: string;
 }

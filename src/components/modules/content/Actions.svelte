@@ -5,26 +5,25 @@
   import { url } from "src/store/url.store";
   import { chatStore } from "src/store/chat.store";
   import type { Contact } from "src/types/Config";
-  import type Cipher from "src/class/Cipher";
-  import { config } from "src/config";
   import { wait } from "src/utils/wait";
   import Lock from "src/components/icon/Lock.svelte";
   import { useConfig } from "src/hooks/useConfig";
+  import BrowserStorage from "src/utils/BrowserStorage";
+  import Cipher from "src/class/Cipher";
 
-  export let cipher: Cipher;
   export let id: string;
 
   let status: "safe" | "unsafe" = "unsafe";
   let currentContact: null | Contact = null;
   let isMenuOpen = false;
   let openFromLeft = false;
-  let intervalId: any | null = null;
   let position = { left: 0, top: 0 };
 
   const { getSelector } = useConfig();
 
-  const checkStatus = () => {
-    const contact = LocalStorage.getMap(config.CONTACTS_STORAGE_KEY, $url.id);
+  const checkStatus = async () => {
+    const store = await BrowserStorage.get();
+    const contact = LocalStorage.getMap(store.localStorageKey as string, $url.id);
     contact.publicKey ? (status = "safe") : (status = "unsafe");
     currentContact = contact;
   };
@@ -36,11 +35,12 @@
     if (!isMenu) isMenuOpen = false;
   };
 
-  onMount(() => {
+  onMount(async () => {
+    const store = await BrowserStorage.get();
+    LocalStorage.on(store.localStorageKey as string, checkStatus);
     document.addEventListener("pointerdown", handleCloseMenu);
   });
   onDestroy(() => {
-    clearInterval(intervalId);
     document.removeEventListener("pointerdown", handleCloseMenu);
   });
 
@@ -57,10 +57,11 @@
     isMenuOpen = !isMenuOpen;
   };
   const handleSendHandshake = async () => {
+    const store = await BrowserStorage.get();
     let textFiled = document.querySelector(getSelector("textField")) as HTMLElement;
     textFiled.focus();
-    const packet = await cipher.createDRSAPHandshake("request");
-    typeTo(getSelector("textField"), packet);
+    const publicKey = btoa(store.user!.publicKey);
+    typeTo(getSelector("textField"), publicKey);
     textFiled = document.querySelector(getSelector("textField")) as HTMLElement;
     textFiled.style.display = "none";
     await wait(50);
@@ -69,10 +70,22 @@
     textFiled.style.display = "block";
     isMenuOpen = false;
   };
-  const handleToggleConversation = () => {
-    const contact = LocalStorage.getMap(config.CONTACTS_STORAGE_KEY, $url.id);
+  const handleLoadPublicKey = async () => {
+    const store = await BrowserStorage.get();
+    const publicKey = prompt() as string;
+    if (!publicKey) return;
+    const isValid = Cipher.validatePublickey(publicKey.trim());
+    if (!isValid) return alert("Public key is not valid !");
+    LocalStorage.setMap(store.localStorageKey as string, $url.id, {
+      enable: true,
+      publicKey,
+    });
+  };
+  const handleToggleConversation = async () => {
+    const store = await BrowserStorage.get();
+    const contact = LocalStorage.getMap(store.localStorageKey as string, $url.id);
     const newContact = { ...contact, enable: !contact.enable };
-    LocalStorage.setMap(config.CONTACTS_STORAGE_KEY, $url.id, newContact);
+    LocalStorage.setMap(store.localStorageKey as string, $url.id, newContact);
     currentContact = newContact;
   };
 </script>
@@ -95,12 +108,12 @@
     {#if status === "safe"}
       <div on:click|stopPropagation={handleToggleConversation} data-menu-item="true" class="ctc_menu__item">
         <div class="ctc_radio" class:enable={currentContact?.enable}></div>
-        <span>Enable</span>
+        <span>Encrypt messages</span>
       </div>
     {/if}
     <div on:click|stopPropagation|preventDefault={handleSendHandshake} data-menu-item="true" class="ctc_menu__item">
       <Lock />
-      <span>Start Secret Chat</span>
+      <span>Send public key</span>
     </div>
   </div>
 </div>

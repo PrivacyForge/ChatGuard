@@ -1,5 +1,4 @@
 import Cipher from "src/class/Cipher";
-import { config } from "src/config";
 import useListener from "src/hooks/useListener";
 import { chatStore } from "src/store/chat.store";
 import type { Url } from "src/store/url.store";
@@ -10,16 +9,17 @@ import { clickTo, typeTo } from "src/utils/userAction";
 import { wait } from "src/utils/wait";
 import { makeElementInvisible, makeElementVisible } from "src/utils/elementVisibility";
 import { useConfig } from "src/hooks/useConfig";
+import BrowserStorage from "src/utils/BrowserStorage";
 
-export const registerEventListener = (urlStore: Url) => {
-  const cipher = new Cipher();
+export const registerEventListener = async (urlStore: Url) => {
   const type = getDeviceType();
   const { getSelector } = useConfig();
   const isTouch = type === "mobile" ? true : false;
   const { onClick } = useListener();
+  const store = await BrowserStorage.get();
 
   const handleSubmitClicked = async (e: Event) => {
-    const contact = LocalStorage.getMap(config.CONTACTS_STORAGE_KEY, urlStore.id);
+    const contact = LocalStorage.getMap(store.localStorageKey as string, urlStore.id);
     let textFieldElement = document.querySelector(getSelector("textField")) as HTMLElement;
     const messageLengthIsOk = (textFieldElement.textContent || "").length <= 1200;
 
@@ -31,10 +31,11 @@ export const registerEventListener = (urlStore: Url) => {
     if (!messageLengthIsOk) return alert("character length should be bellow 1200 character");
 
     makeElementInvisible(textFieldElement);
-    const encrypted = await cipher.createDRSAP(textFieldElement.textContent || "", urlStore.id);
+    const publicKeys = [store.user?.publicKey, contact.publicKey];
+    const encrypted = await Cipher.createE2EPacket(publicKeys, textFieldElement.textContent || "");
     if (!encrypted) return makeElementVisible(textFieldElement);
 
-    typeTo(getSelector("textField"), encrypted);
+    typeTo(getSelector("textField"), btoa(encrypted));
     await wait(25);
     chatStore.update((prev) => ({ ...prev, clickSubmit: true }));
     clickTo(getSelector("submitButton"));
@@ -46,24 +47,25 @@ export const registerEventListener = (urlStore: Url) => {
   const handleTextFieldKeyDown = async (e: KeyboardEvent) => {
     // check if we writing text to our textfield or not
     let isEqual = (e.target as HTMLElement).isEqualNode(document.querySelector(getSelector("textField")));
+    let textFieldElement = document.querySelector(getSelector("textField")) as HTMLElement;
     if (!isEqual) return;
 
-    const contact = LocalStorage.getMap(config.CONTACTS_STORAGE_KEY, urlStore.id);
-    let textFieldElement = document.querySelector(getSelector("textField")) as HTMLElement;
+    const contact = LocalStorage.getMap(store.localStorageKey as string, urlStore.id);
     const messageLengthIsOk = (textFieldElement.textContent || "").length <= 1200;
 
-    if (e.key !== "Enter" || !contact.enable || !textFieldElement.textContent?.trim() || e.shiftKey || isTouch) {
-      return;
-    }
+    if (e.key !== "Enter" || !contact.enable || !textFieldElement.textContent?.trim() || e.shiftKey || isTouch) return;
+
     e.preventDefault();
     e.stopImmediatePropagation();
 
     if (!messageLengthIsOk) return alert("character length should be bellow 1200 character");
     makeElementInvisible(textFieldElement);
-    const encrypted = await cipher.createDRSAP(textFieldElement.textContent || "", urlStore.id);
+
+    const publicKeys = [store.user?.publicKey, contact.publicKey];
+    const encrypted = await Cipher.createE2EPacket(publicKeys, textFieldElement.textContent || "");
     if (!encrypted) return makeElementVisible(textFieldElement);
 
-    typeTo(getSelector("textField"), encrypted);
+    typeTo(getSelector("textField"), btoa(encrypted));
     await wait(25);
     chatStore.update((prev) => ({ ...prev, submit: true }));
     clickTo(getSelector("submitButton"));

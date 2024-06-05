@@ -1,5 +1,4 @@
 interface User {
-  guardId: string;
   publicKey: string;
   privateKey: string;
 }
@@ -7,10 +6,12 @@ interface User {
 export type IStorage = {
   user: User | null;
   enable: boolean;
+  localStorageKey: string | null;
 };
 
 const defaultStorage: IStorage = {
   user: null,
+  localStorageKey: null,
   enable: true,
 };
 

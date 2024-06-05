@@ -16,12 +16,10 @@ export const initLog = `
  
 `;
 
-export const version = "V1";
+export const version = "V2";
 export const config: Config = {
-  CONTACTS_STORAGE_KEY: "chatguard_contacts",
-  ENCRYPT_PREFIX: `::CGM_${version}::`,
-  REQ_HANDSHAKE_PREFIX: `::HSQ_${version}::`,
-  RES_HANDSHAKE_PREFIX: `::HSR_${version}::`,
+  ENCRYPT_PREFIX: "-----BEGIN PGP MESSAGE-----",
+  HANDSHAKE_PREFIX: "-----BEGIN PGP PUBLIC KEY BLOCK-----",
 };
 export const selectors: Record<string, Selector> = {
   "web.bale.ai": {

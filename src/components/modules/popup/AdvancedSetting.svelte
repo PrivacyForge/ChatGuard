@@ -20,13 +20,12 @@
     if (!isOK) return;
 
     const store = await BrowserStorage.get();
-    const { privateKey, publicKey } = await Cipher.generateKeyPair();
+    const { privateKey, publicKey } = await Cipher.generateKeys();
     const browserData = {
       ...store,
       enable: true,
       user: {
-        publicKey: publicKey.replace(/[\r\n]/g, ""),
-        guardId: crypto.randomUUID(),
+        publicKey,
         privateKey,
       },
     };
@@ -47,26 +46,36 @@
   const handleImportChatGuardConfig = () => {
     document.getElementById("import-upload")?.click();
   };
+  const exportUserPublicKey = async () => {
+    const store = await BrowserStorage.get();
+    const config = store.user!.publicKey;
+    const a = document.createElement("a");
+    const file = new Blob([config], { type: "text/plain" });
+    a.href = URL.createObjectURL(file);
+    a.download = "publicKey.txt";
+    a.click();
+    URL.revokeObjectURL(a.href);
+  };
   const importChatGuardConfig = async (e: Event) => {
     const store = await BrowserStorage.get();
     const target = e.target as HTMLInputElement;
     const fr = new FileReader();
     fr.onload = function () {
-      if (typeof fr.result !== "string") return (error = "invalid config file");
+      if (typeof fr.result !== "string") return (error = "Invalid config file");
 
       const configText = fr.result || "";
       try {
         const config = JSON.parse(configText);
-        if (!config.privateKey || !config.publicKey || !config.guardId) return (error = "invalid config file");
-        const isPublicValid = Cipher.validatePublicPem(config.publicKey);
-        const isPrivateValid = Cipher.validatePrivatePem(config.privateKey);
-        if (!isPrivateValid || !isPublicValid) return (error = "invalid config file");
+        if (!config.privateKey || !config.publicKey) return (error = "Invalid config file");
+        const isPublicValid = Cipher.validatePublickey(config.publicKey);
+        const isPrivateValid = Cipher.validatePrivateKey(config.privateKey);
+        if (!isPrivateValid || !isPublicValid) return (error = "Invalid config file");
         BrowserStorage.set({ ...store, user: config });
         browserStore = { ...store, user: config };
         refreshPage();
         error = "";
       } catch (e) {
-        error = "invalid config file";
+        error = "Invalid config file";
       }
     };
     fr.readAsText((target as any).files[0]);
@@ -84,19 +93,23 @@
     </div>
     <input on:change={importChatGuardConfig} id="conf" type="file" hidden />
     <label id="import-upload" class="label" for="conf"> </label>
+    <md-filled-button role="button" on:pointerup={exportUserPublicKey} class="fullwidth">
+      <img slot="icon" width="18px" src={exportIcon} alt="" />
+      Export public key
+    </md-filled-button>
     <div class="config-buttons">
       <md-filled-button role="button" on:pointerup={exportChatGuardConfig} class="button">
         <img slot="icon" width="18px" src={exportIcon} alt="" />
-        Export
+        Export Config
       </md-filled-button>
       <md-filled-button on:pointerup={handleImportChatGuardConfig} role="button" class="button">
         <img slot="icon" width="18px" src={importIcon} alt="" />
-        Import
+        Import Config
       </md-filled-button>
     </div>
     <md-outlined-button role="button" on:pointerup={resetChatGuardConfig} class="reset-button">
       <img slot="icon" width="18px" src={resetIcon} alt="" />
-      Reset
+      Reset Everything
     </md-outlined-button>
     {#if error}
       <p class="error">
@@ -134,6 +147,7 @@
         display: flex;
         gap: 0.5rem;
         align-items: center;
+        margin-top: 0.5rem;
       }
       .reset-button {
         --md-sys-color-primary: red;
@@ -143,6 +157,9 @@
       .button {
         width: 50%;
         font-size: 0.8rem;
+      }
+      .fullwidth {
+        width: 100%;
       }
       .label {
         pointer-events: none;

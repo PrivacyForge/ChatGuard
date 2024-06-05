@@ -1,6 +1,9 @@
 export function findTargetRecursive(element: HTMLElement | Node): null | HTMLElement {
-  if (element.nodeType === 3 && element.textContent?.startsWith("::")) {
-    return element.parentElement; // Return the parent element
+  if (element.nodeType === 3) {
+    try {
+      const base64Decoded = atob(element.textContent || "");
+      if (base64Decoded?.startsWith("-----")) return element.parentElement;
+    } catch (error) {}
   }
   // Check child nodes recursively
   if (element.childNodes) {
