@@ -31,7 +31,8 @@ export const registerEventListener = async (urlStore: Url) => {
     if (!messageLengthIsOk) return alert("character length should be bellow 1200 character");
 
     makeElementInvisible(textFieldElement);
-    const publicKeys = [store.user?.publicKey, contact.publicKey];
+    if (!store.publicKey) return;
+    const publicKeys = [store.publicKey, contact.publicKey];
     const encrypted = await Cipher.createE2EPacket(publicKeys, textFieldElement.textContent || "");
     if (!encrypted) return makeElementVisible(textFieldElement);
 
@@ -61,7 +62,8 @@ export const registerEventListener = async (urlStore: Url) => {
     if (!messageLengthIsOk) return alert("character length should be bellow 1200 character");
     makeElementInvisible(textFieldElement);
 
-    const publicKeys = [store.user?.publicKey, contact.publicKey];
+    if (!store.publicKey) return;
+    const publicKeys = [store.publicKey, contact.publicKey];
     const encrypted = await Cipher.createE2EPacket(publicKeys, textFieldElement.textContent || "");
     if (!encrypted) return makeElementVisible(textFieldElement);
 

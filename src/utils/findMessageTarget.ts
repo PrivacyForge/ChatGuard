@@ -2,16 +2,14 @@ export function findTargetRecursive(element: HTMLElement | Node): null | HTMLEle
   if (element.nodeType === 3) {
     try {
       const base64Decoded = atob(element.textContent || "");
-      if (base64Decoded?.startsWith("-----")) return element.parentElement;
+      if (base64Decoded?.startsWith("-----")) return element as HTMLElement;
     } catch (error) {}
   }
   // Check child nodes recursively
   if (element.childNodes) {
     for (let i = 0; i < element.childNodes.length; i++) {
       const foundElement = findTargetRecursive(element.childNodes[i]);
-      if (foundElement) {
-        return foundElement; // Return the found element
-      }
+      if (foundElement) return foundElement;
     }
   }
   return null;

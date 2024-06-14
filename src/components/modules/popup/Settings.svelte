@@ -23,7 +23,7 @@
   });
   const handleCheckbox = async (en: string) => {
     const user = await BrowserStorage.get();
-    BrowserStorage.set({ ...user, enable: en === "on" ? true : false });
+    await BrowserStorage.set({ ...user, enable: en === "on" ? true : false });
   };
   const handleChangeCheckbox = () => {
     refreshPage();

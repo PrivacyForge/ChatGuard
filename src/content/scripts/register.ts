@@ -5,21 +5,21 @@ import logger from "src/utils/logger";
 
 export async function register() {
   let store = await BrowserStorage.get();
-
-  if (!store.user) {
-    const { privateKey, publicKey } = await Cipher.generateKeys();
-    BrowserStorage.set({
-      ...store,
-      enable: true,
-      localStorageKey: generateRandomStorageKey(),
-      user: { publicKey, privateKey },
-    });
-    logger.info("initial login, private,public key created");
+  try {
+    if (!store.privateKey || !store.publicKey || !store.localStorageKey) {
+      const { privateKey, publicKey } = await Cipher.generateKeys();
+      await BrowserStorage.set({
+        ...store,
+        localStorageKey: generateRandomStorageKey(),
+        privateKey,
+        publicKey,
+      });
+      store = await BrowserStorage.get();
+      logger.info("initial login, private,public key created");
+    }
+  } catch (error) {
+    console.log(error);
   }
-  if (!store.localStorageKey) {
-    BrowserStorage.set({
-      ...store,
-      localStorageKey: generateRandomStorageKey(),
-    });
-  }
+  store = await BrowserStorage.get();
+  return store;
 }

@@ -60,7 +60,8 @@
     const store = await BrowserStorage.get();
     let textFiled = document.querySelector(getSelector("textField")) as HTMLElement;
     textFiled.focus();
-    const publicKey = btoa(store.user!.publicKey);
+    if (!store.publicKey) return;
+    const publicKey = btoa(store.publicKey);
     typeTo(getSelector("textField"), publicKey);
     textFiled = document.querySelector(getSelector("textField")) as HTMLElement;
     textFiled.style.display = "none";

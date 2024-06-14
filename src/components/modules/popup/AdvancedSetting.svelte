@@ -30,12 +30,12 @@
       },
     };
     browserStore = browserData;
-    BrowserStorage.set(browserData);
+    await BrowserStorage.set(browserData);
     refreshPage();
   };
   const exportChatGuardConfig = async () => {
     const store = await BrowserStorage.get();
-    const config = JSON.stringify(store.user);
+    const config = JSON.stringify({ privateKey: store.privateKey, publicKey: store.publicKey });
     const a = document.createElement("a");
     const file = new Blob([config], { type: "text/plain" });
     a.href = URL.createObjectURL(file);
@@ -48,7 +48,8 @@
   };
   const exportUserPublicKey = async () => {
     const store = await BrowserStorage.get();
-    const config = store.user!.publicKey;
+    if (!store.publicKey) return;
+    const config = store.publicKey;
     const a = document.createElement("a");
     const file = new Blob([config], { type: "text/plain" });
     a.href = URL.createObjectURL(file);
@@ -60,7 +61,7 @@
     const store = await BrowserStorage.get();
     const target = e.target as HTMLInputElement;
     const fr = new FileReader();
-    fr.onload = function () {
+    fr.onload = async function () {
       if (typeof fr.result !== "string") return (error = "Invalid config file");
 
       const configText = fr.result || "";
@@ -70,8 +71,8 @@
         const isPublicValid = Cipher.validatePublickey(config.publicKey);
         const isPrivateValid = Cipher.validatePrivateKey(config.privateKey);
         if (!isPrivateValid || !isPublicValid) return (error = "Invalid config file");
-        BrowserStorage.set({ ...store, user: config });
-        browserStore = { ...store, user: config };
+        await BrowserStorage.set({ ...store, user: config });
+        browserStore = { ...store, privateKey: config.privateKey, publicKey: config.publicKey };
         refreshPage();
         error = "";
       } catch (e) {

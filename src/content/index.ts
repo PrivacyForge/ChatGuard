@@ -3,7 +3,6 @@ import { initLog } from "src/config";
 import useObserver from "src/hooks/useObserver";
 import useRender from "src/hooks/useRender";
 import useUrl from "src/hooks/useUrl";
-import BrowserStorage from "src/utils/BrowserStorage";
 import { getDeviceType } from "src/utils";
 import logger from "src/utils/logger";
 import { parseMessage } from "./scripts/messageParser";
@@ -12,9 +11,8 @@ import { register } from "./scripts/register";
 import { useConfig } from "src/hooks/useConfig";
 
 (async function main() {
-  let store = await BrowserStorage.get();
+  const store = await register();
   if (!store.enable) return null;
-  await register();
   const type = getDeviceType();
   const { getSelector, idProvider, name } = useConfig();
   const isTouch = type === "mobile" ? true : false;

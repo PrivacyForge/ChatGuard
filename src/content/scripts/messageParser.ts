@@ -5,6 +5,7 @@ import { useConfig } from "src/hooks/useConfig";
 import type { IStorage } from "src/utils/BrowserStorage";
 import { changeTextNode } from "src/utils/changeTextNode";
 import { findFirstTextNode, findTargetRecursive } from "src/utils/findMessageTarget";
+import { wait } from "src/utils/wait";
 
 export const parseMessage = async (messages: Element[], index: number, store: IStorage) => {
   const { getSelector } = useConfig();
@@ -20,16 +21,16 @@ export const parseMessage = async (messages: Element[], index: number, store: IS
   if (textNodeContentDecoded.startsWith(config.ENCRYPT_PREFIX)) {
     changeTextNode(target, "Parsing ...");
     try {
-      const packet = await Cipher.decryptE2EPacket(store.user!.privateKey, textNodeContentDecoded);
-      if (!packet) {
-        changeTextNode(target, "⛔ Error in decryption");
-      } else {
-        const status = document.createElement("span");
-        status.textContent = "🔒 ";
-        status.style.opacity = "0.4";
-        changeTextNode(target, packet);
-        target.prepend(status);
-      }
+      if (!store.privateKey) return changeTextNode(target, "⛔ Error in decryption");
+      const packet = await Cipher.decryptE2EPacket(store.privateKey, textNodeContentDecoded);
+      if (!packet) return changeTextNode(target, "⛔ Error in decryption");
+
+      const status = document.createElement("span");
+      status.textContent = "🔒 ";
+      status.style.opacity = "0.4";
+      changeTextNode(target, packet);
+      target.prepend(status);
+
       (target as any).dir = "auto";
     } catch (error) {
       changeTextNode(target, "⛔ Error in decryption");
@@ -38,9 +39,8 @@ export const parseMessage = async (messages: Element[], index: number, store: IS
   }
   // HandShakes Request
   if (textNodeContentDecoded.startsWith(config.HANDSHAKE_PREFIX)) {
-    changeTextNode(target, "Parsing ...");
     const parent = document.createElement("div");
-    target.textContent = "";
+    changeTextNode(target, "");
     new Handshake({ target: parent, props: { publicKey: textNodeContentDecoded } });
     target.prepend(parent);
     return;

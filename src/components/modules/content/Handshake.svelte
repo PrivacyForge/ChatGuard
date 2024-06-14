@@ -2,6 +2,7 @@
   import { url } from "src/store/url.store";
   import BrowserStorage from "src/utils/BrowserStorage";
   import LocalStorage from "src/utils/LocalStorage";
+  import { wait } from "src/utils/wait";
   import { onMount } from "svelte";
 
   export let publicKey: string;
@@ -18,7 +19,8 @@
   const handleShowHandshake = () => {
     alert(publicKey);
   };
-  const checkAlreadyUsing = (localStorageKey: string) => {
+  const checkAlreadyUsing = async (localStorageKey: string) => {
+    await wait(100);
     const contact = LocalStorage.getMap(localStorageKey as string, $url.id);
     if (!contact || contact.publicKey !== publicKey) return (alreadyUsing = false);
     alreadyUsing = true;
