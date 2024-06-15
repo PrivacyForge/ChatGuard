@@ -16,11 +16,10 @@ export const initLog = `
  
 `;
 
-export const version = "V1";
+export const version = "V2";
 export const config: Config = {
-  CONTACTS_STORAGE_KEY: "chatguard_contacts",
-  ENCRYPT_PREFIX: `::CGM_${version}::`,
-  HANDSHAKE_PREFIX: `::HSH_${version}::`,
+  ENCRYPT_PREFIX: "-----BEGIN PGP MESSAGE-----",
+  HANDSHAKE_PREFIX: "-----BEGIN PGP PUBLIC KEY BLOCK-----",
 };
 export const selectors: Record<string, Selector> = {
   "web.bale.ai": {
@@ -76,7 +75,7 @@ export const selectors: Record<string, Selector> = {
     selector: {
       textField: "#editable-message-text",
       header: "#MiddleColumn > div.messages-layout > div.MiddleHeader",
-      message: "[data-message-id]",
+      message: ".Message[data-message-id]",
       innerMessageText: ".text-content",
       submitButton:
         "#MiddleColumn > div.messages-layout > div.Transition > div > div.middle-column-footer > div.Composer.shown.mounted > button",

@@ -10,7 +10,7 @@ import { get } from "svelte/store";
 const useUrl = (idProvider: string) => {
   const urlStore = get(url);
 
-  setInterval(() => {
+  const calculateUrl = () => {
     const urlStore = get(url);
     if (urlStore.href === location.href) return;
     const href = location.href;
@@ -25,7 +25,9 @@ const useUrl = (idProvider: string) => {
     }
     const id = new URLSearchParams(location.search).get(idProvider) || "";
     url.set({ id, href });
-  }, 100);
+  };
+  calculateUrl();
+  setInterval(calculateUrl, 100);
 
   url.subscribe((newUrlStore) => {
     urlStore.href = newUrlStore.href;

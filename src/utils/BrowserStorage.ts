@@ -1,16 +1,15 @@
-interface User {
-  guardId: string;
-  publicKey: string;
-  privateKey: string;
-}
-
 export type IStorage = {
-  user: User | null;
+  publicKey: string | null;
+  privateKey: string | null;
   enable: boolean;
+  localStorageKey: string | null;
 };
 
 const defaultStorage: IStorage = {
-  user: null,
+  publicKey: null,
+  privateKey: null,
+  localStorageKey: null,
+
   enable: true,
 };
 
@@ -21,7 +20,7 @@ async function get() {
   return chrome.storage.sync.get(defaultStorage) as Promise<IStorage>;
 }
 
-async function set(value: any) {
+async function set(value: IStorage) {
   if (typeof browser !== "undefined") {
     return browser.storage.sync.set(value);
   }

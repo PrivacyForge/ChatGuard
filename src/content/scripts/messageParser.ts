@@ -1,12 +1,13 @@
 import Cipher from "src/class/Cipher";
+import Handshake from "src/components/modules/content/Handshake.svelte";
 import { config } from "src/config";
 import { useConfig } from "src/hooks/useConfig";
-import type { Url } from "src/store/url.store";
+import type { IStorage } from "src/utils/BrowserStorage";
 import { changeTextNode } from "src/utils/changeTextNode";
 import { findFirstTextNode, findTargetRecursive } from "src/utils/findMessageTarget";
+import { wait } from "src/utils/wait";
 
-export const parseMessage = async (urlStore: Url, message: Element, messages: Element[], index: number) => {
-  const cipher = new Cipher();
+export const parseMessage = async (messages: Element[], index: number, store: IStorage) => {
   const { getSelector } = useConfig();
 
   const targets = Array.from(messages[index].querySelectorAll(getSelector("innerMessageText")));
@@ -14,31 +15,34 @@ export const parseMessage = async (urlStore: Url, message: Element, messages: El
   if (!target) return;
 
   const textNodeContent = findFirstTextNode(target);
+  const textNodeContentDecoded = atob(textNodeContent);
 
   // Messages
-  if (textNodeContent.startsWith(config.ENCRYPT_PREFIX)) {
+  if (textNodeContentDecoded.startsWith(config.ENCRYPT_PREFIX)) {
     changeTextNode(target, "Parsing ...");
     try {
-      const packet = await cipher.resolveDRSAP(textNodeContent);
-      if (!packet) {
-        changeTextNode(target, "⛔ Error in decryption");
-      } else {
-        const status = document.createElement("span");
-        status.textContent = "🔒 ";
-        status.style.opacity = "0.4";
-        changeTextNode(target, packet);
-        target.prepend(status);
-      }
+      if (!store.privateKey) return changeTextNode(target, "⛔ Error in decryption");
+      const packet = await Cipher.decryptE2EPacket(store.privateKey, textNodeContentDecoded);
+      if (!packet) return changeTextNode(target, "⛔ Error in decryption");
+
+      const status = document.createElement("span");
+      status.textContent = "🔒 ";
+      status.style.opacity = "0.4";
+      changeTextNode(target, packet);
+      target.prepend(status);
+
       (target as any).dir = "auto";
     } catch (error) {
       changeTextNode(target, "⛔ Error in decryption");
     }
     return;
   }
-  // HandShakes
-  if (textNodeContent.startsWith(config.HANDSHAKE_PREFIX)) {
-    cipher.resolveDRSAPHandshake(textNodeContent, urlStore.id);
-    changeTextNode(target, "🤝 encryption Handshake");
+  // HandShakes Request
+  if (textNodeContentDecoded.startsWith(config.HANDSHAKE_PREFIX)) {
+    const parent = document.createElement("div");
+    changeTextNode(target, "");
+    new Handshake({ target: parent, props: { publicKey: textNodeContentDecoded } });
+    target.prepend(parent);
     return;
   }
 };

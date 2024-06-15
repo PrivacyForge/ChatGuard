@@ -19,7 +19,6 @@ export interface Selector {
 }
 
 export interface Config {
-  CONTACTS_STORAGE_KEY: string;
   ENCRYPT_PREFIX: string;
   HANDSHAKE_PREFIX: string;
 }
@@ -28,4 +27,8 @@ export interface Contact {
   enable: boolean;
   publicKey: string;
   timeStamp: string;
+}
+
+export interface HandshakePacket {
+  publicKey: string;
 }
