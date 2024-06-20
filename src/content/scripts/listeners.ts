@@ -1,4 +1,4 @@
-import Cipher from "src/class/Cipher";
+import Cipher from "src/utils/Cipher";
 import useListener from "src/hooks/useListener";
 import { chatStore } from "src/store/chat.store";
 import type { Url } from "src/store/url.store";
@@ -32,11 +32,14 @@ export const registerEventListener = async (urlStore: Url) => {
 
     makeElementInvisible(textFieldElement);
     if (!store.publicKey) return;
-    const publicKeys = [store.publicKey, contact.publicKey];
-    const encrypted = await Cipher.createE2EPacket(publicKeys, textFieldElement.textContent || "");
+    const encrypted = await Cipher.createE2EPacket(
+      contact.publicKey,
+      store.privateKey as string,
+      textFieldElement.textContent || ""
+    );
     if (!encrypted) return makeElementVisible(textFieldElement);
 
-    typeTo(getSelector("textField"), btoa(encrypted));
+    typeTo(getSelector("textField"), "خب " + encrypted);
     await wait(25);
     chatStore.update((prev) => ({ ...prev, clickSubmit: true }));
     clickTo(getSelector("submitButton"));
@@ -63,11 +66,14 @@ export const registerEventListener = async (urlStore: Url) => {
     makeElementInvisible(textFieldElement);
 
     if (!store.publicKey) return;
-    const publicKeys = [store.publicKey, contact.publicKey];
-    const encrypted = await Cipher.createE2EPacket(publicKeys, textFieldElement.textContent || "");
+    const encrypted = await Cipher.createE2EPacket(
+      contact.publicKey,
+      store.privateKey as string,
+      textFieldElement.textContent || ""
+    );
     if (!encrypted) return makeElementVisible(textFieldElement);
 
-    typeTo(getSelector("textField"), btoa(encrypted));
+    typeTo(getSelector("textField"), "خب " + encrypted);
     await wait(25);
     chatStore.update((prev) => ({ ...prev, submit: true }));
     clickTo(getSelector("submitButton"));

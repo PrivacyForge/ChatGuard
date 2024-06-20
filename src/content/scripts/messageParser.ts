@@ -1,28 +1,40 @@
-import Cipher from "src/class/Cipher";
+import Cipher from "src/utils/Cipher";
 import Handshake from "src/components/modules/content/Handshake.svelte";
-import { config } from "src/config";
 import { useConfig } from "src/hooks/useConfig";
 import type { IStorage } from "src/utils/BrowserStorage";
 import { changeTextNode } from "src/utils/changeTextNode";
 import { findFirstTextNode, findTargetRecursive } from "src/utils/findMessageTarget";
-import { wait } from "src/utils/wait";
+import LocalStorage from "src/utils/LocalStorage";
+import { url } from "src/store/url.store";
+import { get } from "svelte/store";
 
 export const parseMessage = async (messages: Element[], index: number, store: IStorage) => {
   const { getSelector } = useConfig();
+  const contact = LocalStorage.getMap(store.localStorageKey as string, get(url).id);
 
   const targets = Array.from(messages[index].querySelectorAll(getSelector("innerMessageText")));
   const target = targets.find((el) => findTargetRecursive(el)) as HTMLElement | null;
   if (!target) return;
 
   const textNodeContent = findFirstTextNode(target);
-  const textNodeContentDecoded = atob(textNodeContent);
+  const words = textNodeContent.split(" ");
+
+  // HandShakes Request
+  if (words[0] === "سلام" && words.length === 21) {
+    words.shift();
+    const parent = document.createElement("div");
+    changeTextNode(target, "");
+    new Handshake({ target: parent, props: { publicKey: words.join(" ") } });
+    target.prepend(parent);
+    return;
+  }
 
   // Messages
-  if (textNodeContentDecoded.startsWith(config.ENCRYPT_PREFIX)) {
-    changeTextNode(target, "Parsing ...");
+  if (words[0] === "خب" && words.length > 8) {
     try {
+      words.shift();
       if (!store.privateKey) return changeTextNode(target, "⛔ Error in decryption");
-      const packet = await Cipher.decryptE2EPacket(store.privateKey, textNodeContentDecoded);
+      const packet = await Cipher.decryptE2EPacket(store.privateKey, contact.publicKey, words.join(" "));
       if (!packet) return changeTextNode(target, "⛔ Error in decryption");
 
       const status = document.createElement("span");
@@ -33,16 +45,9 @@ export const parseMessage = async (messages: Element[], index: number, store: IS
 
       (target as any).dir = "auto";
     } catch (error) {
+      console.log(error);
       changeTextNode(target, "⛔ Error in decryption");
     }
-    return;
-  }
-  // HandShakes Request
-  if (textNodeContentDecoded.startsWith(config.HANDSHAKE_PREFIX)) {
-    const parent = document.createElement("div");
-    changeTextNode(target, "");
-    new Handshake({ target: parent, props: { publicKey: textNodeContentDecoded } });
-    target.prepend(parent);
     return;
   }
 };

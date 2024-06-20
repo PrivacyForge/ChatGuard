@@ -18,11 +18,6 @@ export interface Selector {
   idProvider: string;
 }
 
-export interface Config {
-  ENCRYPT_PREFIX: string;
-  HANDSHAKE_PREFIX: string;
-}
-
 export interface Contact {
   enable: boolean;
   publicKey: string;

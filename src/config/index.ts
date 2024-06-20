@@ -1,4 +1,4 @@
-import type { Config, Selector } from "src/types/Config";
+import type { Selector } from "src/types/Config";
 
 export const initLog = `
  ██████ ██   ██  █████  ████████          
@@ -16,11 +16,6 @@ export const initLog = `
  
 `;
 
-export const version = "V2";
-export const config: Config = {
-  ENCRYPT_PREFIX: "-----BEGIN PGP MESSAGE-----",
-  HANDSHAKE_PREFIX: "-----BEGIN PGP PUBLIC KEY BLOCK-----",
-};
 export const selectors: Record<string, Selector> = {
   "web.bale.ai": {
     selector: {

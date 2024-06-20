@@ -1,5 +1,5 @@
 import BrowserStorage from "src/utils/BrowserStorage";
-import Cipher from "src/class/Cipher";
+import cipher from "src/utils/Cipher";
 import { generateRandomStorageKey } from "src/utils/generateRandomStorageKey";
 import logger from "src/utils/logger";
 
@@ -7,7 +7,7 @@ export async function register() {
   let store = await BrowserStorage.get();
   try {
     if (!store.privateKey || !store.publicKey || !store.localStorageKey) {
-      const { privateKey, publicKey } = await Cipher.generateKeys();
+      const { privateKey, publicKey } = await cipher.generateKeys();
       await BrowserStorage.set({
         ...store,
         localStorageKey: generateRandomStorageKey(),

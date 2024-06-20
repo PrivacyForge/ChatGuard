@@ -1,6 +1,6 @@
 <script lang="ts">
   import BrowserStorage, { type IStorage } from "src/utils/BrowserStorage";
-  import Cipher from "src/class/Cipher";
+  import Cipher from "src/utils/Cipher";
   import { refreshPage } from "src/utils/refreshPage";
   import { onMount } from "svelte";
   import importIcon from "../../../assets/icons/import.svg";
@@ -68,10 +68,7 @@
       try {
         const config = JSON.parse(configText);
         if (!config.privateKey || !config.publicKey) return (error = "Invalid config file");
-        const isPublicValid = Cipher.validatePublickey(config.publicKey);
-        const isPrivateValid = Cipher.validatePrivateKey(config.privateKey);
-        if (!isPrivateValid || !isPublicValid) return (error = "Invalid config file");
-        await BrowserStorage.set({ ...store, user: config });
+        await BrowserStorage.set({ ...store, ...config });
         browserStore = { ...store, privateKey: config.privateKey, publicKey: config.publicKey };
         refreshPage();
         error = "";

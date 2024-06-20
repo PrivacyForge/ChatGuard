@@ -1,8 +1,13 @@
+import { isValidEncoding } from "./WordEncoder";
+
 export function findTargetRecursive(element: HTMLElement | Node): null | HTMLElement {
   if (element.nodeType === 3) {
     try {
-      const base64Decoded = atob(element.textContent || "");
-      if (base64Decoded?.startsWith("-----")) return element as HTMLElement;
+      const text = element.textContent || "";
+      const words = text.split(" ");
+      words.shift();
+      const isValid = isValidEncoding(words.join(" "));
+      if (isValid) return element as HTMLElement;
     } catch (error) {}
   }
   // Check child nodes recursively

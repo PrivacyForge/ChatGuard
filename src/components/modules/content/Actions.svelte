@@ -7,9 +7,10 @@
   import type { Contact } from "src/types/Config";
   import { wait } from "src/utils/wait";
   import Lock from "src/components/icon/Lock.svelte";
+  import Import from "src/components/icon/Import.svelte";
   import { useConfig } from "src/hooks/useConfig";
   import BrowserStorage from "src/utils/BrowserStorage";
-  import Cipher from "src/class/Cipher";
+  import Cipher from "src/utils/Cipher";
 
   export let id: string;
 
@@ -61,8 +62,7 @@
     let textFiled = document.querySelector(getSelector("textField")) as HTMLElement;
     textFiled.focus();
     if (!store.publicKey) return;
-    const publicKey = btoa(store.publicKey);
-    typeTo(getSelector("textField"), publicKey);
+    typeTo(getSelector("textField"), "سلام " + store.publicKey);
     textFiled = document.querySelector(getSelector("textField")) as HTMLElement;
     textFiled.style.display = "none";
     await wait(50);
@@ -75,11 +75,9 @@
     const store = await BrowserStorage.get();
     const publicKey = prompt() as string;
     if (!publicKey) return;
-    const isValid = Cipher.validatePublickey(publicKey.trim());
-    if (!isValid) return alert("Public key is not valid !");
     LocalStorage.setMap(store.localStorageKey as string, $url.id, {
       enable: true,
-      publicKey,
+      publicKey: publicKey.trim(),
     });
   };
   const handleToggleConversation = async () => {
@@ -112,6 +110,10 @@
         <span>Encrypt messages</span>
       </div>
     {/if}
+    <div on:click|stopPropagation|preventDefault={handleLoadPublicKey} data-menu-item="true" class="ctc_menu__item">
+      <Import />
+      <span>Import public key</span>
+    </div>
     <div on:click|stopPropagation|preventDefault={handleSendHandshake} data-menu-item="true" class="ctc_menu__item">
       <Lock />
       <span>Send public key</span>
