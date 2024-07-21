@@ -39,7 +39,7 @@ export const registerEventListener = async (urlStore: Url) => {
     );
     if (!encrypted) return makeElementVisible(textFieldElement);
 
-    typeTo(getSelector("textField"), "خب " + encrypted);
+    typeTo(getSelector("textField"), encrypted);
     await wait(25);
     chatStore.update((prev) => ({ ...prev, clickSubmit: true }));
     clickTo(getSelector("submitButton"));
@@ -73,7 +73,7 @@ export const registerEventListener = async (urlStore: Url) => {
     );
     if (!encrypted) return makeElementVisible(textFieldElement);
 
-    typeTo(getSelector("textField"), "خب " + encrypted);
+    typeTo(getSelector("textField"), encrypted);
     await wait(25);
     chatStore.update((prev) => ({ ...prev, submit: true }));
     clickTo(getSelector("submitButton"));

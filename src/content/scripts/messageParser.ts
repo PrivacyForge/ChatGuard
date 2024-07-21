@@ -11,6 +11,7 @@ import { get } from "svelte/store";
 export const parseMessage = async (messages: Element[], index: number, store: IStorage) => {
   const { getSelector } = useConfig();
   const contact = LocalStorage.getMap(store.localStorageKey as string, get(url).id);
+  if (!store.privateKey) return;
 
   const targets = Array.from(messages[index].querySelectorAll(getSelector("innerMessageText")));
   const target = targets.find((el) => findTargetRecursive(el)) as HTMLElement | null;
@@ -29,25 +30,23 @@ export const parseMessage = async (messages: Element[], index: number, store: IS
     return;
   }
 
+  if (!contact.publicKey) return;
   // Messages
-  if (words[0] === "خب" && words.length > 8) {
-    try {
-      words.shift();
-      if (!store.privateKey) return changeTextNode(target, "⛔ Error in decryption");
-      const packet = await Cipher.decryptE2EPacket(store.privateKey, contact.publicKey, words.join(" "));
-      if (!packet) return changeTextNode(target, "⛔ Error in decryption");
+  try {
+    const isEncrypted = target.getAttribute("encrypted");
+    const errorTry = +(target.getAttribute("error-try") || "0");
 
-      const status = document.createElement("span");
-      status.textContent = "🔒 ";
-      status.style.opacity = "0.4";
-      changeTextNode(target, packet);
-      target.prepend(status);
+    if (isEncrypted) return;
+    if (errorTry === 4) return changeTextNode(target, "⛔ Error in decryption");
 
-      (target as any).dir = "auto";
-    } catch (error) {
-      console.log(error);
-      changeTextNode(target, "⛔ Error in decryption");
-    }
-    return;
+    const packet = await Cipher.decryptE2EPacket(store.privateKey, contact.publicKey, words.join(" "));
+    if (!packet) return target.setAttribute("error-try", (errorTry + 1).toString());
+    changeTextNode(target, packet, true);
+    (target as any).dir = "auto";
+    target.setAttribute("encrypted", "true");
+  } catch (e) {
+    console.log(e);
+    changeTextNode(target, "⛔ Can't open, wrong public/private key");
   }
+  return;
 };
