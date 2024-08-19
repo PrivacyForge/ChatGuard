@@ -110,10 +110,6 @@
         <span>Encrypt messages</span>
       </div>
     {/if}
-    <div on:click|stopPropagation|preventDefault={handleLoadPublicKey} data-menu-item="true" class="ctc_menu__item">
-      <Import />
-      <span>Import public key</span>
-    </div>
     <div on:click|stopPropagation|preventDefault={handleSendHandshake} data-menu-item="true" class="ctc_menu__item">
       <Lock />
       <span>Send public key</span>

@@ -57,6 +57,17 @@
     a.click();
     URL.revokeObjectURL(a.href);
   };
+  const exportUserPrivateKey = async () => {
+    const store = await BrowserStorage.get();
+    if (!store.privateKey) return;
+    const config = store.privateKey;
+    const a = document.createElement("a");
+    const file = new Blob([config], { type: "text/plain" });
+    a.href = URL.createObjectURL(file);
+    a.download = "private.txt";
+    a.click();
+    URL.revokeObjectURL(a.href);
+  };
   const importChatGuardConfig = async (e: Event) => {
     const store = await BrowserStorage.get();
     const target = e.target as HTMLInputElement;
@@ -82,29 +93,7 @@
 
 <div class="wrapper">
   <div class="config">
-    <h2 class="title">Config</h2>
-    <div class="description">
-      <p
-        >The Config file includes your private key, public key, and Guard ID. You can export/import/reset your keys here
-        and use them on other devices or for backups.
-      </p>
-    </div>
-    <input on:change={importChatGuardConfig} id="conf" type="file" hidden />
-    <label id="import-upload" class="label" for="conf"> </label>
-    <md-filled-button role="button" on:pointerup={exportUserPublicKey} class="fullwidth">
-      <img slot="icon" width="18px" src={exportIcon} alt="" />
-      Export public key
-    </md-filled-button>
-    <div class="config-buttons">
-      <md-filled-button role="button" on:pointerup={exportChatGuardConfig} class="button">
-        <img slot="icon" width="18px" src={exportIcon} alt="" />
-        Export Config
-      </md-filled-button>
-      <md-filled-button on:pointerup={handleImportChatGuardConfig} role="button" class="button">
-        <img slot="icon" width="18px" src={importIcon} alt="" />
-        Import Config
-      </md-filled-button>
-    </div>
+    <h2 class="title">My credentials</h2>
     <md-outlined-button role="button" on:pointerup={resetChatGuardConfig} class="reset-button">
       <img slot="icon" width="18px" src={resetIcon} alt="" />
       Reset Everything

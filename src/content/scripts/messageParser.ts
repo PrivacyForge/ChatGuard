@@ -22,11 +22,14 @@ export const parseMessage = async (messages: Element[], index: number, store: IS
 
   // HandShakes Request
   if (words[0] === "سلام" && words.length === 21) {
-    words.shift();
+    const isHandshake = target.getAttribute("handshake");
+    if (isHandshake) return;
     const parent = document.createElement("div");
     changeTextNode(target, "");
+    words.shift();
     new Handshake({ target: parent, props: { publicKey: words.join(" ") } });
     target.prepend(parent);
+    target.setAttribute("handshake", "true");
     return;
   }
 
@@ -34,9 +37,10 @@ export const parseMessage = async (messages: Element[], index: number, store: IS
   // Messages
   try {
     const isEncrypted = target.getAttribute("encrypted");
+    const isHandshake = target.getAttribute("handshake");
     const errorTry = +(target.getAttribute("error-try") || "0");
 
-    if (isEncrypted) return;
+    if (isEncrypted || isHandshake) return;
     if (errorTry === 4) return changeTextNode(target, "⛔ Error in decryption");
 
     const packet = await Cipher.decryptE2EPacket(store.privateKey, contact.publicKey, words.join(" "));

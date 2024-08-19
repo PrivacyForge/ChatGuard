@@ -24,7 +24,7 @@ export const selectors: Record<string, Selector> = {
         type === "mobile"
           ? "#chat_footer > :has(#main-message-input) :nth-child(5)"
           : "#chat_footer > :has(#editable-message-text) :nth-child(5)",
-      header: "#toolbarWrapper",
+      header: ".main-section-container :nth-child(1) div",
       message: "[data-sid]",
       innerMessageText: "span",
     },

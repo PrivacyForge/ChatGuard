@@ -10,19 +10,20 @@
   let alreadyUsing = false;
 
   const handleUseHandshake = async () => {
+    const publicKeyArray = publicKey.split(" ");
+    publicKeyArray.shift();
     const store = await BrowserStorage.get();
     LocalStorage.setMap(store.localStorageKey as string, $url.id, {
       enable: true,
-      publicKey,
+      publicKey: publicKeyArray.join(" "),
     });
   };
-  const handleShowHandshake = () => {
-    alert(publicKey);
-  };
   const checkAlreadyUsing = async (localStorageKey: string) => {
+    const publicKeyArray = publicKey.split(" ");
+    publicKeyArray.shift();
     await wait(100);
     const contact = LocalStorage.getMap(localStorageKey as string, $url.id);
-    if (!contact || contact.publicKey !== publicKey) return (alreadyUsing = false);
+    if (!contact || contact.publicKey !== publicKeyArray.join(" ")) return (alreadyUsing = false);
     alreadyUsing = true;
   };
   onMount(async () => {
@@ -33,8 +34,8 @@
 </script>
 
 <div class="container">
-  <p>Public key handshake</p>
-  <div class="bottom">
+  {publicKey}
+  <div class="button-wrapper">
     <button disabled={alreadyUsing} on:click={handleUseHandshake}>
       {#if alreadyUsing}
         Already using
@@ -42,53 +43,37 @@
         Use
       {/if}
     </button>
-    <button on:click={handleShowHandshake}>Show</button>
   </div>
 </div>
 
 <style lang="scss" module>
   $primary-color: #0072f7;
   $primary-color-dark: #0062d2;
-
   .container {
+    width: 100%;
     display: flex;
     flex-direction: column;
-    justify-content: start;
-    align-items: start;
-    padding: 8px;
-    gap: 16px;
-    .bottom {
-      width: 100%;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-    }
-    p {
-      margin: 0;
-      padding: 0;
-    }
-    button {
-      width: 100%;
-      background-color: $primary-color;
-      padding: 8px 10px;
-      border-radius: 6px;
-      color: #fff;
-      border: none;
-      box-shadow: 0 0 1rem #00000042;
-      outline: none;
-      cursor: pointer;
-      &:disabled {
-        opacity: 0.2;
-        cursor: default;
-      }
-      &:hover {
-        background-color: $primary-color-dark;
-        &:disabled {
-          background-color: $primary-color;
-        }
-      }
+  }
+  p {
+    margin: 0;
+    padding: 0;
+  }
+  .button-wrapper {
+    padding-block: 10px;
+  }
+  button {
+    width: fit-content;
+    background-color: $primary-color;
+    padding: 4px 15px;
+    border-radius: 20px;
+    color: #fff;
+    font-size: 15px;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    &:disabled {
+      opacity: 0.5;
+      cursor: default;
     }
   }
 </style>
