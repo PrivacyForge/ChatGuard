@@ -24,16 +24,6 @@ Welcome to Chat Guard for. This guide will walk you through the steps to downloa
 
 ## kiwi
 
-1. Download the latest extension file from [download page](https://github.com/PrivacyForge/ChatGuard/releases).
+[![chrome store](/images/chromeStore.svg)](https://chromewebstore.google.com/detail/chatguard-beta/fokigjblcpglhdmjimcpmjikdfmchccg)
 
-2. Open Kiwi Browser on your mobile device.
-
-3. Click on the menu on top-right corner
-
-4. Click on "Extension"
-
-5. Make sure that "developer mode" is enabled
-
-6. Click on +(from .zip/...)
-
-7. select the zip file that you downloaded from the step 1
+1. Open the link above and Click on "Add to Chrome".
