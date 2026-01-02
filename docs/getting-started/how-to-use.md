@@ -4,8 +4,8 @@ in this step we learn how to make a secure conversation with ChatGuard and how p
 
 ## Supported Messenger
 
-- [telegram/k](https://telegram.com/k)
-- [telegram/a](https://telegram.com/a)
+- [telegram/k](https://web.telegram.org/k)
+- [telegram/a](https://web.telegram.org/a)
 - [bale](https://web.bale.ai/chat)
 - [soroush](https://web.splus.ir/)
 - [eitaa](https://web.eitaa.com/)
